@@ -55,9 +55,8 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     prefs.reload();
                     if (prefs.getBoolean("downgrade", false)) {
                         Field field = packageClass.getField("mVersionCode");
-                        field.set(packageInfoLite, 0);
+                        field.set(packageInfoLite, 1);
                     }
-                    ;
                 }
             });
 
@@ -76,6 +75,23 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     prefs.reload();
                     if (prefs.getBoolean("zipauthcreak", false)) {
                         methodHookParam.setResult(0);
+                    }
+                }
+            });
+
+            XposedBridge.hookAllMethods(localClass, "compareSignaturesCompat", new XC_MethodHook() {
+                protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) {
+                    prefs.reload();
+                    if (prefs.getBoolean("authcreak", false)) {
+                        paramAnonymousMethodHookParam.setResult(0);
+                    }
+                }
+            });
+            XposedBridge.hookAllMethods(localClass, "compareSignaturesRecover", new XC_MethodHook() {
+                protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) {
+                    prefs.reload();
+                    if (prefs.getBoolean("authcreak", false)) {
+                        paramAnonymousMethodHookParam.setResult(0);
                     }
                 }
             });

@@ -21,6 +21,20 @@ public class MainActivity extends AppCompatActivity {
     String ApplicationName = "com.coderstory.toolkit";
     public final String PREFS_FOLDER = " /data/data/" + ApplicationName + "/shared_prefs\n";
     public final String PREFS_FILE = " /data/data/" + ApplicationName + "/shared_prefs/" + "conf.xml" + ".xml\n";
+    @SuppressLint("HandlerLeak")
+    Handler myHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            final AlertDialog.Builder normalDialog =
+                    new AlertDialog.Builder(MainActivity.this);
+            normalDialog.setTitle("提示");
+            normalDialog.setMessage("请先授权应用ROOT权限");
+            normalDialog.setPositiveButton("确定",
+                    (dialog, which) -> System.exit(0));
+            // 显示
+            normalDialog.show();
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +100,4 @@ public class MainActivity extends AppCompatActivity {
         prefs = getSharedPreferences("UserSettings", Context.MODE_PRIVATE);
         return prefs;
     }
-    @SuppressLint("HandlerLeak")
-    Handler myHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            final AlertDialog.Builder normalDialog =
-                    new AlertDialog.Builder(MainActivity.this);
-            normalDialog.setTitle("提示");
-            normalDialog.setMessage("请先授权应用ROOT权限");
-            normalDialog.setPositiveButton("确定",
-                    (dialog, which) -> System.exit(0));
-            // 显示
-            normalDialog.show();
-            super.handleMessage(msg);
-        }
-    };
 }
