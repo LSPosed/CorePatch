@@ -15,6 +15,7 @@
                 <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
