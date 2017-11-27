@@ -79,6 +79,24 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     }
                 }
             });
+
+            XposedBridge.hookAllMethods(localClass, "compareSignaturesCompat", new XC_MethodHook() {
+                protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                    prefs.reload();
+                    if (prefs.getBoolean("authcreak", false)) {
+                        methodHookParam.setResult(0);
+                    }
+                }
+            });
+
+            XposedBridge.hookAllMethods(localClass, "compareSignaturesRecover", new XC_MethodHook() {
+                protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                    prefs.reload();
+                    if (prefs.getBoolean("authcreak", false)) {
+                        methodHookParam.setResult(0);
+                    }
+                }
+            });
         }
     }
 }

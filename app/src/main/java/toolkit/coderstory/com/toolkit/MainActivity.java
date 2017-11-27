@@ -1,6 +1,7 @@
 package toolkit.coderstory.com.toolkit;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     String ApplicationName = "com.coderstory.toolkit";
     public final String PREFS_FOLDER = " /data/data/" + ApplicationName + "/shared_prefs\n";
     public final String PREFS_FILE = " /data/data/" + ApplicationName + "/shared_prefs/" + "conf.xml" + ".xml\n";
-
+    private ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +50,23 @@ public class MainActivity extends AppCompatActivity {
         ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", false));
         ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", false));
 
-        new Thread(() -> {
-            if (!Shell.SU.available()) {
-                myHandler.sendMessage(new Message());
-            }
-        }).start();
+        if (!getPrefs().getBoolean("isRooted",false)) {
+            // 检测弹窗
+            new Thread(() -> {
+                Message msg = new Message();
+                msg.arg1 = 1;
+                myHandler.sendMessage(msg);
+                if (!Shell.SU.available()) {
+                    msg = new Message();
+                    msg.arg1 = 0;
+                    myHandler.sendMessage(msg);
+                } else {
+                    msg = new Message();
+                    msg.arg1 = 2;
+                    myHandler.sendMessage(msg);
+                }
+            }).start();
+        }
 
     }
 
@@ -89,15 +102,25 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("HandlerLeak")
     Handler myHandler = new Handler() {
         public void handleMessage(Message msg) {
-            final AlertDialog.Builder normalDialog =
-                    new AlertDialog.Builder(MainActivity.this);
-            normalDialog.setTitle("提示");
-            normalDialog.setMessage("请先授权应用ROOT权限");
-            normalDialog.setPositiveButton("确定",
-                    (dialog, which) -> System.exit(0));
-            // 显示
-            normalDialog.show();
-            super.handleMessage(msg);
+
+            if (msg.arg1 == 0) {
+                final AlertDialog.Builder normalDialog = new AlertDialog.Builder(MainActivity.this);
+                normalDialog.setTitle("提示");
+                normalDialog.setMessage("请先授权应用ROOT权限");
+                normalDialog.setPositiveButton("确定",
+                        (dialog, which) -> System.exit(0));
+                // 显示
+                normalDialog.show();
+                super.handleMessage(msg);
+            } else if ((msg.arg1 == 1)) {
+                dialog = ProgressDialog.show(MainActivity.this, "检测ROOT权限", "请在ROOT授权弹窗中给与ROOT权限,\n如果长时间无反应则请检查ROOT程序是否被\"省电程序\"干掉");
+                dialog.show();
+            } else {
+                if (dialog != null && dialog.isShowing()) {
+                    dialog.cancel();
+                    getEditor().putBoolean("isRooted",true).apply();
+                }
+            }
         }
     };
 }
