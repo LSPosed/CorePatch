@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
             sudoFixPermissions();
         });
 
-        ((Switch) $(R.id.authcreak)).setChecked(getPrefs().getBoolean("authcreak", false));
-        ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", false));
-        ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", false));
+        ((Switch) $(R.id.authcreak)).setChecked(getPrefs().getBoolean("authcreak", true));
+        ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", true));
+        ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", true));
 
         new Thread(() -> {
             if (!Shell.SU.available()) {

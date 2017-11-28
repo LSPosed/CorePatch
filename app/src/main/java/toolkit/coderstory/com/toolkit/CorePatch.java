@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -20,7 +21,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             protected void beforeHookedMethod(MethodHookParam methodHookParam)
                     throws Throwable {
                 prefs.reload();
-                if (prefs.getBoolean("authcreak", false)) {
+                if (prefs.getBoolean("authcreak", true)) {
                     methodHookParam.setResult(true);
                 }
             }
@@ -30,7 +31,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             protected void beforeHookedMethod(MethodHookParam paramAnonymousMethodHookParam)
                     throws Throwable {
                 prefs.reload();
-                if (prefs.getBoolean("authcreak", false)) {
+                if (prefs.getBoolean("authcreak", true)) {
                     paramAnonymousMethodHookParam.setResult(true);
                 }
             }
@@ -44,8 +45,9 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
         if (("android".equals(paramLoadPackageParam.packageName)) && (paramLoadPackageParam.processName.equals("android"))) {
 
-            Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
+            final  Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
             final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", paramLoadPackageParam.classLoader);
+            final Class packageParser = XposedHelpers.findClass("android.content.pm.PackageParser", paramLoadPackageParam.classLoader);
 
             XposedBridge.hookAllMethods(localClass, "checkDowngrade", new XC_MethodHook() {
                 @Override
@@ -53,7 +55,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     super.beforeHookedMethod(methodHookParam);
                     Object packageInfoLite = methodHookParam.args[0];
                     prefs.reload();
-                    if (prefs.getBoolean("downgrade", false)) {
+                    if (prefs.getBoolean("downgrade", true)) {
                         Field field = packageClass.getField("mVersionCode");
                         field.set(packageInfoLite, 1);
                     }
@@ -64,7 +66,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     prefs.reload();
-                    if (prefs.getBoolean("authcreak", false)) {
+                    if (prefs.getBoolean("authcreak", true)) {
                         methodHookParam.setResult(true);
                     }
                 }
@@ -73,7 +75,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             XposedBridge.hookAllMethods(localClass, "compareSignatures", new XC_MethodHook() {
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     prefs.reload();
-                    if (prefs.getBoolean("zipauthcreak", false)) {
+                    if (prefs.getBoolean("zipauthcreak", true)) {
                         methodHookParam.setResult(0);
                     }
                 }
@@ -82,7 +84,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             XposedBridge.hookAllMethods(localClass, "compareSignaturesCompat", new XC_MethodHook() {
                 protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) {
                     prefs.reload();
-                    if (prefs.getBoolean("authcreak", false)) {
+                    if (prefs.getBoolean("authcreak", true)) {
                         paramAnonymousMethodHookParam.setResult(0);
                     }
                 }
@@ -90,11 +92,13 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             XposedBridge.hookAllMethods(localClass, "compareSignaturesRecover", new XC_MethodHook() {
                 protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) {
                     prefs.reload();
-                    if (prefs.getBoolean("authcreak", false)) {
+                    if (prefs.getBoolean("authcreak", true)) {
                         paramAnonymousMethodHookParam.setResult(0);
                     }
                 }
             });
+
+            XposedBridge.hookAllMethods(packageParser, "getApkSigningVersion",  XC_MethodReplacement.returnConstant(1));
         }
     }
 }
