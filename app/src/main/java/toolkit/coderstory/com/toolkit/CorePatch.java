@@ -57,8 +57,9 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     prefs.reload();
                     if (prefs.getBoolean("downgrade", true)) {
                         Field field = packageClass.getField("mVersionCode");
-                        field.set(packageInfoLite, 1);
+                        field.set(packageInfoLite, 0);
                     }
+                    ;
                 }
             });
 
