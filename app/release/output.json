@@ -1,1 +1,18 @@
-[{"outputType":{"type":"APK"},"apkInfo":{"type":"MAIN","splits":[],"versionCode":1600},"path":"app-release.apk","properties":{"packageId":"com.coderstory.toolkit","split":"","minSdkVersion":"19"}}]
+[
+  {
+    "outputType": {
+      "type": "APK"
+    },
+    "apkInfo": {
+      "type": "MAIN",
+      "splits": [],
+      "versionCode": 1602
+    },
+    "path": "app-release.apk",
+    "properties": {
+      "packageId": "com.coderstory.toolkit",
+      "split": "",
+      "minSdkVersion": "19"
+    }
+  }
+]
