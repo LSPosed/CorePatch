@@ -6,8 +6,8 @@ android {
         applicationId "com.coderstory.toolkit"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 1601
-        versionName "1.6"
+        versionCode 1605
+        versionName "1.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
