@@ -37,6 +37,37 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             }
         });
 
+        final Class ApkSignatureSchemeV2Verifier = XposedHelpers.findClass("android.util.apk.ApkSignatureSchemeV2Verifier", null);
+        final Class packageParser = XposedHelpers.findClass("android.content.pm.PackageParser",null);
+        final Class strictJarVerifier = XposedHelpers.findClass("android.util.jar.StrictJarVerifier", null);
+        final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", null);
+
+        XposedBridge.hookAllMethods(packageParser, "getApkSigningVersion",  XC_MethodReplacement.returnConstant(1));
+
+        XposedBridge.hookAllConstructors(strictJarVerifier, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+
+                prefs.reload();
+                if (prefs.getBoolean("authcreak", true)) {
+                    param.args[3]=false;
+                }
+            }
+        });
+
+        XposedBridge.hookAllConstructors(ApkSignatureSchemeV2Verifier, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Object packageInfoLite = param.thisObject;
+                prefs.reload();
+                if (prefs.getBoolean("authcreak", true)) {
+                    Field field = packageClass.getField(" SF_ATTRIBUTE_ANDROID_APK_SIGNED_ID");
+                    field.setAccessible(true);
+                    field.set(packageInfoLite, 3);
+                }
+            }
+        });
+
     }
 
 
@@ -47,7 +78,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
             final  Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
             final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", paramLoadPackageParam.classLoader);
-            final Class packageParser = XposedHelpers.findClass("android.content.pm.PackageParser", paramLoadPackageParam.classLoader);
 
             XposedBridge.hookAllMethods(localClass, "checkDowngrade", new XC_MethodHook() {
                 @Override
@@ -57,9 +87,9 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     prefs.reload();
                     if (prefs.getBoolean("downgrade", true)) {
                         Field field = packageClass.getField("mVersionCode");
+                        field.setAccessible(true);
                         field.set(packageInfoLite, 0);
-                    }
-                    ;
+                    };
                 }
             });
 
@@ -99,7 +129,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 }
             });
 
-            XposedBridge.hookAllMethods(packageParser, "getApkSigningVersion",  XC_MethodReplacement.returnConstant(1));
         }
     }
 }
