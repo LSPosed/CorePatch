@@ -2,8 +2,10 @@ package toolkit.coderstory.com.toolkit;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         ((Switch) $(R.id.authcreak)).setChecked(getPrefs().getBoolean("authcreak", true));
         ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", true));
         ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", true));
+        ((Switch) $(R.id.hideicon)).setChecked(getPrefs().getBoolean("hideIcon", false));
 
         if (!getPrefs().getBoolean("isRooted", false)) {
             // 检测弹窗
@@ -92,6 +95,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }).start();
         }
+
+        $(R.id.hideicon).setOnClickListener(v -> {
+            getEditor().putBoolean("hideIcon", ((Switch) v).isChecked());
+            getEditor().apply();
+            sudoFixPermissions();
+            ComponentName localComponentName = new ComponentName(MainActivity.this, "toolkit.coderstory.com.toolkit.MainActivity");
+            PackageManager localPackageManager = getPackageManager();
+            localPackageManager.getComponentEnabledSetting(localComponentName);
+            PackageManager packageManager = getPackageManager();
+            ComponentName componentName = new ComponentName(MainActivity.this, "toolkit.coderstory.com.toolkit.MainActivity");
+
+            if (((Switch) v).isChecked()) {
+                packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
+            } else {
+                packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+                        PackageManager.DONT_KILL_APP);
+            }
+        });
 
     }
 

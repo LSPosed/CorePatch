@@ -56,6 +56,45 @@
                 android:paddingStart="30dp"
                 android:text="@string/zipauthcreak" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+
+                android:paddingEnd="30dp"
+                android:paddingStart="30dp"
+                android:paddingTop="20dp"
+                android:text="设置" />
+
+            <Switch
+                android:id="@+id/hideicon"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/switchBtn"
+                android:paddingEnd="30dp"
+                android:paddingStart="30dp"
+                android:text="@string/hideicon" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+
+                android:paddingEnd="30dp"
+                android:paddingStart="30dp"
+                android:paddingTop="20dp"
+                android:text="联系" />
+            <TextView
+                android:id="@+id/textView"
+                android:paddingEnd="30dp"
+                android:paddingStart="30dp"
+                android:paddingTop="20dp"
+                android:layout_width="match_parent"
+                android:autoLink="all"
+                android:layout_height="wrap_content"
+                android:text="@string/blog" />
+
         </LinearLayout>
+
+
     </ScrollView>
 </LinearLayout>
