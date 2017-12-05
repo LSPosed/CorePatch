@@ -83,15 +83,33 @@
                 android:paddingStart="30dp"
                 android:paddingTop="20dp"
                 android:text="联系" />
+
             <TextView
                 android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="all"
                 android:paddingEnd="30dp"
                 android:paddingStart="30dp"
                 android:paddingTop="20dp"
-                android:layout_width="match_parent"
-                android:autoLink="all"
-                android:layout_height="wrap_content"
                 android:text="@string/blog" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+
+                android:paddingEnd="30dp"
+                android:paddingStart="30dp"
+                android:paddingTop="20dp"
+                android:text="捐赠支持作者" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/alipay"
+                android:layout_width="150dp"
+                android:layout_height="118dp"
+                android:layout_gravity="center"
+                android:maxHeight="150dp"
+                android:src="@drawable/alipay" />
 
         </LinearLayout>
 

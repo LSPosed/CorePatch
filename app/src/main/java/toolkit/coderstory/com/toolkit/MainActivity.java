@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.didikee.donate.AlipayDonate;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -77,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", true));
         ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", true));
         ((Switch) $(R.id.hideicon)).setChecked(getPrefs().getBoolean("hideIcon", false));
+        $(R.id.alipay).setOnClickListener(view ->
+                donateAlipay("aex087445gnaa6gawjaohe8")
+        );
 
         if (!getPrefs().getBoolean("isRooted", false)) {
             // 检测弹窗
@@ -145,5 +149,12 @@ public class MainActivity extends AppCompatActivity {
     protected SharedPreferences getPrefs() {
         prefs = getSharedPreferences("UserSettings", Context.MODE_PRIVATE);
         return prefs;
+    }
+
+    private void donateAlipay(String payCode) {
+        boolean hasInstalledAlipayClient = AlipayDonate.hasInstalledAlipayClient(MainActivity.this);
+        if (hasInstalledAlipayClient) {
+            AlipayDonate.startAlipayClient(MainActivity.this, payCode);
+        }
     }
 }
