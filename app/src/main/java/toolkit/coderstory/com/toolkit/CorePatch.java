@@ -75,13 +75,11 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 if (prefs.getBoolean("authcreak", true)) {
                     Field field = packageClass.getField(" SF_ATTRIBUTE_ANDROID_APK_SIGNED_ID");
                     field.setAccessible(true);
-                    field.set(packageInfoLite, 3);
+                    field.set(packageInfoLite, -1);
                 }
             }
         });
-
     }
-
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam paramLoadPackageParam) {
