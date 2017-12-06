@@ -68,6 +68,25 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 }
             }
         });
+
+        Class AppOpsService = null;
+        try {
+            AppOpsService = XposedHelpers.findClass("com.android.server.AppOpsService", null);
+
+        } catch (XposedHelpers.ClassNotFoundError e) {
+            XposedBridge.log(e);
+        }
+        if (AppOpsService != null) {
+            XposedBridge.hookAllMethods(AppOpsService, "isSystemOrPrivApp", new XC_MethodHook() {
+                protected void beforeHookedMethod(MethodHookParam paramAnonymousMethodHookParam)
+                        throws Throwable {
+                    prefs.reload();
+                    if (prefs.getBoolean("authcreak", true)) {
+                        paramAnonymousMethodHookParam.setResult(true);
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -77,7 +96,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
             final Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
             final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", paramLoadPackageParam.classLoader);
-            final Class AppOpsService = XposedHelpers.findClass("com.android.server.AppOpsService", null);
 
             XposedBridge.hookAllMethods(localClass, "checkDowngrade", new XC_MethodHook() {
                 @Override
@@ -88,7 +106,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     if (prefs.getBoolean("downgrade", true)) {
                         Field field = packageClass.getField("mVersionCode");
                         field.setAccessible(true);
-                        field.set(packageInfoLite, 0);
+                        field.set(packageInfoLite, -1);
                     }
                 }
             });
@@ -129,15 +147,24 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 }
             });
 
-            XposedBridge.hookAllMethods(AppOpsService, "isSystemOrPrivApp", new XC_MethodHook() {
-                protected void beforeHookedMethod(MethodHookParam paramAnonymousMethodHookParam)
-                        throws Throwable {
-                    prefs.reload();
-                    if (prefs.getBoolean("authcreak", true)) {
-                        paramAnonymousMethodHookParam.setResult(true);
+            Class AppOpsService = null;
+            try {
+                AppOpsService = XposedHelpers.findClass("com.android.server.AppOpsService", null);
+
+            } catch (XposedHelpers.ClassNotFoundError e) {
+                XposedBridge.log(e);
+            }
+            if (AppOpsService != null) {
+                XposedBridge.hookAllMethods(AppOpsService, "isSystemOrPrivApp", new XC_MethodHook() {
+                    protected void beforeHookedMethod(MethodHookParam paramAnonymousMethodHookParam)
+                            throws Throwable {
+                        prefs.reload();
+                        if (prefs.getBoolean("authcreak", true)) {
+                            paramAnonymousMethodHookParam.setResult(true);
+                        }
                     }
-                }
-            });
+                });
+            }
 
         }
     }
