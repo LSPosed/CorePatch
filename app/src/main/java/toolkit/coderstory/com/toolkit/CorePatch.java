@@ -102,7 +102,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                         field.setAccessible(true);
                         field.set(packageInfoLite, 0);
                     }
-                    ;
                 }
             });
 
