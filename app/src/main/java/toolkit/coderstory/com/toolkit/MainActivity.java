@@ -100,17 +100,24 @@ public class MainActivity extends AppCompatActivity {
                     msg = new Message();
                     msg.arg1 = 0;
                     myHandler.sendMessage(msg);
-                } if (!isEnable()){
+                } /* if (!isEnable()){
                     msg = new Message();
                     msg.arg1 = 3;
                     myHandler.sendMessage(msg);
-                } else{
+                }*/
+                else{
                     msg = new Message();
                     msg.arg1 = 2;
                     myHandler.sendMessage(msg);
                 }
             }).start();
-        }
+        }/*else{
+            if (!isEnable()){
+                Message  msg = new Message();
+                msg.arg1 = 3;
+                myHandler.sendMessage(msg);
+            }
+        }*/
 
         $(R.id.hideicon).setOnClickListener(v -> {
             getEditor().putBoolean("hideIcon", ((Switch) v).isChecked());
