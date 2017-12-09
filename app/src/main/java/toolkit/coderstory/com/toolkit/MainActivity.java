@@ -38,11 +38,19 @@ public class MainActivity extends AppCompatActivity {
                         (dialog, which) -> System.exit(0));
                 // 显示
                 normalDialog.show();
-                super.handleMessage(msg);
+
             } else if ((msg.arg1 == 1)) {
                 dialog = ProgressDialog.show(MainActivity.this, "检测ROOT权限", "请在ROOT授权弹窗中给与ROOT权限,\n如果长时间无反应则请检查ROOT程序是否被\"省电程序\"干掉");
                 dialog.show();
-            } else {
+            } else if (msg.arg1 == 3){
+                final AlertDialog.Builder normalDialog = new AlertDialog.Builder(MainActivity.this);
+                normalDialog.setTitle("提示");
+                normalDialog.setMessage("插件尚未启用，请开启后再次打开.实在搞不定，就删了xposed installer 重新安装一次");
+                normalDialog.setPositiveButton("确定",
+                        (dialog, which) -> System.exit(0));
+                // 显示
+                normalDialog.show();
+            }else {
                 if (dialog != null && dialog.isShowing()) {
                     dialog.cancel();
                     getEditor().putBoolean("isRooted", true).apply();
@@ -75,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ((Switch) $(R.id.authcreak)).setChecked(getPrefs().getBoolean("authcreak", true));
-        ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", true));
+        ((Switch) $(R.id.zipauthcreak)).setChecked(getPrefs().getBoolean("zipauthcreak", false));
         ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", true));
         ((Switch) $(R.id.hideicon)).setChecked(getPrefs().getBoolean("hideIcon", false));
         $(R.id.alipay).setOnClickListener(view ->
@@ -92,7 +100,11 @@ public class MainActivity extends AppCompatActivity {
                     msg = new Message();
                     msg.arg1 = 0;
                     myHandler.sendMessage(msg);
-                } else {
+                } if (!isEnable()){
+                    msg = new Message();
+                    msg.arg1 = 3;
+                    myHandler.sendMessage(msg);
+                } else{
                     msg = new Message();
                     msg.arg1 = 2;
                     myHandler.sendMessage(msg);
@@ -147,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected SharedPreferences getPrefs() {
-        prefs = getSharedPreferences("conf", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("conf.xml", Context.MODE_PRIVATE);
         return prefs;
     }
 
@@ -156,5 +168,9 @@ public class MainActivity extends AppCompatActivity {
         if (hasInstalledAlipayClient) {
             AlipayDonate.startAlipayClient(MainActivity.this, payCode);
         }
+    }
+
+    public boolean isEnable(){
+        return  false;
     }
 }
