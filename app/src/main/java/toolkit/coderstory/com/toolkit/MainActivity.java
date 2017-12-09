@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected SharedPreferences getPrefs() {
-        prefs = getSharedPreferences("UserSettings", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("conf", Context.MODE_PRIVATE);
         return prefs;
     }
 
