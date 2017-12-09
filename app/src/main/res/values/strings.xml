@@ -3,7 +3,7 @@
     <string name="corepatch">核心破解</string>
     <string name="downgr"><b>允许降级安装应用 - 实时生效</b>\n允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
     <string name="authcreak"><b>禁用软件包管理器签名验证 - 实时生效</b>\n关闭安装应用时的签名验证,可以安装被篡改的应用</string>
-    <string name="zipauthcreak"><b>禁用APK签名验证 - 实时生效</b>\n允许直接覆盖安装同包名不同签名的应用</string>
+    <string name="zipauthcreak"><b>禁用APK签名验证 - 实时生效</b>\n允许直接覆盖安装同包名不同签名的应用\n警告：部分系统开启后会导致无法安装app,已安装的app消失</string>
     <string name="hideicon"><b>隐藏应用图标</b>\n隐藏核心破解在桌上面的图标，隐藏图标后可在Xposed安装器中打开</string>
     <string name="blog">
         <b>博客主页: blog.coderstory.cn</b>
