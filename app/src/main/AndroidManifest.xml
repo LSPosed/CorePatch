@@ -20,7 +20,7 @@
 
         <activity-alias
             android:name="AndroidAlias"
-            android:label="Module"
+            android:label="@string/app_name"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

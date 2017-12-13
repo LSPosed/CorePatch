@@ -1,6 +1,12 @@
 package toolkit.coderstory.com.toolkit;
 
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.util.Base64;
+
 import java.lang.reflect.Field;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -13,7 +19,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 
 public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IXposedHookLoadPackage {
-
+    String platform = "";
+    Context PMcontext;
 
     public void initZygote(IXposedHookZygoteInit.StartupParam paramStartupParam) {
 
@@ -73,8 +80,8 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam paramLoadPackageParam) {
 
-        if("com.coderstory.toolkit".equals(paramLoadPackageParam.packageName)){
-            final Class packageClass = XposedHelpers.findClass("toolkit.coderstory.com.toolkit.MainActivity", null);
+        if ("com.coderstory.toolkit".equals(paramLoadPackageParam.packageName)) {
+            final Class packageClass = XposedHelpers.findClass("com.coderstory.toolkit.MainActivity", null);
             XposedBridge.hookAllMethods(packageClass, "isEnable", XC_MethodReplacement.returnConstant(false));
         }
 
@@ -82,6 +89,12 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
             final Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
             final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", paramLoadPackageParam.classLoader);
+
+            XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader), new XC_MethodHook() {
+                protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
+                    PMcontext = (Context) paramAnonymousMethodHookParam.args[0];
+                }
+            });
 
             XposedBridge.hookAllMethods(localClass, "checkDowngrade", new XC_MethodHook() {
                 @Override
@@ -111,6 +124,31 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     prefs.reload();
                     if (prefs.getBoolean("zipauthcreak", false)) {
+                        if (platform.equals("")) {
+                            PackageInfo packageInfo = PMcontext.getPackageManager().getPackageInfo("android", PackageManager.GET_SIGNATURES);
+                            if (packageInfo.signatures[0] != null) {
+                                platform = new String(Base64.encode(packageInfo.signatures[0].toByteArray(), Base64.DEFAULT)).replaceAll("\n", "");
+                            }
+                        }
+
+                        Signature[] signatures = (Signature[]) methodHookParam.args[0];
+                        if (signatures != null && signatures.length > 0) {
+                            for (Signature signature : signatures) {
+                                if (new String(Base64.encode(signature.toByteArray(), Base64.DEFAULT)).replaceAll("\n", "").equals(platform)) {
+                                    return;
+                                }
+                            }
+                        }
+
+                        signatures = (Signature[]) methodHookParam.args[1];
+                        if (signatures != null && signatures.length > 0) {
+                            for (Signature signature : signatures) {
+                                if (new String(Base64.encode(signature.toByteArray(), Base64.DEFAULT)).replaceAll("\n", "").equals(platform)) {
+                                    return;
+                                }
+                            }
+                        }
+
                         methodHookParam.setResult(0);
                     }
                 }

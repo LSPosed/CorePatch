@@ -75,15 +75,23 @@
                 android:paddingStart="30dp"
                 android:text="@string/hideicon" />
 
+
+            <View
+                android:id="@+id/line5"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginTop="5dp"
+                android:paddingTop="50dp"
+                android:paddingBottom="20dp"
+                android:background="#dc484b4b" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-
                 android:paddingEnd="30dp"
                 android:paddingStart="30dp"
                 android:paddingTop="20dp"
-                android:text="联系" />
-
+                android:text="@string/link" />
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
@@ -94,14 +102,14 @@
                 android:paddingTop="20dp"
                 android:text="@string/blog" />
 
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-
                 android:paddingEnd="30dp"
                 android:paddingStart="30dp"
                 android:paddingTop="20dp"
-                android:text="捐赠支持作者" />
+                android:text="@string/donta" />
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/alipay"
@@ -110,6 +118,17 @@
                 android:layout_gravity="center"
                 android:maxHeight="150dp"
                 android:src="@drawable/alipay" />
+
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="all"
+                android:paddingEnd="30dp"
+                android:paddingStart="30dp"
+                android:paddingTop="20dp"
+                android:text="@string/blog2" />
 
         </LinearLayout>
 
