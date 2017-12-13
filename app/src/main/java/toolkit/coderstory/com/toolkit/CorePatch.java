@@ -1,7 +1,6 @@
 package toolkit.coderstory.com.toolkit;
 
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -20,10 +19,11 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     String platform = "";
-    Context PMcontext;
+    Object PMcontext;
+    boolean disableCheckSignatures;
 
     public void initZygote(IXposedHookZygoteInit.StartupParam paramStartupParam) {
-
+        this.disableCheckSignatures = true;
         XposedHelpers.findAndHookMethod("java.security.MessageDigest", null, "isEqual", byte[].class, byte[].class, new XC_MethodHook() {
             protected void beforeHookedMethod(MethodHookParam methodHookParam)
                     throws Throwable {
@@ -80,19 +80,26 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam paramLoadPackageParam) {
 
-        if ("com.coderstory.toolkit".equals(paramLoadPackageParam.packageName)) {
-            final Class packageClass = XposedHelpers.findClass("com.coderstory.toolkit.MainActivity", null);
-            XposedBridge.hookAllMethods(packageClass, "isEnable", XC_MethodReplacement.returnConstant(false));
-        }
 
         if (("android".equals(paramLoadPackageParam.packageName)) && (paramLoadPackageParam.processName.equals("android"))) {
 
             final Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
             final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", paramLoadPackageParam.classLoader);
 
+            XposedBridge.hookAllMethods(localClass, "scanPackageLI", new XC_MethodHook() {
+                protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
+                    disableCheckSignatures = true;
+                }
+
+                protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
+                    disableCheckSignatures = false;
+                }
+            });
+
             XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader), new XC_MethodHook() {
                 protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
-                    PMcontext = (Context) paramAnonymousMethodHookParam.args[0];
+                    XposedBridge.log("读取到了context");
+                    PMcontext = paramAnonymousMethodHookParam.args[0];
                 }
             });
 
@@ -123,9 +130,10 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             XposedBridge.hookAllMethods(localClass, "compareSignatures", new XC_MethodHook() {
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     prefs.reload();
-                    if (prefs.getBoolean("zipauthcreak", false)) {
-                        if (platform.equals("")) {
-                            PackageInfo packageInfo = PMcontext.getPackageManager().getPackageInfo("android", PackageManager.GET_SIGNATURES);
+                    if (prefs.getBoolean("zipauthcreak", false) && disableCheckSignatures) {
+
+                        if (platform.equals("") && PMcontext != null) {
+                            PackageInfo packageInfo = ((PackageManager) XposedHelpers.callMethod(PMcontext, "getPackageManager")).getPackageInfo("android", PackageManager.GET_SIGNATURES);
                             if (packageInfo.signatures[0] != null) {
                                 platform = new String(Base64.encode(packageInfo.signatures[0].toByteArray(), Base64.DEFAULT)).replaceAll("\n", "");
                             }
