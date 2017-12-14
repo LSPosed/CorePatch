@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.didikee.donate.AlipayDonate;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Switch;
 
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             } else if ((msg.arg1 == 1)) {
                 dialog = ProgressDialog.show(MainActivity.this, "检测ROOT权限", "请在ROOT授权弹窗中给与ROOT权限,\n如果长时间无反应则请检查ROOT程序是否被\"省电程序\"干掉");
                 dialog.show();
-            } else if (msg.arg1 == 3){
+            } else if (msg.arg1 == 3) {
                 final AlertDialog.Builder normalDialog = new AlertDialog.Builder(MainActivity.this);
                 normalDialog.setTitle("提示");
                 normalDialog.setMessage("插件尚未启用，请开启后再次打开.实在搞不定，就删了xposed installer 重新安装一次");
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                         (dialog, which) -> System.exit(0));
                 // 显示
                 normalDialog.show();
-            }else {
+            } else {
                 if (dialog != null && dialog.isShowing()) {
                     dialog.cancel();
                     getEditor().putBoolean("isRooted", true).apply();
@@ -63,6 +65,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // 读取平台签名并保存
+        new Thread(() -> {
+            try {
+                PackageInfo packageInfo = MainActivity.this.getPackageManager().getPackageInfo("android", PackageManager.GET_SIGNATURES);
+                if (packageInfo.signatures[0] != null) {
+                    String platform = new String(Base64.encode(packageInfo.signatures[0].toByteArray(), Base64.DEFAULT)).replaceAll("\n", "");
+                    getEditor().putString("platform", platform);
+                    getEditor().apply();
+                    sudoFixPermissions();
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
         $(R.id.authcreak).setOnClickListener(v -> {
             getEditor().putBoolean("authcreak", ((Switch) v).isChecked());
             getEditor().apply();
@@ -87,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", true));
         ((Switch) $(R.id.hideicon)).setChecked(getPrefs().getBoolean("hideIcon", false));
         $(R.id.alipay).setOnClickListener(view ->
-                donateAlipay("aex087445gnaa6gawjaohe8")
+                donateAlipay()
         );
 
         if (!getPrefs().getBoolean("isRooted", false)) {
@@ -100,24 +118,13 @@ public class MainActivity extends AppCompatActivity {
                     msg = new Message();
                     msg.arg1 = 0;
                     myHandler.sendMessage(msg);
-                } /* if (!isEnable()){
-                    msg = new Message();
-                    msg.arg1 = 3;
-                    myHandler.sendMessage(msg);
-                }*/
-                else{
+                } else {
                     msg = new Message();
                     msg.arg1 = 2;
                     myHandler.sendMessage(msg);
                 }
             }).start();
-        }/*else{
-            if (!isEnable()){
-                Message  msg = new Message();
-                msg.arg1 = 3;
-                myHandler.sendMessage(msg);
-            }
-        }*/
+        }
 
         $(R.id.hideicon).setOnClickListener(v -> {
             getEditor().putBoolean("hideIcon", ((Switch) v).isChecked());
@@ -170,14 +177,14 @@ public class MainActivity extends AppCompatActivity {
         return prefs;
     }
 
-    private void donateAlipay(String payCode) {
+    private void donateAlipay() {
         boolean hasInstalledAlipayClient = AlipayDonate.hasInstalledAlipayClient(MainActivity.this);
         if (hasInstalledAlipayClient) {
-            AlipayDonate.startAlipayClient(MainActivity.this, payCode);
+            AlipayDonate.startAlipayClient(MainActivity.this, "aex087445gnaa6gawjaohe8");
         }
     }
 
-    public boolean isEnable(){
-        return  false;
+    public boolean isEnable() {
+        return false;
     }
 }

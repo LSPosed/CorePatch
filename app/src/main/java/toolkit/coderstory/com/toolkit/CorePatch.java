@@ -18,12 +18,9 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 
 public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IXposedHookLoadPackage {
-    String platform = "";
-    Object PMcontext;
-    boolean disableCheckSignatures;
 
     public void initZygote(IXposedHookZygoteInit.StartupParam paramStartupParam) {
-        this.disableCheckSignatures = true;
+
         XposedHelpers.findAndHookMethod("java.security.MessageDigest", null, "isEqual", byte[].class, byte[].class, new XC_MethodHook() {
             protected void beforeHookedMethod(MethodHookParam methodHookParam)
                     throws Throwable {
@@ -86,23 +83,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             final Class localClass = XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader);
             final Class packageClass = XposedHelpers.findClass("android.content.pm.PackageParser.Package", paramLoadPackageParam.classLoader);
 
-            XposedBridge.hookAllMethods(localClass, "scanPackageLI", new XC_MethodHook() {
-                protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
-                    disableCheckSignatures = true;
-                }
-
-                protected void beforeHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
-                    disableCheckSignatures = false;
-                }
-            });
-
-            XposedBridge.hookAllConstructors(XposedHelpers.findClass("com.android.server.pm.PackageManagerService", paramLoadPackageParam.classLoader), new XC_MethodHook() {
-                protected void afterHookedMethod(XC_MethodHook.MethodHookParam paramAnonymousMethodHookParam) throws Throwable {
-                    XposedBridge.log("读取到了context");
-                    PMcontext = paramAnonymousMethodHookParam.args[0];
-                }
-            });
-
             XposedBridge.hookAllMethods(localClass, "checkDowngrade", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
@@ -130,13 +110,12 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             XposedBridge.hookAllMethods(localClass, "compareSignatures", new XC_MethodHook() {
                 protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     prefs.reload();
-                    if (prefs.getBoolean("zipauthcreak", false) && disableCheckSignatures) {
+                    if (prefs.getBoolean("zipauthcreak", false) ) {
 
-                        if (platform.equals("") && PMcontext != null) {
-                            PackageInfo packageInfo = ((PackageManager) XposedHelpers.callMethod(PMcontext, "getPackageManager")).getPackageInfo("android", PackageManager.GET_SIGNATURES);
-                            if (packageInfo.signatures[0] != null) {
-                                platform = new String(Base64.encode(packageInfo.signatures[0].toByteArray(), Base64.DEFAULT)).replaceAll("\n", "");
-                            }
+                        String platform = prefs.getString("platform","DEFAULT");
+
+                        if (platform.equals("DEFAULT")){
+                            XposedBridge.log("警告:核心破解上未初始化,请至少打开一次APP!");
                         }
 
                         Signature[] signatures = (Signature[]) methodHookParam.args[0];
