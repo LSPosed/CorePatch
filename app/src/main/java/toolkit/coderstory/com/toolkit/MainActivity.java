@@ -156,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
             editor = prefs.edit();
         }
         return editor;
-
     }
 
     protected void sudoFixPermissions() {
@@ -182,9 +181,5 @@ public class MainActivity extends AppCompatActivity {
         if (hasInstalledAlipayClient) {
             AlipayDonate.startAlipayClient(MainActivity.this, "aex087445gnaa6gawjaohe8");
         }
-    }
-
-    public boolean isEnable() {
-        return false;
     }
 }
