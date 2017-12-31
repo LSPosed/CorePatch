@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected SharedPreferences.Editor getEditor() {
         if (editor == null) {
-            editor = prefs.edit();
+            editor = getPrefs().edit();
         }
         return editor;
     }
