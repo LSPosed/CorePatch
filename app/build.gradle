@@ -8,7 +8,6 @@ android {
         targetSdkVersion 27
         versionCode 1755
         versionName "2.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     repositories {
         //mavenCentral()
@@ -28,12 +27,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    testImplementation 'junit:junit:4.12'
     compile 'eu.chainfire:libsuperuser:1.0.0.201704021214'
     provided 'de.robv.android.xposed:api:82'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.github.didikee:AndroidDonate:0.1.0'
 }
