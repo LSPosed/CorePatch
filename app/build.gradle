@@ -4,10 +4,11 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.coderstory.toolkit"
-        minSdkVersion 19
+        buildToolsVersion '27.0.3'
+        minSdkVersion 23
         targetSdkVersion 27
-        versionCode 1755
-        versionName "2.0"
+        versionCode 1760
+        versionName "2.1"
     }
     repositories {
         //mavenCentral()
