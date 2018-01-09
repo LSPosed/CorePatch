@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "com.coderstory.toolkit"
         buildToolsVersion '27.0.3'
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 27
         versionCode 1760
         versionName "2.1"
