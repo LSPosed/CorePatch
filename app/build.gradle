@@ -7,7 +7,7 @@ android {
         buildToolsVersion '27.0.3'
         minSdkVersion 24
         targetSdkVersion 27
-        versionCode 1760
+        versionCode 1765
         versionName "2.1"
     }
     repositories {
