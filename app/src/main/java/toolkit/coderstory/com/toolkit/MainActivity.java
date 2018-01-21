@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private void donateAlipay() {
         boolean hasInstalledAlipayClient = AlipayDonate.hasInstalledAlipayClient(MainActivity.this);
         if (hasInstalledAlipayClient) {
-            AlipayDonate.startAlipayClient(MainActivity.this, "aex087445gnaa6gawjaohe8");
+            AlipayDonate.startAlipayClient(MainActivity.this, "FKX03884EYVUJKBZLWQTFA");
         }
     }
 }
