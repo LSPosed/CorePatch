@@ -10,9 +10,7 @@
         \n\n<b>微博主页: weibo.com/codestory</b>
     </string>
     <string name="blog2">
-        \n\n1.去签名校验思路来自 http://t.cn/RQhbCit
-        \n2.APK Signature Scheme v2签名破解和App降级安装属原创
-        \n3.平台签名获取方法源自 Lucky Patcher
+        \n\n 兼容Android 9-10
         \n\n
     </string>
     <string name="link"><b>联系方式</b></string>

@@ -1,4 +1,4 @@
-package toolkit.coderstory.com.toolkit;
+package toolkit.coderstory;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -20,6 +20,7 @@ import android.widget.Switch;
 import java.io.File;
 
 import eu.chainfire.libsuperuser.Shell;
+import toolkit.coderstory.com.toolkit.R;
 
 public class MainActivity extends AppCompatActivity {
     private static SharedPreferences prefs;
@@ -130,11 +131,11 @@ public class MainActivity extends AppCompatActivity {
             getEditor().putBoolean("hideIcon", ((Switch) v).isChecked());
             getEditor().apply();
             sudoFixPermissions();
-            ComponentName localComponentName = new ComponentName(MainActivity.this, "toolkit.coderstory.com.toolkit.MainActivity");
+            ComponentName localComponentName = new ComponentName(MainActivity.this, "toolkit.coderstory.MainActivity");
             PackageManager localPackageManager = getPackageManager();
             localPackageManager.getComponentEnabledSetting(localComponentName);
             PackageManager packageManager = getPackageManager();
-            ComponentName componentName = new ComponentName(MainActivity.this, "toolkit.coderstory.com.toolkit.MainActivity");
+            ComponentName componentName = new ComponentName(MainActivity.this, "toolkit.coderstory.MainActivity");
 
             if (((Switch) v).isChecked()) {
                 packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,

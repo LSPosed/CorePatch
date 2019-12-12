@@ -1,2 +1,2 @@
 # CorePatch
-android 4.4-7.x  核心破解
+android 9.0 - 10  核心破解
