@@ -111,7 +111,7 @@
                 android:paddingTop="20dp"
                 android:text="@string/donta" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/alipay"
                 android:layout_width="150dp"
                 android:layout_height="118dp"

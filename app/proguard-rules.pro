@@ -1,21 +1,27 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+#-repackageclasses com.coderstory.flyme.utils
+-mergeinterfacesaggressively
+-dontusemixedcaseclassnames
+#指定代码的压缩级别
+-optimizationpasses 7
+-overloadaggressively
+-useuniqueclassmembernames
+#包明不混合大小写
+#-dontusemixedcaseclassnames
+#不去忽略非公共的库类
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+#预校验
+-dontpreverify
+#混淆时是否记录日志
+#-verbose
+#混淆时所采用的算法
+-optimizations !code/simplification/arithmetic,!code/simplication/cast,!field/*,!class/mergin/*
+#避免混淆Annotation、内部类、泛型、匿名类
+#-keepattributes *Annotation*,InnerClasses,Signature,EnclosingMethod
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+#保护注解
+#-keepattributes Annotation
+#保持哪些类不被混淆
+-keep class toolkit.coderstory.CorePatch
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile

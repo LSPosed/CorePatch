@@ -45,6 +45,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             }
         });
 
+
         final Class packageClazz = XposedHelpers.findClass("android.util.apk.ApkSignatureSchemeV2Verifier", null);
         hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
         hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
@@ -73,6 +74,42 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
         if (("android".equals(loadPackageParam.packageName)) && (loadPackageParam.processName.equals("android"))) {
 
+            hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", XC_MethodReplacement.returnConstant(null));
+            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
+            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
+            hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual", XC_MethodReplacement.returnConstant(true));
+            //    public static ParseResult<SigningDetails> getSigningDetails(ParseInput input,
+            //            String baseCodePath, boolean skipVerify, boolean isStaticSharedLibrary,
+            //            @NonNull SigningDetails existingSigningDetails, int targetSdk) {
+
+            // @CheckResult
+            //    public static SigningDetails getSigningDetails(ParsingPackageRead pkg, boolean skipVerify)
+            //            throws PackageParserException {
+            hookAllMethods("android.content.pm.parsing.ParsingPackageUtils", loadPackageParam.classLoader, "getSigningDetails", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    super.beforeHookedMethod(param);
+                    if (param.args.length == 2) {
+                        param.args[1] = false;
+                    } else if (param.args.length == 6) {
+                        param.args[2] = false;
+                    }
+                }
+            });
+            hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifySignatures", new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    // private static PackageParser.SigningDetails verifySignatures(String apkPath,
+                    //            @SignatureSchemeVersion int minSignatureSchemeVersion, boolean verifyFull)
+                    //            throws PackageParserException {
+
+                    //  return verifyV3AndBelowSignatures(apkPath, minSignatureSchemeVersion, verifyFull);
+
+                    return null;
+                }
+            });
+
+
             Class packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
             Class signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
 
@@ -83,21 +120,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
             Field error = XposedHelpers.findField(packageParserException, "error");
             error.setAccessible(true);
 
-            hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", new XC_MethodHook() {
-                public void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                    super.beforeHookedMethod(methodHookParam);
-                    Object packageInfoLite = methodHookParam.args[0];
 
-                    if (prefs.getBoolean("downgrade", true)) {
-                        Field field = packageClazz.getField("mVersionCode");
-                        field.setAccessible(true);
-                        field.set(packageInfoLite, 0);
-                        field = packageClazz.getField("mVersionCodeMajor");
-                        field.setAccessible(true);
-                        field.set(packageInfoLite, 0);
-                    }
-                }
-            });
             hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -211,7 +234,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 });
 
 
-                findAndHookMethod("com.android.server.pm.PackageManagerServiceInjector", loadPackageParam.classLoader, "isAllowedInstall", XC_MethodReplacement.returnConstant(true));
+                //findAndHookMethod("com.android.server.pm.PackageManagerServiceInjector", loadPackageParam.classLoader, "isAllowedInstall", XC_MethodReplacement.returnConstant(true));
 
                 //disable_verify
                 hookAllMethods(packageManagerService, "canSkipFullPackageVerification", new XC_MethodHook() {
