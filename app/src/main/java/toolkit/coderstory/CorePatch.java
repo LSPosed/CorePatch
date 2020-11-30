@@ -25,27 +25,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
 
     public void initZygote(IXposedHookZygoteInit.StartupParam paramStartupParam) {
 
-        XposedHelpers.findAndHookMethod("java.security.MessageDigest", null, "isEqual", byte[].class, byte[].class, new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("zipauthcreak", true)) {
-                    param.setResult(Boolean.TRUE);
-                }
-            }
-        });
-
-        hookAllMethods(findClass("com.android.org.conscrypt.OpenSSLSignature", null), "engineVerify", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("zipauthcreak", true)) {
-                    param.setResult(Boolean.TRUE);
-                }
-            }
-        });
-
-
         final Class packageClazz = XposedHelpers.findClass("android.util.apk.ApkSignatureSchemeV2Verifier", null);
         hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
         hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
@@ -75,16 +54,10 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
         if (("android".equals(loadPackageParam.packageName)) && (loadPackageParam.processName.equals("android"))) {
 
             hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", XC_MethodReplacement.returnConstant(null));
-            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
-            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
-            hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual", XC_MethodReplacement.returnConstant(true));
-            //    public static ParseResult<SigningDetails> getSigningDetails(ParseInput input,
-            //            String baseCodePath, boolean skipVerify, boolean isStaticSharedLibrary,
-            //            @NonNull SigningDetails existingSigningDetails, int targetSdk) {
+//            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
+//            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
+//            hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual", XC_MethodReplacement.returnConstant(true));
 
-            // @CheckResult
-            //    public static SigningDetails getSigningDetails(ParsingPackageRead pkg, boolean skipVerify)
-            //            throws PackageParserException {
             hookAllMethods("android.content.pm.parsing.ParsingPackageUtils", loadPackageParam.classLoader, "getSigningDetails", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -96,32 +69,8 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     }
                 }
             });
-            hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifySignatures", new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    // private static PackageParser.SigningDetails verifySignatures(String apkPath,
-                    //            @SignatureSchemeVersion int minSignatureSchemeVersion, boolean verifyFull)
-                    //            throws PackageParserException {
 
-                    //  return verifyV3AndBelowSignatures(apkPath, minSignatureSchemeVersion, verifyFull);
-
-                    return null;
-                }
-            });
-
-
-            Class packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
-            Class signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
-
-            Constructor findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
-            findConstructorExact.setAccessible(true);
-
-            Class packageParserException = XposedHelpers.findClass("android.content.pm.PackageParser.PackageParserException", loadPackageParam.classLoader);
-            Field error = XposedHelpers.findField(packageParserException, "error");
-            error.setAccessible(true);
-
-
-            hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
+            hookAllMethods(findClass("android.content.pm.PackageParser", loadPackageParam.classLoader), "checkCapability", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     super.beforeHookedMethod(param);
@@ -130,15 +79,7 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     }
                 }
             });
-            hookAllMethods(signingDetails, "checkCapabilityRecover", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    if (prefs.getBoolean("authcreak", true)) {
-                        param.setResult(Boolean.TRUE);
-                    }
-                }
-            });
+
             hookAllMethods("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader, "verifySignatures", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -148,6 +89,16 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     }
                 }
             });
+
+
+            Class signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
+
+            Constructor findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
+            findConstructorExact.setAccessible(true);
+
+            Class packageParserException = XposedHelpers.findClass("android.content.pm.PackageParser.PackageParserException", loadPackageParam.classLoader);
+            Field error = XposedHelpers.findField(packageParserException, "error");
+            error.setAccessible(true);
             Object[] signingDetailsArgs = new Object[2];
             signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
             signingDetailsArgs[1] = 1;
@@ -174,6 +125,10 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     }
                 }
             });
+
+
+            //##############################
+
             hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "systemReady", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -210,53 +165,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                 }
             });
 
-            final Class packageManagerService = findClass("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader);
-            if (android.os.Build.VERSION.SDK_INT >= 29) {
-                //allow_no_sig
-                hookAllMethods(packageManagerService, "compareSignaturesCompat", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        if (prefs.getBoolean("authcreak", true)) {
-                            param.setResult(0);
-                        }
-                    }
-                });
-
-                hookAllMethods(packageManagerService, "compareSignaturesRecover", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        if (prefs.getBoolean("authcreak", true)) {
-                            param.setResult(0);
-                        }
-                    }
-                });
-
-
-                //findAndHookMethod("com.android.server.pm.PackageManagerServiceInjector", loadPackageParam.classLoader, "isAllowedInstall", XC_MethodReplacement.returnConstant(true));
-
-                //disable_verify
-                hookAllMethods(packageManagerService, "canSkipFullPackageVerification", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        if (prefs.getBoolean("zipauthcreak", true)) {
-                            param.setResult(Boolean.TRUE);
-                        }
-                    }
-                });
-                // disable_verify
-                hookAllMethods(packageManagerService, "canSkipFullApkVerification", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        if (prefs.getBoolean("zipauthcreak", true)) {
-                            param.setResult(Boolean.TRUE);
-                        }
-                    }
-                });
-            }
         }
     }
 }
