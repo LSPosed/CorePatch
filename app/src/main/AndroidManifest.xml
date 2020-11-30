@@ -32,10 +32,10 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Android 7.x- 10 核心破解" />
+            android:value="Android 11 core patch" />
         <meta-data
             android:name="xposedminversion"
-            android:value="53" />
+            android:value="92" />
 
     </application>
 
