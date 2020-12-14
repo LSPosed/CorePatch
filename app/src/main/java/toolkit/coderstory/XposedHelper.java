@@ -11,21 +11,11 @@ import toolkit.coderstory.com.toolkit.BuildConfig;
 
 
 public class XposedHelper {
-
     protected XSharedPreferences prefs = new XSharedPreferences("com.coderstory.toolkit", "config");
 
     {
         prefs.makeWorldReadable();
         prefs.reload();
-    }
-
-    protected static void findAndHookMethod(String p1, String p2, Object[] p3) throws ClassNotFoundException {
-        try {
-            XposedHelpers.findAndHookMethod(Class.forName(p1), p2, p3);
-        } catch (Exception e) {
-            if (BuildConfig.DEBUG)
-                XposedBridge.log(e);
-        }
     }
 
 
@@ -80,13 +70,6 @@ public class XposedHelper {
                 XposedBridge.log(e);
         }
     }
-
-    @SuppressWarnings("unchecked")
-    protected static Object getDrmResultSUCCESS() {
-        Class<Enum> drmSuccess = (Class<Enum>) XposedHelpers.findClass("miui.drm.DrmManager.DrmResult", null);
-        return Enum.valueOf(drmSuccess, "DRM_SUCCESS");
-    }
-
 
     public static Class<?> findClass(String className, ClassLoader classLoader) {
         try {

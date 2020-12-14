@@ -47,14 +47,14 @@
                 android:text="@string/authcreak" />
 
             <Switch
-                android:id="@+id/zipauthcreak"
+                android:id="@+id/digestCreak"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/switchBtn"
                 android:paddingEnd="30dp"
                 android:paddingStart="30dp"
-                android:text="@string/zipauthcreak" />
+                android:text="@string/digestCreak" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -116,8 +116,8 @@
                 android:layout_width="150dp"
                 android:layout_height="118dp"
                 android:layout_gravity="center"
-                android:maxHeight="150dp"
-                android:src="@drawable/alipay" />
+                android:maxHeight="100dp"
+                android:src="@drawable/timg" />
 
 
             <TextView

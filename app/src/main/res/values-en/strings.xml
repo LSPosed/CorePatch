@@ -3,7 +3,7 @@
     <string name="corepatch">The current version is available for Android R only\n\nPlease use the latest version of the EdXposed</string>
     <string name="downgr"><b>allow downgrade</b>\nallow downgrade application</string>
     <string name="authcreak"><b>disable digest verify</b>\nallows direct install apps after modify file in apk [ignore invalid digest error]</string>
-    <string name="zipauthcreak"><b>disable compare signatures</b>\nallow re-install app with different signatures</string>
+    <string name="digestCreak"><b>disable compare signatures</b>\nallow re-install app with different signatures</string>
     <string name="hideicon"><b>hide icon</b></string>
     <string name="blog">
         <b>Blog: http://blog.coderstory.cn:4433</b>
