@@ -1,106 +1,75 @@
 package toolkit.coderstory;
 
 
-import android.content.pm.PackageInfo;
 import android.content.pm.Signature;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 
-public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IXposedHookLoadPackage {
+public class CorePatch extends XposedHelper implements IXposedHookLoadPackage {
 
-    private static final String SIGNATURE = "308203553082023da0030201020204378edaaa300d06092a864886f70d01010b0500305a310d300b0603550406130466616b65310d300b0603550408130466616b65310d300b0603550407130466616b65310d300b060355040a130466616b65310d300b060355040b130466616b65310d300b0603550403130466616b653020170d3138303533303034343434385a180f32313237313230353034343434385a305a310d300b0603550406130466616b65310d300b0603550408130466616b65310d300b0603550407130466616b65310d300b060355040a130466616b65310d300b060355040b130466616b65310d300b0603550403130466616b6530820122300d06092a864886f70d01010105000382010f003082010a0282010100b766ff6afd8a53edd4cee4985bc90e0c515157b5e9f731818961f7250d0d1ac7c7fb80eb5aeb8c28478732e8ff38cff574bfa0eba8039f73af1532f939c4ef9684719efbaba2dd3c583a20907c1c55248a63098c6da23dcfc877763d5fe6061dddd399cf2f49e3250e23f9e687a4d182bcd0662179ba4c9983448e34b4c83e5abbf4f87e87add9157c75fd40de3416744507a3517915f35b6fcad78766e8e1879df8ab823a6ffa335e4790f6e29c87393732025b63ce3a38e42cb0d48cdceb902f191d7d45823db9a0678895e8bfc59b2af7526ca4c2dc3dbe7e70c7c840e666b9629d36e5ddf1d9a80c37f1ab1bc1fb30432914008fbde95d5d3db7853565510203010001a321301f301d0603551d0e04160414d8513e1ae21c64e9ebeee3507e24ea375eef958e300d06092a864886f70d01010b0500038201010088bf20b36428558359536dddcfff16fe233656a92364cb544d8acc43b0859f880a8da339dd430616085edf035e4e6e6dd2281ceb14adde2f05e9ac58d547a09083eece0c6d405289cb7918f85754ee545eefe35e30c103cad617905e94eb4fb68e6920a60d30577855f9feb6e3a664856f74aa9f824aa7d4a3adf85e162c67b9a4261e3185f038ead96112ae3e574d280425e90567352fb82bc9173302122025eaecfabd94d0f9be69a85c415f7cf7759c9651734300952027b316c37aaa1b2418865a3fc7b6bd1072c92ccaacdaa1cf9586d9b8310ceee066ce68859107dfc45ccce729ad9e75b53b584fa37dcd64da8673b1279c6c5861ed3792deac156c8a";
-    private HashSet<Signature> signatures;
-
-    public void initZygote(IXposedHookZygoteInit.StartupParam paramStartupParam) {
-
-        final Class packageClazz = XposedHelpers.findClass("android.util.apk.ApkSignatureSchemeV2Verifier", null);
-        hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
-        hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("zipauthcreak", true)) {
-                    param.args[3] = Boolean.FALSE;
-                }
-            }
-        });
-        hookAllConstructors("android.util.apk.ApkSignatureSchemeV2Verifier", new XC_MethodHook() {
-
-            public void afterHookedMethod(MethodHookParam methodHookParam) throws NoSuchFieldException, IllegalAccessException {
-                if (prefs.getBoolean("zipauthcreak", true)) {
-                    Field field = packageClazz.getField("SF_ATTRIBUTE_ANDROID_APK_SIGNED_ID");
-                    field.setAccessible(true);
-                    field.set(methodHookParam.thisObject, -1);
-                }
-            }
-        });
-    }
+    // 随便拿的一个签名
+    String SIGNATURE = "308203c6308202aea003020102021426d148b7c65944abcf3a683b4c3dd3b139c4ec85300d06092a864886f70d01010b05003074310b3009060355040613025553311330110603550408130a43616c69666f726e6961311630140603550407130d4d6f756e7461696e205669657731143012060355040a130b476f6f676c6520496e632e3110300e060355040b1307416e64726f69643110300e06035504031307416e64726f6964301e170d3139303130323138353233385a170d3439303130323138353233385a3074310b3009060355040613025553311330110603550408130a43616c69666f726e6961311630140603550407130d4d6f756e7461696e205669657731143012060355040a130b476f6f676c6520496e632e3110300e060355040b1307416e64726f69643110300e06035504031307416e64726f696430820122300d06092a864886f70d01010105000382010f003082010a028201010087fcde48d9beaeba37b733a397ae586fb42b6c3f4ce758dc3ef1327754a049b58f738664ece587994f1c6362f98c9be5fe82c72177260c390781f74a10a8a6f05a6b5ca0c7c5826e15526d8d7f0e74f2170064896b0cf32634a388e1a975ed6bab10744d9b371cba85069834bf098f1de0205cdee8e715759d302a64d248067a15b9beea11b61305e367ac71b1a898bf2eec7342109c9c5813a579d8a1b3e6a3fe290ea82e27fdba748a663f73cca5807cff1e4ad6f3ccca7c02945926a47279d1159599d4ecf01c9d0b62e385c6320a7a1e4ddc9833f237e814b34024b9ad108a5b00786ea15593a50ca7987cbbdc203c096eed5ff4bf8a63d27d33ecc963990203010001a350304e300c0603551d13040530030101ff301d0603551d0e04160414a361efb002034d596c3a60ad7b0332012a16aee3301f0603551d23041830168014a361efb002034d596c3a60ad7b0332012a16aee3300d06092a864886f70d01010b0500038201010022ccb684a7a8706f3ee7c81d6750fd662bf39f84805862040b625ddf378eeefae5a4f1f283deea61a3c7f8e7963fd745415153a531912b82b596e7409287ba26fb80cedba18f22ae3d987466e1fdd88e440402b2ea2819db5392cadee501350e81b8791675ea1a2ed7ef7696dff273f13fb742bb9625fa12ce9c2cb0b7b3d94b21792f1252b1d9e4f7012cb341b62ff556e6864b40927e942065d8f0f51273fcda979b8832dd5562c79acf719de6be5aee2a85f89265b071bf38339e2d31041bc501d5e0c034ab1cd9c64353b10ee70b49274093d13f733eb9d3543140814c72f8e003f301c7a00b1872cc008ad55e26df2e8f07441002c4bcb7dc746745f0db";
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 
         if (("android".equals(loadPackageParam.packageName)) && (loadPackageParam.processName.equals("android"))) {
-
+            // 允许降级
             hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", XC_MethodReplacement.returnConstant(null));
-//            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
-//            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
-//            hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual", XC_MethodReplacement.returnConstant(true));
+            // apk内文件修改后 digest校验会失败
+            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
+            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
+            hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual", XC_MethodReplacement.returnConstant(true));
 
-            hookAllMethods("android.content.pm.parsing.ParsingPackageUtils", loadPackageParam.classLoader, "getSigningDetails", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    if (param.args.length == 2) {
-                        param.args[1] = false;
-                    } else if (param.args.length == 6) {
-                        param.args[2] = false;
-                    }
-                }
-            });
+            // Targeting R+ (version " + Build.VERSION_CODES.R + " and above) requires"
+            // + " the resources.arsc of installed APKs to be stored uncompressed"
+            // + " and aligned on a 4-byte boundary
+            // target >=30 的情况下 resources.arsc 必须是未压缩的且4K对齐
+            hookAllMethods("android.content.res.AssetManager", loadPackageParam.classLoader, "containsAllocatedTable", XC_MethodReplacement.returnConstant(false));
 
-            hookAllMethods(findClass("android.content.pm.PackageParser", loadPackageParam.classLoader), "checkCapability", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    if (prefs.getBoolean("authcreak", true)) {
-                        param.setResult(Boolean.TRUE);
-                    }
-                }
-            });
-
-            hookAllMethods("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader, "verifySignatures", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    if (prefs.getBoolean("zipauthcreak", true)) {
-                        param.setResult(Boolean.FALSE);
-                    }
-                }
-            });
-
-
+            //New package has a different signature
+            //处理覆盖安装但签名不一致
             Class signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
+            hookAllMethods(signingDetails, "checkCapability", XC_MethodReplacement.returnConstant(true));
 
-            Constructor findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
+            // No signature found in package of version " + minSignatureSchemeVersion
+            // + " or newer for package " + apkPath
+            findAndHookMethod("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "getMinimumSignatureSchemeVersionForTargetSdk", int.class, XC_MethodReplacement.returnConstant(0));
+            findAndHookMethod("com.android.apksig.ApkVerifier", loadPackageParam.classLoader, "getMinimumSignatureSchemeVersionForTargetSdk", int.class, XC_MethodReplacement.returnConstant(0));
+
+            // Package " + packageName + " signatures do not match previously installed version; ignoring!"
+            // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
+            // public boolean checkCapability(SigningDetails oldDetails, @CertCapabilities int flags)
+            hookAllMethods("android.content.pm.PackageParser", loadPackageParam.classLoader, "checkCapability", XC_MethodReplacement.returnConstant(true));
+
+            // 当verifyV1Signature抛出转换异常时，替换一个签名作为返回值
+            Constructor<?> findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
             findConstructorExact.setAccessible(true);
-
-            Class packageParserException = XposedHelpers.findClass("android.content.pm.PackageParser.PackageParserException", loadPackageParam.classLoader);
+            Class<?> packageParserException = XposedHelpers.findClass("android.content.pm.PackageParser.PackageParserException", loadPackageParam.classLoader);
             Field error = XposedHelpers.findField(packageParserException, "error");
             error.setAccessible(true);
             Object[] signingDetailsArgs = new Object[2];
             signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
+
+            hookAllConstructors("android.content.pm.Signature", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    super.beforeHookedMethod(param);
+                    XposedBridge.log(param.args[0].toString());
+                }
+            });
+
+
             signingDetailsArgs[1] = 1;
             final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
             hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
@@ -125,46 +94,6 @@ public class CorePatch extends XposedHelper implements IXposedHookZygoteInit, IX
                     }
                 }
             });
-
-
-            //##############################
-
-            hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "systemReady", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    PackageInfo packageInfo = (PackageInfo) XposedHelpers.callMethod(param.thisObject, "getPackageInfo", new Object[]{"android", 64, 0});
-                    if (packageInfo.signatures != null) {
-                        CorePatch.this.signatures = new HashSet<>(Arrays.asList(packageInfo.signatures));
-                    }
-                }
-            });
-            hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "compareSignatures", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                    super.beforeHookedMethod(methodHookParam);
-                    if (prefs.getBoolean("authcreak", false) && CorePatch.this.signatures != null) {
-                        Signature[] signatureArr = (Signature[]) methodHookParam.args[0];
-                        if (signatureArr != null && signatureArr.length > 0) {
-                            for (Signature signature : signatures) {
-                                if (!CorePatch.this.signatures.contains(signature)) {
-                                    return;
-                                }
-                            }
-                        }
-                        signatureArr = (Signature[]) methodHookParam.args[1];
-                        if (signatureArr != null && signatureArr.length > 0) {
-                            for (Signature signature : signatures) {
-                                if (!CorePatch.this.signatures.contains(signature)) {
-                                    return;
-                                }
-                            }
-                        }
-                        methodHookParam.setResult(0);
-                    }
-                }
-            });
-
         }
     }
 }

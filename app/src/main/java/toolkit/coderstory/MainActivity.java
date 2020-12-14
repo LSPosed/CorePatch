@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 
@@ -69,12 +70,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+
         // 读取平台签名并保存
         new Thread(() -> {
             try {
                 PackageInfo packageInfo = MainActivity.this.getPackageManager().getPackageInfo("android", PackageManager.GET_SIGNATURES);
                 if (packageInfo.signatures[0] != null) {
                     String platform = new String(Base64.encode(packageInfo.signatures[0].toByteArray(), Base64.DEFAULT)).replaceAll("\n", "");
+                    Log.d("xxxx",platform);
                     getEditor().putString("platform", platform);
                     getEditor().apply();
                     sudoFixPermissions();
