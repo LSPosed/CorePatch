@@ -1,17 +1,19 @@
 package toolkit.coderstory;
 
 
+import com.coderstory.toolkit.BuildConfig;
+
 import java.util.Set;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import toolkit.coderstory.com.toolkit.BuildConfig;
+
 
 
 public class XposedHelper {
-    protected XSharedPreferences prefs = new XSharedPreferences("com.coderstory.toolkit", "config");
+    protected XSharedPreferences prefs = new XSharedPreferences("com.coderstory.toolkit", "conf");
 
     {
         prefs.makeWorldReadable();

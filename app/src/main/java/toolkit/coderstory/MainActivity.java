@@ -1,31 +1,23 @@
 package toolkit.coderstory;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.coderstory.toolkit.R;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
-import eu.chainfire.libsuperuser.Shell;
-import toolkit.coderstory.com.toolkit.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ((Switch) $(R.id.authcreak)).setChecked(getPrefs().getBoolean("authcreak", true));
-        ((Switch) $(R.id.digestCreak)).setChecked(getPrefs().getBoolean("digestCreak", false));
+        ((Switch) $(R.id.digestCreak)).setChecked(getPrefs().getBoolean("digestCreak", true));
         ((Switch) $(R.id.downgrade)).setChecked(getPrefs().getBoolean("downgrade", true));
         ((Switch) $(R.id.hideicon)).setChecked(getPrefs().getBoolean("hideIcon", false));
 
@@ -97,7 +89,16 @@ public class MainActivity extends AppCompatActivity {
     }
     
     protected SharedPreferences getPrefs() {
-        SharedPreferences prefs = getSharedPreferences("conf.xml", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("conf", Context.MODE_PRIVATE);
+        try {
+            Field mfile = Class.forName("android.app.SharedPreferencesImpl").getDeclaredField("mFile");
+            mfile.setAccessible(true);
+            File file = (File) mfile.get(prefs);
+            Log.d("xxxxx",file.getAbsolutePath());
+
+        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return prefs;
     }
 }

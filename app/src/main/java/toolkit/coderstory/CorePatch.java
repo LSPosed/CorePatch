@@ -3,6 +3,7 @@ package toolkit.coderstory;
 
 import android.content.pm.Signature;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -23,11 +25,16 @@ public class CorePatch extends XposedHelper implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
 
         if (("android".equals(loadPackageParam.packageName)) && (loadPackageParam.processName.equals("android"))) {
+            File file = (File) XposedHelpers.getObjectField(prefs, "mFile");
+            XposedBridge.log("file"+file.getAbsolutePath());
+            XposedBridge.log("downgrade" + prefs.getBoolean("downgrade", true));
+            XposedBridge.log("authcreak" + prefs.getBoolean("authcreak", true));
+            XposedBridge.log("digestCreak" + prefs.getBoolean("digestCreak", true));
             // 允许降级
-            if (prefs.getBoolean("downgrade", false)) {
+            if (prefs.getBoolean("downgrade", true)) {
                 hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", XC_MethodReplacement.returnConstant(null));
             }
-            if (prefs.getBoolean("authcreak", false)) {
+            if (prefs.getBoolean("authcreak", true)) {
                 // apk内文件修改后 digest校验会失败
                 hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
                 hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
@@ -82,7 +89,7 @@ public class CorePatch extends XposedHelper implements IXposedHookLoadPackage {
                     }
                 });
             }
-            if (prefs.getBoolean("digestCreak", false)) {
+            if (prefs.getBoolean("digestCreak", true)) {
                 //New package has a different signature
                 //处理覆盖安装但签名不一致
                 Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
