@@ -89,16 +89,6 @@ public class MainActivity extends AppCompatActivity {
     }
     
     protected SharedPreferences getPrefs() {
-        SharedPreferences prefs = getSharedPreferences("conf", Context.MODE_PRIVATE);
-        try {
-            Field mfile = Class.forName("android.app.SharedPreferencesImpl").getDeclaredField("mFile");
-            mfile.setAccessible(true);
-            File file = (File) mfile.get(prefs);
-            Log.d("xxxxx",file.getAbsolutePath());
-
-        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return prefs;
+        return getSharedPreferences("conf", Context.MODE_PRIVATE);
     }
 }

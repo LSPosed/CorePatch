@@ -5,8 +5,8 @@ android {
     buildToolsVersion "30.0.2"
     defaultConfig {
         applicationId "com.coderstory.toolkit"
-        minSdkVersion 26
-        targetSdkVersion 26
+        minSdkVersion 24
+        targetSdkVersion 24
         versionCode 1800
         versionName "3.0"
     }
