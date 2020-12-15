@@ -32,7 +32,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Android 11 core patch" />
+            android:value="Android 10-11 core patch" />
         <meta-data
             android:name="xposedminversion"
             android:value="93" />

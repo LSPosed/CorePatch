@@ -4,7 +4,7 @@
 # Description
 ### branch master -> support  android 4.4-7.x  
 ### branch Q -> support android 9.0-10.0 
-### branch R -> support android 11
+### branch R -> support android 10-11
 # Fetures
 
 > allow downgrade application [INSTALL_FAILED_VERSION_DOWNGRADE]

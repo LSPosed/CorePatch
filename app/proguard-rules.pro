@@ -23,5 +23,5 @@
 #保护注解
 #-keepattributes Annotation
 #保持哪些类不被混淆
--keep class toolkit.coderstory.CorePatch
+-keep class toolkit.coderstory.MainHook
 

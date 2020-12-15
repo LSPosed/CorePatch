@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">核心破解</string>
-    <string name="corepatch">此版本只支持android 11\n\n请安装最新版本的EdXposed框架,否则功能可能无法正确启用</string>
+    <string name="corepatch">此版本只支持android 10-11\n\n请安装最新版本的EdXposed框架,否则功能可能无法正确启用</string>
     <string name="downgr"><b>允许降级安装应用 - 实时生效</b>\n允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
     <string name="authcreak"><b>禁用软件包管理器签名验证 - 实时生效</b>\n关闭安装应用时的签名验证,可以安装被篡改的应用</string>
     <string name="digestCreak"><b>禁用APK签名验证 - 实时生效</b>\n允许直接覆盖安装同包名不同签名的应用</string>
