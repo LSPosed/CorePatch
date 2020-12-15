@@ -33,3 +33,7 @@ lovesykun： Technical support
 ```
 ### License
 Spring is released under the GPL V2 license. See LICENSE for details.
+
+### CI
+you can download dev version from github actions
+https://github.com/coderstory/CorePatch/actions
