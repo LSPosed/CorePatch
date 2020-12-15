@@ -4,6 +4,7 @@
 A Module For Xposed Framework
 Disable signature verification For Android
  ```
+![Android CI](https://github.com/coderstory/CorePatch/workflows/Android%20CI/badge.svg)
 
 ### Description
 ```
