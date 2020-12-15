@@ -21,3 +21,6 @@ Android8.x ->  maybe you need find the commit what version name is bump to 2.1,t
 
  allow overlay install apps with inconsistent signatures
 ```
+
+### History
+You can download history version from https://soft.shouji.com.cn/down/32512.html
