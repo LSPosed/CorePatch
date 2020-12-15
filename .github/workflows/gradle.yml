@@ -15,8 +15,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Gradle
-      run:  chmod +x gradlew &&./gradlew assembleRelease --stacktrace
+    - name: "Build Android project"
+      uses: vgaidarji/android-github-actions-build@v1.0.1
+      with:
+        args: "./gradlew assembleRelease"
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
       # ID used to access action output
