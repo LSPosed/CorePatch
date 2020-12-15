@@ -15,10 +15,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: "Build Android project"
+    - name: Android Build
+      # You may pin to the exact commit or the version.
+      # uses: vgaidarji/android-github-actions-build@0888eff41ad409a802aa4ccd7790a91891da9056
       uses: vgaidarji/android-github-actions-build@v1.0.1
-      with:
-        args: "chmod +x gradlew &&./gradlew assembleRelease"
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
       # ID used to access action output
