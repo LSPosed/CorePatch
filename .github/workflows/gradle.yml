@@ -15,10 +15,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Android Build
+      
+    - name: Gradle Android
       # You may pin to the exact commit or the version.
-      # uses: vgaidarji/android-github-actions-build@0888eff41ad409a802aa4ccd7790a91891da9056
-      uses: vgaidarji/android-github-actions-build@v1.0.1
+      # uses: Raul6469/android-gradle-action@b8fc7c7bde2562a4578b7e1bd996cc78d841638e
+      uses: Raul6469/android-gradle-action@2.0.0
+      with:
+        # The ./gradlew command arguments
+        script: assembleRelease
+        # Your Android license agreement id
+        #android-licence: # optional
+      
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
       # ID used to access action output
