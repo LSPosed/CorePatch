@@ -10,6 +10,7 @@ Disable signature verification For Android
 branch master -> support  android 4.4-7.x  
 branch Q -> support android 9.0-10.0 
 branch R -> support android 11
+Android8.x ->  maybe you need find the commit what version name is bump to 2.1,then compile by you self
 ```
 
 ## Fetures
