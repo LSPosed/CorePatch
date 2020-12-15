@@ -18,7 +18,7 @@ jobs:
     - name: "Build Android project"
       uses: vgaidarji/android-github-actions-build@v1.0.1
       with:
-        args: "./gradlew assembleRelease"
+        args: "chmod +x gradlew &&./gradlew assembleRelease"
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
       # ID used to access action output
