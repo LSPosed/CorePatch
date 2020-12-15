@@ -119,17 +119,6 @@
                 android:maxHeight="100dp"
                 android:src="@drawable/timg" />
 
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autoLink="all"
-                android:paddingEnd="30dp"
-                android:paddingStart="30dp"
-                android:paddingTop="20dp"
-                android:text="@string/blog2" />
-
         </LinearLayout>
 
 

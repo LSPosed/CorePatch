@@ -7,16 +7,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.coderstory.toolkit.R;
-
-import java.io.File;
-import java.lang.reflect.Field;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             getEditor().commit();
         });
 
-        $(R.id.alipay).setOnClickListener(v->{
+        $(R.id.alipay).setOnClickListener(v -> {
             Uri uri = Uri.parse("http://paypal.me/code620");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
@@ -87,8 +83,21 @@ public class MainActivity extends AppCompatActivity {
         }
         return editor;
     }
-    
+
     protected SharedPreferences getPrefs() {
-        return getSharedPreferences("conf", Context.MODE_PRIVATE);
+        try {
+            // getSharedPreferences will hooked by edxposed manager and change xml file path to /data/misc/edxp**
+            // will not throw SecurityException
+            return getSharedPreferences("conf", Context.MODE_WORLD_READABLE);
+        } catch (SecurityException exception) {
+            android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(MainActivity.this);
+            dialog.setTitle(getString(R.string.tips));
+            dialog.setMessage(getString(R.string.not_supported));
+            dialog.setPositiveButton(getString(R.string.exit), (dialog12, which) -> {
+                System.exit(0);
+            });
+            dialog.show();
+            return getSharedPreferences("conf", Context.MODE_PRIVATE);
+        }
     }
 }

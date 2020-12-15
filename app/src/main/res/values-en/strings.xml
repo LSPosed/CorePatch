@@ -9,9 +9,10 @@
         <b>Blog: http://blog.coderstory.cn:4433</b>
         \n\n<b> weibo: weibo.com/codestory</b>
     </string>
-    <string name="blog2">
-    </string>
     <string name="link"><b>Contact information</b></string>
     <string name="donta"><b>Donate</b></string>
     <string name="settings">settings</string>
+    <string name="tips">prompt message</string>
+    <string name="exit">exit</string>
+    <string name="not_supported">Detected that you are using a lower version of EdXposed or Unactivated EdXposed, please update or try again after activated</string>
 </resources>

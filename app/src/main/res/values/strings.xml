@@ -9,10 +9,10 @@
         <b>博客主页: http://blog.coderstory.cn:4433</b>
         \n\n<b>微博主页: weibo.com/codestory</b>
     </string>
-    <string name="blog2">
-
-    </string>
     <string name="link"><b>联系方式</b></string>
     <string name="donta"><b>捐赠支持作者</b></string>
     <string name="settings">设置</string>
+    <string name="tips">提示</string>
+    <string name="exit">退出</string>
+    <string name="not_supported">检测到你正在使用低版本的EdXposed或者EdXposed未激活,请更新或者激活后再试</string>
 </resources>
