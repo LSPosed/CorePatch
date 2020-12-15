@@ -11,20 +11,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: set up JDK 1.8
+    - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-      
-    - name: Gradle Android
-      # You may pin to the exact commit or the version.
-      # uses: Raul6469/android-gradle-action@b8fc7c7bde2562a4578b7e1bd996cc78d841638e
-      uses: Raul6469/android-gradle-action@2.0.0
-      with:
-        # The ./gradlew command arguments
-        script: assembleRelease
-        # Your Android license agreement id
-        #android-licence: # optional
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: sudo ./gradlew build
       
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
