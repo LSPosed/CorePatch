@@ -7,8 +7,8 @@ android {
         applicationId "com.coderstory.toolkit"
         minSdkVersion 24
         targetSdkVersion 24
-        versionCode 1800
-        versionName "3.0"
+        versionCode 1801
+        versionName "3.1"
     }
 
     lintOptions {
