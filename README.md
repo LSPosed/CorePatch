@@ -24,3 +24,12 @@ Android8.x ->  maybe you need find the commit what version name is bump to 2.1,t
 
 ### History
 You can download history version from https://soft.shouji.com.cn/down/32512.html
+
+### Thanks
+```
+weishu: Reference some code
+edxposed: Hook Framework for ART
+lovesykun： Technical support 
+```
+### License
+Spring is released under the GPL V2 license. See LICENSE for details.
