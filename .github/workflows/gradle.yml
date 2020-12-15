@@ -16,7 +16,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run:  bash ./gradlew assembleRelease
+      run:  chmod +x gradlew &&./gradlew assembleRelease
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
       # ID used to access action output
