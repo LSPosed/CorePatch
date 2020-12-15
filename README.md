@@ -38,3 +38,6 @@ Spring is released under the GPL V2 license. See LICENSE for details.
 ### CI
 you can download dev version from github actions
 https://github.com/coderstory/CorePatch/actions
+
+### TG Group
+https://t.me/core_patch_chat
