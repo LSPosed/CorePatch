@@ -10,12 +10,15 @@ public class MainHook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (Build.VERSION.SDK_INT == 30) {
-            new CorePatchForR().handleLoadPackage(lpparam);
-        } else if (Build.VERSION.SDK_INT == 29) {
-            new CorePatchForQ().handleLoadPackage(lpparam);
-        } else {
-            XposedBridge.log("Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
+        if (("android".equals(lpparam.packageName)) && (lpparam.processName.equals("android"))) {
+            XposedBridge.log("Current sdk version " + Build.VERSION.SDK_INT);
+            if (Build.VERSION.SDK_INT == 30) {
+                new CorePatchForR().handleLoadPackage(lpparam);
+            } else if (Build.VERSION.SDK_INT == 29) {
+                new CorePatchForQ().handleLoadPackage(lpparam);
+            } else {
+                XposedBridge.log("Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
+            }
         }
     }
 }
