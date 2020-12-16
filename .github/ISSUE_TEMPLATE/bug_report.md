@@ -7,10 +7,7 @@ assignees: ''
 
 ---
 
-<!--
-如果你遇到了卡开机的问题，请确保在提交错误报告之前禁用了所有模块。
-If you encountered boot loop, please make sure you have disabled all modules before submit an issue.
--->
+
 
 **什么情况/What happened?**
 
@@ -23,8 +20,8 @@ EdXposed:
 Riru:
 
 **核心破解版本/Version of Core Patch?**
+version:
 
 **相关日志/Related Logs**
 
-为了帮助我们定位问题，请使用debug版EdXposed模块抓日志。
-Please capture log with debug version, otherwise it won't help us locating the issue.
+
