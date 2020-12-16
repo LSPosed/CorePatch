@@ -11,16 +11,20 @@ android {
         versionName "3.2"
     }
 
+    signingConfigs {
+        release {
+        }
+    }
     lintOptions {
         abortOnError false
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            zipAlignEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            pseudoLocalesEnabled truees.pro'
         }
     }
     compileOptions {
