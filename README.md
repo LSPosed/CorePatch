@@ -40,10 +40,9 @@ you can download dev version from github actions
 https://github.com/coderstory/CorePatch/actions
 
 ### community
-TG Group
-https://t.me/core_patch_chat
-QQ Group
-415471685
+[TG Chat](https://t.me/core_patch_chat)
+[QQ Chat](https://qm.qq.com/cgi-bin/qm/qr?k=CWxud1wEJKsp4Zh4W7L8PdMVglTno4EG&jump_from=webapi)
+
 
 ### donate
 [paypal](http://paypal.me/code620)
