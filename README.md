@@ -44,3 +44,8 @@ TG Group
 https://t.me/core_patch_chat
 QQ Group
 415471685
+
+### donate
+[paypal](http://paypal.me/code620)
+
+
