@@ -21,7 +21,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="Android 10-11 core patch" />
+            android:value="@string/module_description" />
         <meta-data
             android:name="xposedminversion"
             android:value="93" />

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">核心破解</string>
+    <string name="module_description">Android 10–11 核心破解</string>
     <string name="corepatch">此版本只支持 Android 10–11\n请安装最新版本的 EdXposed 框架，否则功能可能无法正确启用。</string>
     <string name="downgr">允许降级安装应用</string>
     <string name="downgr_summary">允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
