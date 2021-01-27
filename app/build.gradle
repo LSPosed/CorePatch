@@ -19,6 +19,10 @@ android {
         abortOnError false
     }
 
+    packagingOptions {
+        exclude 'META-INF/**'
+    }
+
     buildTypes {
         release {
             minifyEnabled true
