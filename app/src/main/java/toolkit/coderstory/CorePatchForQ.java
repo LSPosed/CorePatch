@@ -2,6 +2,7 @@ package toolkit.coderstory;
 
 
 import android.content.pm.Signature;
+import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
 
@@ -13,7 +14,6 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -26,9 +26,9 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
-        XposedBridge.log("downgrade" + prefs.getBoolean("downgrade->", true));
-        XposedBridge.log("authcreak" + prefs.getBoolean("authcreak->", true));
-        XposedBridge.log("digestCreak" + prefs.getBoolean("digestCreak->", true));
+        Log.d(MainHook.TAG, "downgrade" + prefs.getBoolean("downgrade->", true));
+        Log.d(MainHook.TAG, "authcreak" + prefs.getBoolean("authcreak->", true));
+        Log.d(MainHook.TAG, "digestCreak" + prefs.getBoolean("digestCreak->", true));
 
         // 允许降级
         if (prefs.getBoolean("downgrade", true)) {
