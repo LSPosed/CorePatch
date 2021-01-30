@@ -25,6 +25,13 @@
             android:summary="@string/digestCreak_summary"
             android:defaultValue="true"
             app:iconSpaceReserved="false" />
+
+        <SwitchPreferenceCompat
+            android:key="enhancedMode"
+            android:title="@string/enhancedMode"
+            android:summary="@string/enhancedMode_summary"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory

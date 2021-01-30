@@ -27,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
     @SuppressLint("WorldReadableFiles")
     private void checkEdXposed() {
         try {
-            // getSharedPreferences will hooked by EdXposed and change xml file path to /data/misc/edxp**
+            // getSharedPreferences will hooked by LSPosed and change xml file path to /data/misc/edxp**
             // will not throw SecurityException
             //noinspection deprecation
             getSharedPreferences("conf", Context.MODE_WORLD_READABLE);

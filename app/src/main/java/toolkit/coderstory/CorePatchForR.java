@@ -11,16 +11,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage {
+public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+    XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
+
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
         Log.d(MainHook.TAG, "downgrade" + prefs.getBoolean("downgrade->", true));
         Log.d(MainHook.TAG, "authcreak" + prefs.getBoolean("authcreak->", true));
@@ -90,6 +92,20 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             //处理覆盖安装但签名不一致
             Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
             hookAllMethods(signingDetails, "checkCapability", XC_MethodReplacement.returnConstant(true));
+        }
+    }
+
+    @Override
+    public void initZygote(StartupParam startupParam) throws Throwable {
+        if (prefs.getBoolean("enhancedMode", true)) {
+            hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
+            hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    super.beforeHookedMethod(param);
+                    param.args[3] = Boolean.FALSE;
+                }
+            });
         }
     }
 }

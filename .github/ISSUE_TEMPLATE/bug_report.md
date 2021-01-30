@@ -13,9 +13,9 @@ assignees: ''
 
 如无法开机/模块无效等
 
-**EdXposed及Riru版本/Version of EdXposed and Riru**
+**LSPosed及Riru版本/Version of LSPosed及Riru版本 and Riru**
 
-EdXposed:
+LSPosed:
 
 Riru:
 

@@ -29,7 +29,7 @@ You can download history version from https://soft.shouji.com.cn/down/32512.html
 ### Thanks
 ```
 weishu: Reference some code
-edxposed: Hook Framework for ART
+LSPosed Hook Framework for ART
 lovesykun： Technical support
 ```
 ### License

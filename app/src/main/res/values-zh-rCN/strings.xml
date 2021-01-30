@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">核心破解</string>
     <string name="module_description">Android 10–11 核心破解</string>
-    <string name="corepatch">此版本只支持 Android 10–11\n请安装最新版本的 EdXposed 框架，否则功能可能无法正确启用。</string>
+    <string name="corepatch">此版本只支持 Android 10–11\n请安装最新版本的 LSPosed 框架，否则功能可能无法正确启用。</string>
     <string name="downgr">允许降级安装应用</string>
     <string name="downgr_summary">允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
     <string name="authcreak">禁用软件包管理器签名验证</string>
@@ -14,5 +14,7 @@
     <string name="donate">捐赠支持作者</string>
     <string name="settings">设置</string>
     <string name="ignore">忽略</string>
-    <string name="not_supported">您似乎正在使用过时的 EdXposed 版本或 EdXposed 未激活，请更新 EdXposed 或者激活后再试。</string>
+    <string name="not_supported">您似乎正在使用过时的 LSPosed 版本或 LSPosed 未激活，请更新 LSPosed 或者激活后再试。</string>
+    <string name="enhancedMode">增强模式</string>
+    <string name="enhancedMode_summary">可以解决一些app内部的完整性校验,一般不需要开启</string>
 </resources>
