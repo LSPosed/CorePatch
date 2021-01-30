@@ -20,10 +20,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
-        if (!loadPackageParam.packageName.equals("android")) {
-            return;
-        }
-
         XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
         Log.d(MainHook.TAG, "downgrade" + prefs.getBoolean("downgrade->", true));
