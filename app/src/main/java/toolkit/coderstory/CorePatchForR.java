@@ -97,7 +97,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
-        if (prefs.getBoolean("enhancedMode", true)) {
+        if (prefs.getBoolean("enhancedMode", false)) {
             hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
             hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
                 @Override
