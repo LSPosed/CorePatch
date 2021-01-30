@@ -1,18 +1,20 @@
 <resources>
-    <string name="app_name">核心破解</string>
-    <string name="corepatch">此版本只支持android 10-11\n\n请安装最新版本的EdXposed框架,否则功能可能无法正确启用</string>
-    <string name="downgr"><b>允许降级安装应用 - 实时生效</b>\n允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
-    <string name="authcreak"><b>禁用软件包管理器签名验证 - 实时生效</b>\n关闭安装应用时的签名验证,可以安装被篡改的应用</string>
-    <string name="digestCreak"><b>禁用APK签名验证 - 实时生效</b>\n允许直接覆盖安装同包名不同签名的应用</string>
-    <string name="hideicon"><b>隐藏应用图标</b>\n隐藏核心破解在桌上面的图标，隐藏图标后可在Xposed安装器中打开</string>
-    <string name="blog">
-        <b>博客主页: http://blog.coderstory.cn:4433</b>
-        \n\n<b>微博主页: weibo.com/codestory</b>
-    </string>
-    <string name="link"><b>联系方式</b></string>
-    <string name="donta"><b>捐赠支持作者</b></string>
-    <string name="settings">设置</string>
-    <string name="tips">提示</string>
-    <string name="exit">退出</string>
-    <string name="not_supported">检测到你正在使用低版本的EdXposed或者EdXposed未激活,请更新或者激活后再试</string>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Android 10–11 core patch</string>
+    <string name="corepatch">This version is for Android 10–11 only.\nPlease use the latest version of the EdXposed.</string>
+    <string name="downgr">Allow downgrade</string>
+    <string name="downgr_summary">Allow downgrade applications.</string>
+    <string name="authcreak">Disable digest verify</string>
+    <string name="authcreak_summary">Allows install apps after modify file in apk (ignore invalid digest error).</string>
+    <string name="digestCreak">Disable compare signatures</string>
+    <string name="digestCreak_summary">Allow re-install app with different signatures.</string>
+    <string name="link"><b>Contact information</b></string>
+    <string name="blog">Blog</string>
+    <string name="blog_link" translatable="false">http://blog.coderstory.cn:4433</string>
+    <string name="weibo">Weibo</string>
+    <string name="weibo_link" translatable="false">http://weibo.com/codestory</string>
+    <string name="donate">Donate</string>
+    <string name="settings">Settings</string>
+    <string name="ignore">Ignore</string>
+    <string name="not_supported">It seems that you are using an out dated version of EdXposed or EdXposed is not activated, please update EdXposed or try again after activated.</string>
 </resources>

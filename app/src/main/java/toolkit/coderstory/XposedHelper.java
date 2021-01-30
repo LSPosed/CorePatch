@@ -1,4 +1,5 @@
 package toolkit.coderstory;
+
 import com.coderstory.toolkit.BuildConfig;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -41,7 +42,7 @@ public class XposedHelper {
 
     public static Class<?> findClass(String className, ClassLoader classLoader) {
         try {
-            return Class.forName(className,false,classLoader);
+            return Class.forName(className, false, classLoader);
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
