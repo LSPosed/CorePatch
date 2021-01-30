@@ -15,8 +15,6 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Install NDK
-      run:  echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;21.1.6352462" --channel=1 --sdk_root=${ANDROID_SDK_ROOT}
     - name: Build with Gradle
       run:  bash ./gradlew assembleRelease
     - uses: r0adkll/sign-android-release@v1
