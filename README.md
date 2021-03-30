@@ -9,9 +9,9 @@ Disable signature verification For Android
 ### Description
 ```
 branch master -> support  android 4.4-7.x
+Android8.x ->  maybe you need find the commit what change version name to 2.1,then compile by you self
 branch Q -> support android 9.0-10.0
 branch R -> support android 10-11
-Android8.x ->  maybe you need find the commit what version name is bump to 2.1,then compile by you self
 ```
 
 ## Fetures
@@ -41,7 +41,6 @@ https://github.com/coderstory/CorePatch/actions
 
 ### community
 [TG Chat](https://t.me/core_patch_chat)
-[QQ Chat](https://qm.qq.com/cgi-bin/qm/qr?k=CWxud1wEJKsp4Zh4W7L8PdMVglTno4EG&jump_from=webapi)
 
 
 ### donate
