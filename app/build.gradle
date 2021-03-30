@@ -7,8 +7,8 @@ android {
         applicationId "com.coderstory.toolkit"
         minSdkVersion 29
         targetSdkVersion 30
-        versionCode 1805
-        versionName "3.3"
+        versionCode 1810
+        versionName "3.4"
     }
 
     signingConfigs {
