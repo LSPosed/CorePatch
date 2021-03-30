@@ -17,17 +17,17 @@ public class XposedHelper {
             if (findClass(p1, lpparam) != null) {
                 XposedHelpers.findAndHookMethod(p1, lpparam, p2, parameterTypesAndCallback);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
         }
-    }
+    } 
 
     public static void hookAllMethods(String p1, ClassLoader lpparam, String methodName, XC_MethodHook parameterTypesAndCallback) {
         try {
             Class<?> packageParser = findClass(p1, lpparam);
             XposedBridge.hookAllMethods(packageParser, methodName, parameterTypesAndCallback);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
         }
@@ -37,7 +37,7 @@ public class XposedHelper {
     public void hookAllMethods(Class<?> packageManagerServiceUtils, String verifySignatures, XC_MethodHook methodHook) {
         try {
             XposedBridge.hookAllMethods(packageManagerServiceUtils, verifySignatures, methodHook);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
         }
@@ -46,7 +46,7 @@ public class XposedHelper {
     public static Class<?> findClass(String className, ClassLoader classLoader) {
         try {
             return Class.forName(className, false, classLoader);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
         }
@@ -57,7 +57,7 @@ public class XposedHelper {
         try {
             Class<?> packageParser = findClass(p1, null);
             hookAllConstructors(packageParser, parameterTypesAndCallback);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
         }
@@ -66,7 +66,7 @@ public class XposedHelper {
     private static Set<XC_MethodHook.Unhook> hookAllConstructors(Class<?> hookClass, XC_MethodHook callback) {
         try {
             return XposedBridge.hookAllConstructors(hookClass, callback);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log(e);
             return null;
