@@ -30,7 +30,17 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
 
         // 允许降级
         if (prefs.getBoolean("downgrade", true)) {
-            hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", XC_MethodReplacement.returnConstant(null));
+            findAndHookMethod("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader,
+                    "checkDowngrade",
+                    "com.android.server.pm.parsing.pkg.AndroidPackage",
+                    "android.content.pm.PackageInfoLite",
+                    XC_MethodReplacement.returnConstant(null));
+            // exists on flyme 9(Android 11) only
+            findAndHookMethod("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader,
+                    "checkDowngrade",
+                    "android.content.pm.PackageInfoLite",
+                    "android.content.pm.PackageInfoLite",
+                    XC_MethodReplacement.returnConstant(1));
         }
         if (prefs.getBoolean("authcreak", true)) {
             // apk内文件修改后 digest校验会失败
