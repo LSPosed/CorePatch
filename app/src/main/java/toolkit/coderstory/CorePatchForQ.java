@@ -94,7 +94,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     super.beforeHookedMethod(param);
-                    if (prefs.getBoolean("authcreak", true)) {
+                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
                         param.setResult(Boolean.TRUE);
                     }
                 }
@@ -104,7 +104,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                             super.beforeHookedMethod(param);
-                            if (prefs.getBoolean("authcreak", true)) {
+                            if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
                                 param.setResult(Boolean.TRUE);
                             }
                         }
@@ -113,7 +113,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
     }
 
     @Override
-    public void initZygote(StartupParam startupParam) throws Throwable {
+    public void initZygote(StartupParam startupParam) {
         if (prefs.getBoolean("enhancedMode", false)) {
             hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
             hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
