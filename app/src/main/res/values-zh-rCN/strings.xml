@@ -5,7 +5,7 @@
     <string name="downgr">允许降级安装应用</string>
     <string name="downgr_summary">允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
     <string name="authcreak">禁用软件包管理器签名验证</string>
-    <string name="authcreak_summary">关闭安装应用时的签名验证,可以安装被篡改的应用</string>
+    <string name="authcreak_summary">关闭安装应用时的签名验证，可以安装被篡改的应用</string>
     <string name="digestCreak">禁用APK签名验证</string>
     <string name="digestCreak_summary">允许直接覆盖安装同包名不同签名的应用</string>
     <string name="link">联系方式</string>

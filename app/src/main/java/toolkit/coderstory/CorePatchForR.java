@@ -65,7 +65,17 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             // Package " + packageName + " signatures do not match previously installed version; ignoring!"
             // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
             // public boolean checkCapability(SigningDetails oldDetails, @CertCapabilities int flags)
-            hookAllMethods("android.content.pm.PackageParser", loadPackageParam.classLoader, "checkCapability", XC_MethodReplacement.returnConstant(true));
+            hookAllMethods("android.content.pm.PackageParser", loadPackageParam.classLoader, "checkCapability", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
+                    // Or applications will have all privileged permissions
+                    // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
+                    if ((Integer) param.args[1] != 4) {
+                        param.setResult(true);
+                    }
+                }
+            });
 
             // 当verifyV1Signature抛出转换异常时，替换一个签名作为返回值
             Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
@@ -104,6 +114,17 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             //New package has a different signature
             //处理覆盖安装但签名不一致
             Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
+            hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) {
+                    // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
+                    // Or applications will have all privileged permissions
+                    // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
+                    if ((Integer) param.args[1] != 4) {
+                        param.setResult(true);
+                    }
+                }
+            });
             hookAllMethods(signingDetails, "checkCapability", XC_MethodReplacement.returnConstant(true));
 
             // if app is system app, allow to use hidden api, even if app not using a system signature
@@ -122,7 +143,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
     }
 
     @Override
-    public void initZygote(StartupParam startupParam) throws Throwable {
+    public void initZygote(StartupParam startupParam) {
         if (prefs.getBoolean("enhancedMode", false)) {
             hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
             hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
