@@ -1,6 +1,7 @@
 package toolkit.coderstory;
 
 
+import android.content.pm.ApplicationInfo;
 import android.content.pm.Signature;
 import android.util.Log;
 
@@ -17,6 +18,8 @@ import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+
+import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
 
 public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
@@ -102,6 +105,19 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             //处理覆盖安装但签名不一致
             Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
             hookAllMethods(signingDetails, "checkCapability", XC_MethodReplacement.returnConstant(true));
+
+            // if app is system app, allow to use hidden api, even if app not using a system signature
+            findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    super.beforeHookedMethod(param);
+                    ApplicationInfo info = (ApplicationInfo) param.thisObject;
+                    if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
+                            || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
+                        param.setResult(true);
+                    }
+                }
+            });
         }
     }
 
