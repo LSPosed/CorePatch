@@ -125,7 +125,6 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                     }
                 }
             });
-            hookAllMethods(signingDetails, "checkCapability", XC_MethodReplacement.returnConstant(true));
 
             // if app is system app, allow to use hidden api, even if app not using a system signature
             findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
