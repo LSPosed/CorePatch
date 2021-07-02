@@ -81,7 +81,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             });
 
             // 当verifyV1Signature抛出转换异常时，替换一个签名作为返回值
-            // 如果用户已安装apk，并且其定义了私有权限，则安装时会因签名不一致而被拒绝。尝试从待安装apk中获取签名。如果其中apk的签名和已安装的一致（只动了内容）就没有问题。此策略可能有潜在的安全隐患。
+            // 如果用户已安装apk，并且其定义了私有权限，则安装时会因签名与模块内硬编码的不一致而被拒绝。尝试从待安装apk中获取签名。如果其中apk的签名和已安装的一致（只动了内容）就没有问题。此策略可能有潜在的安全隐患。
             Class<?> pkc = XposedHelpers.findClass("sun.security.pkcs.PKCS7",loadPackageParam.classLoader);
             Constructor<?> pkcc = XposedHelpers.findConstructorExact(pkc,byte[].class);
             pkcc.setAccessible(true);
