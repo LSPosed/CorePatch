@@ -10,6 +10,10 @@ import com.coderstory.toolkit.BuildConfig;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.zip.ZipEntry;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -19,7 +23,6 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
 
 public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
@@ -78,6 +81,14 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             });
 
             // 当verifyV1Signature抛出转换异常时，替换一个签名作为返回值
+            // 如果用户已安装apk，并且其定义了私有权限，则安装时会因签名不一致而被拒绝。尝试从待安装apk中获取签名。如果其中apk的签名和已安装的一致（只动了内容）就没有问题。此策略可能有潜在的安全隐患。
+            Class<?> pkc = XposedHelpers.findClass("sun.security.pkcs.PKCS7",loadPackageParam.classLoader);
+            Constructor<?> pkcc = XposedHelpers.findConstructorExact(pkc,byte[].class);
+            pkcc.setAccessible(true);
+            Class<?> ASV = XposedHelpers.findClass("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader);
+            Class<?> Sjarclass = XposedHelpers.findClass("android.util.jar.StrictJarFile", loadPackageParam.classLoader);
+            Constructor<?> Sjarfile = XposedHelpers.findConstructorExact(Sjarclass, String.class, boolean.class,boolean.class);
+            Sjarfile.setAccessible(true);
             Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
             Constructor<?> findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
             findConstructorExact.setAccessible(true);
@@ -85,15 +96,34 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             Field error = XposedHelpers.findField(packageParserException, "error");
             error.setAccessible(true);
             Object[] signingDetailsArgs = new Object[2];
-            signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
             signingDetailsArgs[1] = 1;
-            final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
+            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyBytes", new XC_MethodHook() {
+                public void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+                    final Object block =  pkcc.newInstance(param.args[0]);
+                    Object[] infos = (Object[]) XposedHelpers.callMethod(block,"getSignerInfos");
+                    Object info = infos[0];
+                    List<X509Certificate> verifiedSignerCertChain = (List<X509Certificate>) XposedHelpers.callMethod(info,"getCertificateChain",block);
+                    param.setResult(verifiedSignerCertChain.toArray(
+                            new X509Certificate[verifiedSignerCertChain.size()]));
+                }
+            });
             hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
                 public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     super.afterHookedMethod(methodHookParam);
                     if (prefs.getBoolean("digestCreak", true)) {
                         Throwable throwable = methodHookParam.getThrowable();
                         if (throwable != null) {
+                            final Object origJarFile = Sjarfile.newInstance(methodHookParam.args[0],true,false);
+                            final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile,"findEntry","AndroidManifest.xml");
+                            final Certificate[][] lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV,"loadCertificates",origJarFile,manifestEntry);
+                            final Signature[] lastSigs = (Signature[]) XposedHelpers.callStaticMethod(ASV,"convertToSignatures", (Object) lastCerts);
+                            if(lastSigs != null){
+                                signingDetailsArgs[0] = lastSigs;
+                            }else {
+                                signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
+                            }
+                            final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
                             Throwable cause = throwable.getCause();
                             if (throwable.getClass() == packageParserException) {
                                 if (error.getInt(throwable) == -103) {
