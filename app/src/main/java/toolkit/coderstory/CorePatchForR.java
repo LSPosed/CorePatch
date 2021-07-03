@@ -1,7 +1,12 @@
 package toolkit.coderstory;
 
 
+import android.app.AndroidAppHelper;
+import android.app.Application;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.util.Log;
 
@@ -32,6 +37,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         Log.d(MainHook.TAG, "downgrade" + prefs.getBoolean("downgrade->", true));
         Log.d(MainHook.TAG, "authcreak" + prefs.getBoolean("authcreak->", true));
         Log.d(MainHook.TAG, "digestCreak" + prefs.getBoolean("digestCreak->", true));
+        Log.d(MainHook.TAG, "UsePreSig" + prefs.getBoolean("UsePreSig->", false));
 
         // 允许降级
         findAndHookMethod("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader,
@@ -108,12 +114,14 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             public void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
-                    final Object block = constructor.newInstance(param.args[0]);
-                    Object[] infos = (Object[]) XposedHelpers.callMethod(block, "getSignerInfos");
-                    Object info = infos[0];
-                    List<X509Certificate> verifiedSignerCertChain = (List<X509Certificate>) XposedHelpers.callMethod(info, "getCertificateChain", block);
-                    param.setResult(verifiedSignerCertChain.toArray(
-                            new X509Certificate[0]));
+                    if(!prefs.getBoolean("UsePreSig", false)) {
+                        final Object block = constructor.newInstance(param.args[0]);
+                        Object[] infos = (Object[]) XposedHelpers.callMethod(block, "getSignerInfos");
+                        Object info = infos[0];
+                        List<X509Certificate> verifiedSignerCertChain = (List<X509Certificate>) XposedHelpers.callMethod(info, "getCertificateChain", block);
+                        param.setResult(verifiedSignerCertChain.toArray(
+                                new X509Certificate[0]));
+                    }
                 }
             }
         });
@@ -123,10 +131,20 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 if (prefs.getBoolean("authcreak", true)) {
                     Throwable throwable = methodHookParam.getThrowable();
                     if (throwable != null) {
-                        final Object origJarFile = constructorExact.newInstance(methodHookParam.args[0], true, false);
-                        final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile, "findEntry", "AndroidManifest.xml");
-                        final Certificate[][] lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV, "loadCertificates", origJarFile, manifestEntry);
-                        final Signature[] lastSigs = (Signature[]) XposedHelpers.callStaticMethod(ASV, "convertToSignatures", (Object) lastCerts);
+                        Signature[] lastSigs = null;
+                        if(prefs.getBoolean("UsePreSig", false)) {
+                            PackageManager PM = AndroidAppHelper.currentApplication().getPackageManager();
+                            PackageInfo pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
+                            PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
+                            lastSigs = InstpI.signatures;
+                        }else {
+                            if(prefs.getBoolean("digestCreak", true)) {
+                                final Object origJarFile = constructorExact.newInstance(methodHookParam.args[0], true, false);
+                                final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile, "findEntry", "AndroidManifest.xml");
+                                final Certificate[][] lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV, "loadCertificates", origJarFile, manifestEntry);
+                                lastSigs = (Signature[]) XposedHelpers.callStaticMethod(ASV, "convertToSignatures", (Object) lastCerts);
+                            }
+                        }
                         if (lastSigs != null) {
                             signingDetailsArgs[0] = lastSigs;
                         } else {

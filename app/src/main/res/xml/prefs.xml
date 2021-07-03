@@ -19,6 +19,12 @@
             android:defaultValue="true" />
 
         <SwitchPreference
+            android:key="UsePreSig"
+            android:title="@string/UsePreSig"
+            android:summary="@string/UsePreSig_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreference
             android:key="enhancedMode"
             android:title="@string/enhancedMode"
             android:summary="@string/enhancedMode_summary"
