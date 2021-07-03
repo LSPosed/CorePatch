@@ -18,60 +18,54 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import static android.content.pm.ApplicationInfo.FLAG_SYSTEM;
-
 public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         // 允许降级
-        if (prefs.getBoolean("downgrade", true)) {
-            Class<?> packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
+        Class<?> packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
             hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", new XC_MethodHook() {
                 public void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                     super.beforeHookedMethod(methodHookParam);
-                    Object packageInfoLite = methodHookParam.args[0];
-
                     if (prefs.getBoolean("downgrade", true)) {
-                        Field field = packageClazz.getField("mVersionCode");
-                        field.setAccessible(true);
-                        field.set(packageInfoLite, 0);
-                        field = packageClazz.getField("mVersionCodeMajor");
-                        field.setAccessible(true);
-                        field.set(packageInfoLite, 0);
-                    }
-                }
-            });
-        }
-        if (prefs.getBoolean("authcreak", true)) {
-            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest", XC_MethodReplacement.returnConstant(true));
-            hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify", XC_MethodReplacement.returnConstant(true));
-            hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual", XC_MethodReplacement.returnConstant(true));
+                        Object packageInfoLite = methodHookParam.args[0];
 
-            hookAllMethods("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader, "verifySignatures", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
-                    if (prefs.getBoolean("zipauthcreak", true)) {
-                        param.setResult(Boolean.FALSE);
+                        if (prefs.getBoolean("downgrade", true)) {
+                            Field field = packageClazz.getField("mVersionCode");
+                            field.setAccessible(true);
+                            field.set(packageInfoLite, 0);
+                            field = packageClazz.getField("mVersionCodeMajor");
+                            field.setAccessible(true);
+                            field.set(packageInfoLite, 0);
+                        }
                     }
                 }
             });
 
-            Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
-            Constructor<?> findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
-            findConstructorExact.setAccessible(true);
-            Class<?> packageParserException = XposedHelpers.findClass("android.content.pm.PackageParser.PackageParserException", loadPackageParam.classLoader);
-            Field error = XposedHelpers.findField(packageParserException, "error");
-            error.setAccessible(true);
-            Object[] signingDetailsArgs = new Object[2];
-            signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
-            signingDetailsArgs[1] = 1;
-            final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
-            hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
-                public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                    super.afterHookedMethod(methodHookParam);
+        hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest",
+                new ReturnConstant(prefs, "authcreak", true));
+        hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verify",
+                new ReturnConstant(prefs, "authcreak", true));
+        hookAllMethods("java.security.MessageDigest", loadPackageParam.classLoader, "isEqual",
+                new ReturnConstant(prefs, "authcreak", true));
+        hookAllMethods("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader, "verifySignatures",
+                new ReturnConstant(prefs, "authcreak", false));
+
+        Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
+        Constructor<?> findConstructorExact = XposedHelpers.findConstructorExact(signingDetails, Signature[].class, Integer.TYPE);
+        findConstructorExact.setAccessible(true);
+        Class<?> packageParserException = XposedHelpers.findClass("android.content.pm.PackageParser.PackageParserException", loadPackageParam.classLoader);
+        Field error = XposedHelpers.findField(packageParserException, "error");
+        error.setAccessible(true);
+        Object[] signingDetailsArgs = new Object[2];
+        signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
+        signingDetailsArgs[1] = 1;
+        final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
+        hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
+            public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                super.afterHookedMethod(methodHookParam);
+                if (prefs.getBoolean("authcreak", true)) {
                     Throwable throwable = methodHookParam.getThrowable();
                     if (throwable != null) {
                         Throwable cause = throwable.getCause();
@@ -87,58 +81,62 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                         }
                     }
                 }
-            });
-        }
-        if (prefs.getBoolean("digestCreak", true)) {
-            //New package has a different signature
-            //处理覆盖安装但签名不一致
-            Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.PackageParser.SigningDetails", loadPackageParam.classLoader);
-            hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
+            }
+        });
+
+        //New package has a different signature
+        //处理覆盖安装但签名不一致
+        hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if (prefs.getBoolean("digestCreak", true)) {
                     if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
                         param.setResult(Boolean.TRUE);
                     }
                 }
-            });
-            hookAllMethods(signingDetails, "checkCapabilityRecover",
-                    new XC_MethodHook() {
-                        @Override
-                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                            super.beforeHookedMethod(param);
+            }
+        });
+        hookAllMethods(signingDetails, "checkCapabilityRecover",
+                new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        super.beforeHookedMethod(param);
+                        if (prefs.getBoolean("digestCreak", true)) {
                             if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
                                 param.setResult(Boolean.TRUE);
                             }
                         }
-                    });
+                    }
+                });
 
-            // if app is system app, allow to use hidden api, even if app not using a system signature
-            findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
-                @Override
+        // if app is system app, allow to use hidden api, even if app not using a system signature
+        findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
+            @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
+                super.beforeHookedMethod(param);
+                if (prefs.getBoolean("digestCreak", true)) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
                         param.setResult(true);
                     }
                 }
+            }
             });
-        }
     }
 
     @Override
     public void initZygote(StartupParam startupParam) {
-        if (prefs.getBoolean("enhancedMode", false)) {
-            hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
-            hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    super.beforeHookedMethod(param);
+        hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
+        hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if (prefs.getBoolean("enhancedMode", false)) {
                     param.args[3] = Boolean.FALSE;
                 }
-            });
-        }
+            }
+        });
     }
 }

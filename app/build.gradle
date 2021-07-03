@@ -8,7 +8,7 @@ android {
         minSdkVersion 29
         targetSdkVersion 30
         versionCode 1820
-        versionName "3.5"
+        versionName "3.6"
     }
 
     signingConfigs {
