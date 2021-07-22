@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="UsePreSig">Использовать установленные подписи</string>
+  <string name="UsePreSig_summary">"При установке всегда используйте подписи из уже установленных приложений.
+  Это крайне «опасно».
+  Включайте только тогда, когда это действительно необходимо! "</string>
+  <string name="app_name">Core Patch</string>
+  <string name="authcreak">Отключить проверку дайджеста</string>
+  <string name="authcreak_summary">Позволяет устанавливать приложения после изменения файла в apk (игнорировать недопустимую ошибку дайджеста).</string>
+  <string name="blog">Blog</string>
+  <string name="blog_link">http://blog.coderstory.cn:4433</string>
+  <string name="corepatch">«Эта версия предназначена только для Android 10–11.
+Пожалуйста, используйте последнюю версию LSPposed. "</string>
+  <string name="digestCreak">Отключить сравнение подписей</string>
+  <string name="digestCreak_summary">Разрешить переустановку приложения с другими подписями.</string>
+  <string name="donate">Пожертвовать</string>
+  <string name="downgr">Разрешить понижать версию.</string>
+  <string name="downgr_summary">Разрешить переустановку приложений на прошлые версии.</string>
+  <string name="enhancedMode">Расширенный режим</string>
+  <string name="enhancedMode_summary">Пройдите некоторую проверку в приложении</string>
+  <string name="ignore">Игнорировать</string>
+  <string name="link">Контакты</string>
+  <string name="module_description">Android 10–11 core patch</string>
+  <string name="not_supported">Похоже, вы используете устаревшую версию LSPposed или LSPposed не активирован, пожалуйста, обновите LSPposed или повторите попытку после активации.</string>
+  <string name="settings">Настройки</string>
+  <string name="weibo">Weibo</string>
+  <string name="weibo_link">http://weibo.com/codestory</string>
+</resources>
