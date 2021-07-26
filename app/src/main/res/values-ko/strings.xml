@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Android 10–11 core patch</string>
+    <string name="corepatch">이 버전은 Android 10–11 전용입니다.\nLSPosed의 최신 버전을 사용하십시오.</string>
+    <string name="downgr">다운그레이드 허용</string>
+    <string name="downgr_summary">애플리케이션 다운그레이드를 허용합니다.</string>
+    <string name="authcreak">다이제스트 확인 비활성화</string>
+    <string name="authcreak_summary">apk의 파일을 수정한 후 앱을 설치할 수 있습니다. (잘못된 다이제스트 오류를 무시).</string>
+    <string name="digestCreak">비교 서명 비활성화</string>
+    <string name="digestCreak_summary">다른 서명을 가진 앱을 재설치할 수 있습니다.</string>
+    <string name="UsePreSig">설치된 서명 사용</string>
+    <string name="UsePreSig_summary">설치할 때는 항상 이미 설치된 앱의 서명을 사용하십시오.\n 이것은 매우 <b>위험</b>합니다.\n 정말로 필요한 경우에만 활성화하십시오!</string>
+    <string name="link"><b>연락처</b></string>
+    <string name="blog">블로그</string>
+    <string name="weibo">웨이보</string>
+    <string name="donate">후원</string>
+    <string name="settings">설정</string>
+    <string name="ignore">무시</string>
+    <string name="not_supported">LSPosed의 오래된 버전을 사용 중이거나 LSPosed가 활성화되지 않은 것 같습니다. LSPosed를 업데이트하거나 활성화한 후 다시 시도하십시오.</string>
+    <string name="enhancedMode">강화 모드</string>
+    <string name="enhancedMode_summary">애플리케이션에서 일부 유효성 검사를 통과합니다.</string>
+</resources>
