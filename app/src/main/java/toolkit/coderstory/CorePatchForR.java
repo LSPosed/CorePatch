@@ -2,8 +2,6 @@ package toolkit.coderstory;
 
 
 import android.app.AndroidAppHelper;
-import android.app.Application;
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -25,6 +23,7 @@ import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -134,9 +133,13 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                         Signature[] lastSigs = null;
                         if(prefs.getBoolean("UsePreSig", false)) {
                             PackageManager PM = AndroidAppHelper.currentApplication().getPackageManager();
-                            PackageInfo pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
-                            PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
-                            lastSigs = InstpI.signatures;
+                            if(PM == null){
+                                XposedBridge.log("E: " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
+                            }else {
+                                PackageInfo pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
+                                PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
+                                lastSigs = InstpI.signatures;
+                            }
                         }else {
                             if(prefs.getBoolean("digestCreak", true)) {
                                 final Object origJarFile = constructorExact.newInstance(methodHookParam.args[0], true, false);
