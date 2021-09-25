@@ -13,10 +13,6 @@ android {
 
     signingConfigs {
         release {
-//            storeFile file('F:/ricardo.jks')
-//            storePassword '112233'
-//            ketAlias 'key0'
-//            keyPassword '112233'
         }
     }
     lintOptions {
@@ -32,7 +28,6 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles 'proguard-rules.pro'
-//            signingConfig signingConfigs.release
         }
     }
     compileOptions {
