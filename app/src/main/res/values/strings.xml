@@ -21,4 +21,6 @@
     <string name="not_supported">It seems that you are using an out dated version of LSPosed or LSPosed is not activated, please update LSPosed or try again after activated.</string>
     <string name="enhancedMode">Enhanced Mode</string>
     <string name="enhancedMode_summary">Pass some validation in the application</string>
+    <string name="miui_usepresig_warn">UsePreSig won\'t work on MiUI because its framework changes too much.\nWe don\'t have time to track the case.</string>
+    <string name="usepresig_warn">!! Any apk can override the installed one !!\nBe carefully when installing unknown apk</string>
 </resources>
