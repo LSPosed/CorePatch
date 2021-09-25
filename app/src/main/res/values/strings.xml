@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Core Patch</string>
-    <string name="module_description">Android 10–11 core patch</string>
-    <string name="corepatch">This version is for Android 10–11 only.\nPlease use the latest version of the LSPosed.</string>
+    <string name="module_description">Android 10–12 core patch</string>
+    <string name="corepatch">This version is for Android 10–12 only.\nPlease use the latest version of the LSPosed.</string>
     <string name="downgr">Allow downgrade</string>
     <string name="downgr_summary">Allow downgrade applications.</string>
     <string name="authcreak">Disable digest verify</string>
@@ -21,4 +21,6 @@
     <string name="not_supported">It seems that you are using an out dated version of LSPosed or LSPosed is not activated, please update LSPosed or try again after activated.</string>
     <string name="enhancedMode">Enhanced Mode</string>
     <string name="enhancedMode_summary">Pass some validation in the application</string>
+    <string name="miui_usepresig_warn">UsePreSig won\'t work on MiUI because its framework changes too much.\nWe don\'t have time to track the case.</string>
+    <string name="usepresig_warn">!! Any apk can override the installed one !!\nBe carefully when installing unknown apk</string>
 </resources>

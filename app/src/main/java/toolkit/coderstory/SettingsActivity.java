@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.view.View;
 
 import com.coderstory.toolkit.R;
+
+import java.lang.reflect.Method;
 
 public class SettingsActivity extends Activity {
 
@@ -39,12 +42,13 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    public static class SettingsFragment extends PreferenceFragment {
+    public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName("conf");
             addPreferencesFromResource(R.xml.prefs);
+            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
@@ -55,7 +59,34 @@ public class SettingsActivity extends Activity {
                 list.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), insets.getStableInsetBottom());
                 return insets.consumeSystemWindowInsets();
             });
+
             super.onViewCreated(view, savedInstanceState);
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals("UsePreSig") && sharedPreferences.getBoolean(key,false)) {
+                try {
+                    final ClassLoader cl = getActivity().getClassLoader();
+                    @SuppressLint("PrivateApi") final Class<?> SystemProperties = cl.loadClass("android.os.SystemProperties");
+                    final Class<?>[] paramTypes = new Class[1];
+                    paramTypes[0] = String.class;
+                    final Method get = SystemProperties.getMethod("get", paramTypes);
+                    final Object[] params = new Object[1];
+                    params[0] = "ro.miui.ui.version.code";
+                    if (!((String) get.invoke(SystemProperties, params)).isEmpty()) {
+                        new AlertDialog.Builder(getActivity()).setMessage(R.string.miui_usepresig_warn).setPositiveButton("Kay", null).show();
+                    }
+                }catch (Exception ignored){}
+
+                new AlertDialog.Builder(getActivity()).setMessage(R.string.usepresig_warn).setPositiveButton("Kay",null).show();
+            }
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         }
     }
 }

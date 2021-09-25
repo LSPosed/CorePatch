@@ -1,18 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.3"
     defaultConfig {
         applicationId "com.coderstory.toolkit"
         minSdkVersion 29
-        targetSdkVersion 30
-        versionCode 1820
-        versionName "3.6"
+        targetSdkVersion 31
+        versionCode 1920
+        versionName "3.7"
     }
 
     signingConfigs {
         release {
+//            storeFile file('F:/ricardo.jks')
+//            storePassword '112233'
+//            ketAlias 'key0'
+//            keyPassword '112233'
         }
     }
     lintOptions {
@@ -28,6 +32,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
         }
     }
     compileOptions {
