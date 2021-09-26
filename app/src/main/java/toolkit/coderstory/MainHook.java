@@ -15,7 +15,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (("android".equals(lpparam.packageName)) && (lpparam.processName.equals("android"))) {
             Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
-            if (Build.VERSION.SDK_INT == 30) {
+            if(Build.VERSION.SDK_INT == 31) {
+                new CorePatchForS().handleLoadPackage(lpparam);
+            }
+            else if (Build.VERSION.SDK_INT == 30) {
                 new CorePatchForR().handleLoadPackage(lpparam);
             } else if (Build.VERSION.SDK_INT == 29) {
                 new CorePatchForQ().handleLoadPackage(lpparam);
@@ -29,7 +32,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     public void initZygote(StartupParam startupParam) throws Throwable {
         if (startupParam.startsSystemServer) {
             Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
-            if (Build.VERSION.SDK_INT == 30) {
+            if(Build.VERSION.SDK_INT == 31) {
+                new CorePatchForS().initZygote(startupParam);
+            }
+            else if (Build.VERSION.SDK_INT == 30) {
                 new CorePatchForR().initZygote(startupParam);
             } else if (Build.VERSION.SDK_INT == 29) {
                 new CorePatchForQ().initZygote(startupParam);
