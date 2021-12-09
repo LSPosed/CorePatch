@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -152,14 +153,23 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                             signingDetailsArgs[0] = lastSigs;
                         } else {
                             signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
-                            }
-                            final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
-                            Throwable cause = throwable.getCause();
-                            if (throwable.getClass() == packageParserException) {
-                                if (error.getInt(throwable) == -103) {
-                                    methodHookParam.setResult(newInstance);
-                                }
-                            }
+                        }
+                        Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
+
+                        //修复 java.lang.ClassCastException: Cannot cast android.content.pm.PackageParser$SigningDetails to android.util.apk.ApkSignatureVerifier$SigningDetailsWithDigests
+                        Class<?> signingDetailsWithDigests = XposedHelpers.findClassIfExists("android.util.apk.ApkSignatureVerifier.SigningDetailsWithDigests", loadPackageParam.classLoader);
+                        if (signingDetailsWithDigests != null) {
+                            Constructor<?> signingDetailsWithDigestsConstructorExact = XposedHelpers.findConstructorExact(signingDetailsWithDigests, signingDetails, Map.class);
+                            signingDetailsWithDigestsConstructorExact.setAccessible(true);
+                            newInstance = signingDetailsWithDigestsConstructorExact.newInstance(new Object[]{newInstance, null});
+                        }
+
+                        Throwable cause = throwable.getCause();
+                        if (throwable.getClass() == packageParserException) {
+                            if (error.getInt(throwable) == -103) {
+                                methodHookParam.setResult(newInstance);
+                             }
+                        }
                         if (cause != null && cause.getClass() == packageParserException) {
                             if (error.getInt(cause) == -103) {
                                 methodHookParam.setResult(newInstance);
