@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion '31.0.0'
     defaultConfig {
         applicationId "com.coderstory.toolkit"
         minSdkVersion 29
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1921
         versionName "3.8"
     }
@@ -15,13 +15,15 @@ android {
         release {
         }
     }
-    lintOptions {
-        abortOnError false
+    packagingOptions {
+        jniLibs {
+            excludes += ['META-INF/**']
+        }
+        resources {
+            excludes += ['META-INF/**']
+        }
     }
 
-    packagingOptions {
-        exclude 'META-INF/**'
-    }
 
     buildTypes {
         release {
@@ -34,6 +36,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'com.coderstory.toolkit'
 }
 
 dependencies {

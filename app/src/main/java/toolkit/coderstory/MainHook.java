@@ -16,6 +16,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         if (("android".equals(lpparam.packageName)) && (lpparam.processName.equals("android"))) {
             Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
             switch (Build.VERSION.SDK_INT) {
+                case Build.VERSION_CODES.S_V2: // 32
+                    new CorePatchForSv2().handleLoadPackage(lpparam);
+                    break;
                 case Build.VERSION_CODES.S: // 31
                     new CorePatchForS().handleLoadPackage(lpparam);
                     break;
@@ -26,7 +29,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     new CorePatchForQ().handleLoadPackage(lpparam);
                     break;
                 default:
-                    XposedBridge.log("Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
+                    XposedBridge.log(TAG + ": Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
                     break;
             }
         }
@@ -37,6 +40,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         if (startupParam.startsSystemServer) {
             Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
             switch (Build.VERSION.SDK_INT) {
+                case Build.VERSION_CODES.S_V2: // 32
+                    new CorePatchForSv2().initZygote(startupParam);
+                    break;
                 case Build.VERSION_CODES.S: // 31
                     new CorePatchForS().initZygote(startupParam);
                     break;
@@ -47,7 +53,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     new CorePatchForQ().initZygote(startupParam);
                     break;
                 default:
-                    XposedBridge.log("Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
+                    XposedBridge.log(TAG + ": Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
                     break;
             }
         }
