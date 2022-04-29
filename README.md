@@ -22,7 +22,7 @@ branch R -> support android 10-12L (12L is not full support)
 
  allow overlay install apps with inconsistent signatures
 ```
-
+Vvvv
 ### History
 You can download history version from https://soft.shouji.com.cn/down/32512.html
 
