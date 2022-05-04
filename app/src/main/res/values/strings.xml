@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Core Patch</string>
-    <string name="module_description">Android 10–12 core patch</string>
-    <string name="corepatch">This version is for Android 10–12 only.\nPlease use the latest version of the LSPosed.</string>
+    <string name="module_description">Android 10–12L core patch</string>
+    <string name="corepatch">This version is for Android 10–12L only.\nPlease use the latest version of the LSPosed.</string>
     <string name="downgr">Allow downgrade</string>
     <string name="downgr_summary">Allow downgrade applications.</string>
     <string name="authcreak">Disable digest verify</string>
