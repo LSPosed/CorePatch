@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Core Patch</string>
-    <string name="module_description">Android 10–11 core patch</string>
-    <string name="corepatch">이 버전은 Android 10–11 전용입니다.\nLSPosed의 최신 버전을 사용하십시오.</string>
+    <string name="module_description">Android 10–12L core patch</string>
+    <string name="corepatch">이 버전은 Android 10–12L 전용입니다.\nLSPosed의 최신 버전을 사용하십시오.</string>
     <string name="downgr">다운그레이드 허용</string>
     <string name="downgr_summary">애플리케이션 다운그레이드를 허용합니다.</string>
     <string name="authcreak">다이제스트 확인 비활성화</string>

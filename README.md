@@ -11,7 +11,7 @@ Disable signature verification For Android
 branch master -> support  android 4.4-7.x
 Android8.x ->  maybe you need find the commit what change version name to 2.1,then compile by you self
 branch Q -> support android 9.0-10.0
-branch R -> support android 10-12L (12L is not full support)
+branch R -> support android 10-12L
 ```
 
 ## Fetures

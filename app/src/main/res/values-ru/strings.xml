@@ -9,7 +9,7 @@
   <string name="authcreak_summary">Позволяет устанавливать приложения после изменения файла в apk (игнорировать недопустимую ошибку дайджеста).</string>
   <string name="blog">Blog</string>
   <string name="blog_link">http://blog.coderstory.cn:4433</string>
-  <string name="corepatch">«Эта версия предназначена только для Android 10–11.
+  <string name="corepatch">«Эта версия предназначена только для Android 10–12L.
 Пожалуйста, используйте последнюю версию LSPposed. "</string>
   <string name="digestCreak">Отключить сравнение подписей</string>
   <string name="digestCreak_summary">Разрешить переустановку приложения с другими подписями.</string>
@@ -20,7 +20,7 @@
   <string name="enhancedMode_summary">Пройдите некоторую проверку в приложении</string>
   <string name="ignore">Игнорировать</string>
   <string name="link">Контакты</string>
-  <string name="module_description">Android 10–11 core patch</string>
+  <string name="module_description">Android 10–12L core patch</string>
   <string name="not_supported">Похоже, вы используете устаревшую версию LSPposed или LSPposed не активирован, пожалуйста, обновите LSPposed или повторите попытку после активации.</string>
   <string name="settings">Настройки</string>
   <string name="weibo">Weibo</string>
