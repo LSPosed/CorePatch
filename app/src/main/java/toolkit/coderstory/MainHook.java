@@ -16,7 +16,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         if (("android".equals(lpparam.packageName)) && (lpparam.processName.equals("android"))) {
             Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
             switch (Build.VERSION.SDK_INT) {
-                case Build.VERSION_CODES.T: // 33
+                case Build.VERSION_CODES.TIRAMISU: // 33
                     new CorePatchForT().handleLoadPackage(lpparam);
                     break;
                 case Build.VERSION_CODES.S_V2: // 32
@@ -43,7 +43,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         if (startupParam.startsSystemServer) {
             Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
             switch (Build.VERSION.SDK_INT) {
-                case Build.VERSION_CODES.T: // 32
+                case Build.VERSION_CODES.TIRAMISU: // 33
                     new CorePatchForT().initZygote(startupParam);
                     break;
                 case Build.VERSION_CODES.S_V2: // 32
