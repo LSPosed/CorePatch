@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Patch pour Android 10–12L</string>
+    <string name="corepatch">Cette version est pour 10–12L uniquement.\nMerci d\’utiliser la dernière version de LSPosed.</string>
+    <string name="downgr">Permettre la rétrogradation</string>
+    <string name="downgr_summary">Permettre la rétrogradation d\’applications.</string>
+    <string name="authcreak">Désactiver la vérification digest</string>
+    <string name="authcreak_summary">Permettre l\’installation d\’applications après avoir modifier le fichier dans l\’apk (ignorer les erreures invalid digest).</string>
+    <string name="digestCreak">Désactiver la comparaison de signatures</string>
+    <string name="digestCreak_summary">Permettre la réinstallation d\’application avec des signatures différentes.</string>
+    <string name="UsePreSig">Utiliser les signatures installées</string>
+    <string name="UsePreSig_summary">Toujours utiliser les signatures depuis les applications déjà installées lors d\’installations.\n C\’est extrêmement <b>dangereux</b>.\n A activer uniquement lors ce que c\’est vraiment nécessaire!</string>
+    <string name="link"><b>Information de contact</b></string>
+    <string name="blog">Blog</string>
+    <string name="blog_link" translatable="false">http://blog.coderstory.cn:4433</string>
+    <string name="weibo">Weibo</string>
+    <string name="weibo_link" translatable="false">http://weibo.com/codestory</string>
+    <string name="donate">Don</string>
+    <string name="settings">Réglages</string>
+    <string name="ignore">Ignorer</string>
+    <string name="not_supported">Vous utilisez apparemment une ancienne version de LSPosed ou LSPosed n\’est pas activé, Merci de mettre LSPosed à jour ou de retenter après activation.</string>
+    <string name="enhancedMode">Mode Amélioré</string>
+    <string name="enhancedMode_summary">Outrepasser certaines validations dans l\’application</string>
+    <string name="miui_usepresig_warn">UsePreSig ne fonctionne pas sur MiUI car son sous-système est beaucoup trop différent.\nNous n\’avons pas le temps de nous pencher sur ce cas.</string>
+    <string name="usepresig_warn">!! N\’importe quel apk peut remplacer celui déjà installé !!\nPrenez garde lors ce que vous installez des apk inconnus</string>
+</resources>
