@@ -114,7 +114,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             public void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
-                    if(!prefs.getBoolean("UsePreSig", false)) {
+                    if (!prefs.getBoolean("UsePreSig", false)) {
                         final Object block = constructor.newInstance(param.args[0]);
                         Object[] infos = (Object[]) XposedHelpers.callMethod(block, "getSignerInfos");
                         Object info = infos[0];
@@ -132,17 +132,17 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                     Throwable throwable = methodHookParam.getThrowable();
                     if (throwable != null) {
                         Signature[] lastSigs = null;
-                        if(prefs.getBoolean("UsePreSig", false)) {
+                        if (prefs.getBoolean("UsePreSig", false)) {
                             PackageManager PM = AndroidAppHelper.currentApplication().getPackageManager();
-                            if(PM == null){
+                            if (PM == null) {
                                 XposedBridge.log("E: " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
-                            }else {
+                            } else {
                                 PackageInfo pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
                                 PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
                                 lastSigs = InstpI.signatures;
                             }
-                        }else {
-                            if(prefs.getBoolean("digestCreak", true)) {
+                        } else {
+                            if (prefs.getBoolean("digestCreak", true)) {
                                 final Object origJarFile = constructorExact.newInstance(methodHookParam.args[0], true, false);
                                 final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile, "findEntry", "AndroidManifest.xml");
                                 final Certificate[][] lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV, "loadCertificates", origJarFile, manifestEntry);
@@ -168,7 +168,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                         if (throwable.getClass() == packageParserException) {
                             if (error.getInt(throwable) == -103) {
                                 methodHookParam.setResult(newInstance);
-                             }
+                            }
                         }
                         if (cause != null && cause.getClass() == packageParserException) {
                             if (error.getInt(cause) == -103) {
