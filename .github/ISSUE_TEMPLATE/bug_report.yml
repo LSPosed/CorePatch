@@ -1,13 +1,13 @@
 name: Bug report/反馈 Bug
-description: Report errors or unexpected behavior. Your issue will be close if not following this template / 反馈错误或异常行为，不使用此模板提交会被close
+description: Report errors or unexpected behavior. Your issue will be close if not following this template. / 反馈错误或异常行为，不使用此模板提交会被close。
 title: "[Bug] "
 labels: [bug]
 body:
   - type: textarea
     attributes:
-      label: 什么情况/What happened?
+      label: What happened/什么情况
       placeholder: |
-        如无法开机/模块无效等
+        Such as bootloops, module not work, etc/如无法开机、模块无效等
     validations:
         required: true
   - type: input
@@ -23,12 +23,12 @@ body:
       required: true
   - type: input
     attributes:
-      label: 核心破解版本/Version of Core Patch
+      label: Version of Core Patch/核心破解版本
     validations:
       required: true
   - type: textarea
     attributes:
       label: Logs/日志
-      description: Please provide the log zip saved from LSPosed manager. Without log, the issue will be closed. /请提供从管理器保存的日志压缩包.无日志提交会被关闭。
+      description: Please provide the log zip saved from LSPosed manager. Without log, the issue will be closed. /请提供从 LSPosed 管理器保存的日志压缩包，无日志提交会被关闭。
     validations:
       required: true
