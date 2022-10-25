@@ -4,12 +4,12 @@ title: "[Bug] "
 labels: [bug]
 body:
   -type: textarea
-   attributes:
-    label: 什么情况/What happened?
-    placeholder: |
-      如无法开机/模块无效等
+    attributes:
+      label: 什么情况/What happened?
+      placeholder: |
+        如无法开机/模块无效等
     validations:
-      required: true
+        required: true
   - type: input
     attributes:
       label: LSPosed version/LSPosed 版本
