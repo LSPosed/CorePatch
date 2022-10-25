@@ -3,7 +3,7 @@ description: Report errors or unexpected behavior. Your issue will be close if n
 title: "[Bug] "
 labels: [bug]
 body:
-  -type: textarea
+  - type: textarea
     attributes:
       label: 什么情况/What happened?
       placeholder: |
