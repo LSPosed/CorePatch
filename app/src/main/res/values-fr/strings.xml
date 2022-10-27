@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Core Patch</string>
-    <string name="module_description">Patch pour Android 10–12L</string>
-    <string name="corepatch">Cette version est pour 10–12L uniquement.\nMerci d\’utiliser la dernière version de LSPosed.</string>
+    <string name="module_description">Patch pour Android 10–13</string>
+    <string name="corepatch">Cette version est pour 10–13 uniquement.\nMerci d\’utiliser la dernière version de LSPosed.</string>
     <string name="downgr">Permettre la rétrogradation</string>
     <string name="downgr_summary">Permettre la rétrogradation d\’applications.</string>
     <string name="authcreak">Désactiver la vérification digest</string>
