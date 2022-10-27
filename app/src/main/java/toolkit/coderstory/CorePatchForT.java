@@ -22,7 +22,7 @@ public class CorePatchForT extends CorePatchForSv2 {
                 new ReturnConstant(prefs, "downgrade", null));
 
         var utilClass = findClass("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
-        Class<?> signingDetails = XposedHelpers.findClass("android.content.pm.SigningDetails", loadPackageParam.classLoader);
+        Class<?> signingDetails = getSigningDetails(loadPackageParam.classLoader);
         //New package has a different signature
         //处理覆盖安装但签名不一致
         hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
@@ -81,5 +81,10 @@ public class CorePatchForT extends CorePatchForSv2 {
                 }
             });
         }
+    }
+
+    @Override
+    Class<?> getSigningDetails(ClassLoader classLoader) {
+        return XposedHelpers.findClassIfExists("android.content.pm.SigningDetails", classLoader);
     }
 }
