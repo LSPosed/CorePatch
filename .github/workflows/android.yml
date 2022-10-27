@@ -3,6 +3,8 @@ name: Android CI
 on:
   push:
     branches: [ main ]
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -10,15 +12,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: set up JDK 11
-      uses: actions/setup-java@v1
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
       with:
         java-version: 11
+        distribution: 'temurin'
+        cache: 'gradle'
+
     - name: Build with Gradle
-      run:  bash ./gradlew assembleRelease
-    - uses: r0adkll/sign-android-release@v1
-      name: Sign app APK
+      run: ./gradlew assembleRelease
+
+    - name: Sign app APK
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+      uses: r0adkll/sign-android-release@v1
       # ID used to access action output
       id: sign_app
       with:
@@ -27,12 +36,10 @@ jobs:
         alias: ${{ secrets.ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
         keyPassword: ${{ secrets.KEY_PASSWORD }}
-      #env:
-        #// override default build-tools version (29.0.3) -- optional
-        #BUILD_TOOLS_VERSION: "30.0.2"
-      
-    # Example use of `signedReleaseFile` output -- not needed
-    - uses: actions/upload-artifact@v2
+
+    - name: Upload artifact
+      if: steps.sign_app.outcome == 'success'
+      uses: actions/upload-artifact@v3
       with:
         name: Signed app bundle
         path: ${{steps.sign_app.outputs.signedReleaseFile}}
