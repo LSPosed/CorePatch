@@ -140,27 +140,38 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                     }
                     if (throwable != null || parseErr != null) {
                         Signature[] lastSigs = null;
-                        if (prefs.getBoolean("UsePreSig", false)) {
-                            PackageManager PM = AndroidAppHelper.currentApplication().getPackageManager();
-                            if (PM == null) {
-                                XposedBridge.log("E: " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
-                            } else {
-                                PackageInfo pI;
-                                if (parseResult != null) {
-                                    pI = PM.getPackageArchiveInfo((String) methodHookParam.args[1], 0);
+                        try {
+                            if (prefs.getBoolean("UsePreSig", false)) {
+                                PackageManager PM = AndroidAppHelper.currentApplication().getPackageManager();
+                                if (PM == null) {
+                                    XposedBridge.log("E: " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
                                 } else {
-                                    pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
+                                    PackageInfo pI;
+                                    if (parseResult != null) {
+                                        pI = PM.getPackageArchiveInfo((String) methodHookParam.args[1], 0);
+                                    } else {
+                                        pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
+                                    }
+                                    PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
+                                    lastSigs = InstpI.signatures;
                                 }
-                                PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
-                                lastSigs = InstpI.signatures;
                             }
-                        } else {
-                            if (prefs.getBoolean("digestCreak", true)) {
-                                final Object origJarFile = constructorExact.newInstance(methodHookParam.args[0], true, false);
+                        } catch (Throwable ignored) {
+
+                        }
+                        try {
+                            if (lastSigs == null && prefs.getBoolean("digestCreak", true)) {
+                                final Object origJarFile = constructorExact.newInstance(methodHookParam.args[parseResult == null ? 0 : 1], true, false);
                                 final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile, "findEntry", "AndroidManifest.xml");
-                                final Certificate[][] lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV, "loadCertificates", origJarFile, manifestEntry);
+                                final Certificate[][] lastCerts;
+                                if (parseResult != null) {
+                                    lastCerts = (Certificate[][]) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(ASV, "loadCertificates", methodHookParam.args[0], origJarFile, manifestEntry), "getResult");
+                                } else {
+                                    lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV, "loadCertificates", origJarFile, manifestEntry);
+                                }
                                 lastSigs = (Signature[]) XposedHelpers.callStaticMethod(ASV, "convertToSignatures", (Object) lastCerts);
                             }
+                        } catch (Throwable ignored) {
                         }
                         if (lastSigs != null) {
                             signingDetailsArgs[0] = lastSigs;

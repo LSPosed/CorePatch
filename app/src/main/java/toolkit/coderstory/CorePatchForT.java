@@ -81,6 +81,25 @@ public class CorePatchForT extends CorePatchForSv2 {
                 }
             });
         }
+        findAndHookMethod("com.android.server.pm.ScanPackageUtils", loadPackageParam.classLoader, "assertMinSignatureSchemeIsValid", "com.android.server.pm.parsing.pkg.AndroidPackage", int.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (prefs.getBoolean("authcreak", true)) {
+                    param.setResult(null);
+                }
+            }
+        });
+        Class<?> strictJarVerifier = findClass("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader);
+        if (strictJarVerifier != null) {
+            XposedBridge.hookAllConstructors(strictJarVerifier, new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) {
+                    if (prefs.getBoolean("authcreak", true)) {
+                        XposedHelpers.setBooleanField(param.thisObject, "signatureSchemeRollbackProtectionsEnforced", false);
+                    }
+                }
+            });
+        }
     }
 
     @Override
