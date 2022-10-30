@@ -147,7 +147,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                                     XposedBridge.log("E: " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
                                 } else {
                                     PackageInfo pI;
-                                    if (parseResult != null) {
+                                    if (parseErr != null) {
                                         pI = PM.getPackageArchiveInfo((String) methodHookParam.args[1], 0);
                                     } else {
                                         pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
@@ -161,10 +161,10 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                         }
                         try {
                             if (lastSigs == null && prefs.getBoolean("digestCreak", true)) {
-                                final Object origJarFile = constructorExact.newInstance(methodHookParam.args[parseResult == null ? 0 : 1], true, false);
+                                final Object origJarFile = constructorExact.newInstance(methodHookParam.args[parseErr == null ? 0 : 1], true, false);
                                 final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile, "findEntry", "AndroidManifest.xml");
                                 final Certificate[][] lastCerts;
-                                if (parseResult != null) {
+                                if (parseErr != null) {
                                     lastCerts = (Certificate[][]) XposedHelpers.callMethod(XposedHelpers.callStaticMethod(ASV, "loadCertificates", methodHookParam.args[0], origJarFile, manifestEntry), "getResult");
                                 } else {
                                     lastCerts = (Certificate[][]) XposedHelpers.callStaticMethod(ASV, "loadCertificates", origJarFile, manifestEntry);
