@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath("com.android.tools.build:gradle:7.3.1")
     }
 }
 
@@ -14,7 +14,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url "https://jcenter.bintray.com" }
+        maven(url = "https://jcenter.bintray.com")
     }
 }
 
