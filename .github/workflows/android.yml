@@ -25,7 +25,7 @@ jobs:
     - name: Write key
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       run: |
-        if [ ! -z "${{ secrets.KEY_STORE }}" ]; then
+        if [ ! -z "${{ secrets.SIGNING_KEY }}" ]; then
         echo releaseStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
         echo releaseKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
         echo releaseKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
