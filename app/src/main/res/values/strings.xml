@@ -9,7 +9,7 @@
     <string name="digestCreak">Disable compare signatures</string>
     <string name="digestCreak_summary">Allow re-install app with different signatures.</string>
     <string name="UsePreSig">Use installed signatures</string>
-    <string name="UsePreSig_summary">Always use signatures from already installed apps when installing.\n This is extremely <b>dangerous</b>.\n Only enable when really needed!</string>
+    <string name="UsePreSig_summary">Always use signatures from already installed apps when installing.\n This is extremely <b>dangerous</b>.\n Only enable when really needed!<b>(V1)</b></string>
     <string name="link"><b>Contact information</b></string>
     <string name="blog">Blog</string>
     <string name="blog_link" translatable="false">http://blog.coderstory.cn:4433</string>
