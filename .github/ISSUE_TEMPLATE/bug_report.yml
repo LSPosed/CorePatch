@@ -1,0 +1,34 @@
+name: Bug report/反馈 Bug
+description: Report errors or unexpected behavior. Your issue will be close if not following this template. / 反馈错误或异常行为，不使用此模板提交会被close。
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened/什么情况
+      placeholder: |
+        Such as bootloops, module not work, etc/如无法开机、模块无效等
+    validations:
+        required: true
+  - type: input
+    attributes:
+      label: LSPosed version/LSPosed 版本
+      description:  Don't use 'latest'. Specify actual version with 4 digits, otherwise your issue will be closed./不要填用“最新版”。给出四位版本号，不然 issue 会被关闭。
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Android version/Android 版本
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Version of Core Patch/核心破解版本
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Logs/日志
+      description: Please provide the log zip saved from LSPosed manager. Without log, the issue will be closed. /请提供从 LSPosed 管理器保存的日志压缩包，无日志提交会被关闭。
+    validations:
+      required: true
