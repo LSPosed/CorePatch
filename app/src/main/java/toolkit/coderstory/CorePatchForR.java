@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.security.cert.Certificate;
@@ -241,6 +242,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 }
             }
         });
+
         V2Heck.classloader = loadPackageParam.classLoader;
         hookAllMethods("android.util.apk.ApkSignatureSchemeV2Verifier", loadPackageParam.classLoader, "verifySigner", new XC_MethodHook() {
             @Override
@@ -251,6 +253,19 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 }
             }
         });
+
+        var utilClass = findClass("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
+        if (utilClass != null) {
+            for (var m : utilClass.getDeclaredMethods()) {
+                if ("verifySignatures".equals(m.getName())) {
+                    try {
+                        XposedBridge.class.getDeclaredMethod("deoptimizeMethod", Member.class).invoke(null, m);
+                    } catch (Throwable e) {
+                        Log.e("CorePatch", "deoptimizing failed", e);
+                    }
+                }
+            }
+        }
     }
 
     Class<?> getSigningDetails(ClassLoader classLoader) {

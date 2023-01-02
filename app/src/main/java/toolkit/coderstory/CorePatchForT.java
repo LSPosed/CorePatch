@@ -3,7 +3,6 @@ package toolkit.coderstory;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -21,7 +20,6 @@ public class CorePatchForT extends CorePatchForSv2 {
                 "android.content.pm.PackageInfoLite",
                 new ReturnConstant(prefs, "downgrade", null));
 
-        var utilClass = findClass("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
         Class<?> signingDetails = getSigningDetails(loadPackageParam.classLoader);
         //New package has a different signature
         //处理覆盖安装但签名不一致
@@ -37,17 +35,6 @@ public class CorePatchForT extends CorePatchForSv2 {
             }
         });
 
-        if (utilClass != null) {
-            for (var m : utilClass.getDeclaredMethods()) {
-                if ("verifySignatures".equals(m.getName())) {
-                    try {
-                        XposedBridge.class.getDeclaredMethod("deoptimizeMethod", Member.class).invoke(null, m);
-                    } catch (Throwable e) {
-                        Log.e("CorePatch", "deoptimizing failed", e);
-                    }
-                }
-            }
-        }
         // Package " + packageName + " signatures do not match previously installed version; ignoring!"
         // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
         // public boolean checkCapability(SigningDetails oldDetails, @CertCapabilities int flags)

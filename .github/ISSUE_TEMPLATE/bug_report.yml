@@ -32,3 +32,8 @@ body:
       description: Please provide the log zip saved from LSPosed manager. Without log, the issue will be closed. /请提供从 LSPosed 管理器保存的日志压缩包，无日志提交会被关闭。
     validations:
       required: true
+  - type: textarea
+    attributes:
+      label: Module settings screenshot/模块设置截图
+    validations:
+      required: true
