@@ -10,12 +10,15 @@ import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
@@ -240,6 +243,24 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             }
         });
 
+        V2Heck.classloader = loadPackageParam.classLoader;
+        hookAllMethods("android.util.apk.ApkSignatureSchemeV2Verifier", loadPackageParam.classLoader, "verifySigner", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                if(prefs.getBoolean("digestCreak", true)&&prefs.getBoolean("authcreak", true)){
+                    Object res = null;
+                    try {
+                        res = V2Heck.verifySigner((ByteBuffer) param.args[0], (Map<Integer, byte[]>) param.args[1], (CertificateFactory) param.args[2]);
+                    }catch (Exception|Error ignored)
+                    {
+                    }
+                    if(res != null)
+                       param.setResult(res);
+                }
+            }
+        });
+
         var utilClass = findClass("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
         if (utilClass != null) {
             for (var m : utilClass.getDeclaredMethods()) {
@@ -272,4 +293,5 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             }
         });
     }
+
 }

@@ -8,7 +8,7 @@ import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class        MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     public static final String TAG = "CorePatch";
 
     @Override
