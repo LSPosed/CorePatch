@@ -249,7 +249,14 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
                 if(prefs.getBoolean("digestCreak", true)&&prefs.getBoolean("authcreak", true)){
-                    param.setResult(V2Heck.verifySigner((ByteBuffer) param.args[0], (Map<Integer, byte[]>) param.args[1], (CertificateFactory) param.args[2]));
+                    Object res = null;
+                    try {
+                        res = V2Heck.verifySigner((ByteBuffer) param.args[0], (Map<Integer, byte[]>) param.args[1], (CertificateFactory) param.args[2]);
+                    }catch (Exception|Error ignored)
+                    {
+                    }
+                    if(res != null)
+                       param.setResult(res);
                 }
             }
         });
