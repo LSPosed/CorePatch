@@ -10,12 +10,6 @@
     <string name="digestCreak_summary">Allow re-install app with different signatures.</string>
     <string name="UsePreSig">Use installed signatures</string>
     <string name="UsePreSig_summary">Always use signatures from already installed apps when installing.\n This is extremely <b>dangerous</b>.\n Only enable when really needed!</string>
-    <string name="link"><b>Contact information</b></string>
-    <string name="blog">Blog</string>
-    <string name="blog_link" translatable="false">http://blog.coderstory.cn:4433</string>
-    <string name="weibo">Weibo</string>
-    <string name="weibo_link" translatable="false">http://weibo.com/codestory</string>
-    <string name="donate">Donate</string>
     <string name="settings">Settings</string>
     <string name="ignore">Ignore</string>
     <string name="not_supported">It seems that you are using an out dated version of LSPosed or LSPosed is not activated, please update LSPosed or try again after activated.</string>

@@ -31,29 +31,4 @@
             android:defaultValue="false" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/link">
-
-        <Preference
-            android:title="@string/blog"
-            android:summary="@string/blog_link">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/blog_link" />
-        </Preference>
-        <Preference
-            android:title="@string/weibo"
-            android:summary="@string/weibo_link">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/weibo_link" />
-        </Preference>
-        <Preference
-            android:title="@string/donate"
-            android:summary="Paypal">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://paypal.me/code620" />
-        </Preference>
-
-    </PreferenceCategory>
 </PreferenceScreen>

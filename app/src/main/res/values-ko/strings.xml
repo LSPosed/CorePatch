@@ -10,10 +10,6 @@
     <string name="digestCreak_summary">다른 서명을 가진 앱을 재설치할 수 있습니다.</string>
     <string name="UsePreSig">설치된 서명 사용</string>
     <string name="UsePreSig_summary">설치할 때는 항상 이미 설치된 앱의 서명을 사용하십시오.\n 이것은 매우 <b>위험</b>합니다.\n 정말로 필요한 경우에만 활성화하십시오!</string>
-    <string name="link"><b>연락처</b></string>
-    <string name="blog">블로그</string>
-    <string name="weibo">웨이보</string>
-    <string name="donate">후원</string>
     <string name="settings">설정</string>
     <string name="ignore">무시</string>
     <string name="not_supported">LSPosed의 오래된 버전을 사용 중이거나 LSPosed가 활성화되지 않은 것 같습니다. LSPosed를 업데이트하거나 활성화한 후 다시 시도하십시오.</string>
