@@ -10,10 +10,6 @@
     <string name="digestCreak_summary">允许直接覆盖安装同包名不同签名的应用</string>
     <string name="UsePreSig">安装时始终使用已装app的签名</string>
     <string name="UsePreSig_summary">不是一般的<b>危险</b> 仅在绝对需要时启用</string>
-    <string name="link">联系方式</string>
-    <string name="blog">博客主页</string>
-    <string name="weibo">微博主页</string>
-    <string name="donate">捐赠支持作者</string>
     <string name="settings">设置</string>
     <string name="ignore">忽略</string>
     <string name="not_supported">您似乎正在使用过时的 LSPosed 版本或 LSPosed 未激活，请更新 LSPosed 或者激活后再试。</string>
