@@ -3,12 +3,14 @@ package toolkit.coderstory;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.Signature;
+import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -124,6 +126,30 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 }
             }
             });
+
+        var keySetManagerClass = findClass("com.android.server.pm.KeySetManagerService", loadPackageParam.classLoader);
+        if (keySetManagerClass != null) {
+            var shouldBypass = new ThreadLocal<Boolean>();
+            hookAllMethods(keySetManagerClass, "shouldCheckUpgradeKeySetLocked", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (prefs.getBoolean("digestCreak", true) && Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) -> "preparePackageLI".equals(o.getMethodName()))) {
+                        shouldBypass.set(true);
+                        param.setResult(true);
+                    } else {
+                        shouldBypass.set(false);
+                    }
+                }
+            });
+            hookAllMethods(keySetManagerClass, "checkUpgradeKeySetLocked", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (prefs.getBoolean("digestCreak", true) && shouldBypass.get()) {
+                        param.setResult(true);
+                    }
+                }
+            });
+        }
     }
 
     @Override
