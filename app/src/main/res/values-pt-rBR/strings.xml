@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Android 10–13 core patch</string>
+    <string name="corepatch">Esta versão é apenas para Android 10–13.\nPor favor, use a versão mais recente do LSPosed.</string>
+    <string name="downgr">Permitir downgrade</string>
+    <string name="downgr_summary">Permitir downgrade de apps.</string>
+    <string name="authcreak">Desativar verificação de integridade</string>
+    <string name="authcreak_summary">Permite instalar apps após modificar o arquivo no apk (ignorar erro de integridade inválido).</string>
+    <string name="digestCreak">Desativar comparação de assinaturas</string>
+    <string name="digestCreak_summary">Permitir reinstalar apps com assinaturas diferentes.</string>
+    <string name="UsePreSig">Usar assinaturas instaladas</string>
+    <string name="UsePreSig_summary">Sempre use assinaturas de apps já instalados durante a instalação.\n Isso é extremamente <b>perigoso</b>.\n Ative apenas quando for realmente necessário!</string>
+    <string name="settings">Configurações</string>
+    <string name="ignore">Ignorar</string>
+    <string name="not_supported">Parece que você está usando uma versão desatualizada do LSPosed ou o LSPosed não está ativado. Atualize o LSPosed ou tente novamente após a ativação.</string>
+    <string name="enhancedMode">Modo aprimorado</string>
+    <string name="enhancedMode_summary">Realize alguma validação no app</string>
+    <string name="miui_usepresig_warn">Usar assinaturas instaladas não funcionará na MiUI porque sua estrutura muda muito.\nNão temos tempo para acompanhar o caso.</string>
+    <string name="usepresig_warn">!! Qualquer apk pode substituir o instalado !!\nTenha cuidado ao instalar apk desconhecido</string>
+</resources>
