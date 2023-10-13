@@ -10,14 +10,14 @@ val releaseKeyAlias: String? by rootProject
 val releaseKeyPassword: String? by rootProject
 
 android {
-    compileSdk = 33
-    buildToolsVersion = "33.0.0"
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
     defaultConfig {
         applicationId = "com.coderstory.toolkit"
         minSdk = 29
-        targetSdk = 33
-        versionCode = 1997
-        versionName = "4.2"
+        targetSdk = 34
+        versionCode = 2000
+        versionName = "4.3"
     }
 
     signingConfigs {
@@ -85,7 +85,7 @@ val optimizeReleaseRes = task("optimizeReleaseRes").doLast {
         optimized.renameTo(zip.toFile())
     }
 }
-tasks.whenTaskAdded {
+tasks.configureEach {
     when (name) {
         "optimizeReleaseResources" -> {
             finalizedBy(optimizeReleaseRes)
