@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Android 10–14 core patch</string>
+    <string name="corepatch">Versi ini adalah untuk Android 10-14 saja.\nHarap gunakan versi LSPosed terbaru.</string>
+    <string name="downgr">Izinkan downgrade</string>
+    <string name="downgr_summary">Izinkan downgrade aplikasi.</string>
+    <string name="authcreak">Matikan verifikasi digest</string>
+    <string name="authcreak_summary">Izinkan pemasangan aplikasi setelah file dalam apk dimodifikasi (abaikan kesalahan digest tidak valid).</string>
+    <string name="digestCreak">Matikan pembanding signatures</string>
+    <string name="digestCreak_summary">Izinkan pemasangan ulang aplikasi dengan signatures berbeda.</string>
+    <string name="UsePreSig">Gunakan signatures terpasang</string>
+    <string name="UsePreSig_summary">Selalu gunakan signatures dari aplikasi yang sudah terpasang saat memasang.\n Ini sangat <b>berbahaya</b>.\n Hanya aktifkan jika diperlukan sangad!</string>
+    <string name="settings">Pengaturan</string>
+    <string name="ignore">Abaikan</string>
+    <string name="not_supported">Sepertinya Anda menggunakan versi LSPosed yang jadul atau LSPosed tidak diaktifkan, harap perbarui LSPosed atau coba lagi setelah diaktifkan.</string>
+    <string name="enhancedMode">Mode Peningkatan</string>
+    <string name="enhancedMode_summary">Loloskan beberapa validasi dalam aplikasi</string>
+    <string name="miui_usepresig_warn">Gunakan signatures terpasang tidak bekerja di MiUI karena framework banyak dimodifikasi.\nKami tidak punya waktu untuk menyelidikinya.</string>
+    <string name="usepresig_warn">!! Segala apk dapat menggantikan aplikasi yang terpasang !!\nBerhati-hati ketika memasang apk antah-berantah</string>
+</resources>
