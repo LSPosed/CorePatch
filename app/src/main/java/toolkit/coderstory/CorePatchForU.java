@@ -2,6 +2,7 @@ package toolkit.coderstory;
 
 import java.lang.reflect.InvocationTargetException;
 
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CorePatchForU extends CorePatchForT {
@@ -15,5 +16,19 @@ public class CorePatchForU extends CorePatchForT {
                 "com.android.server.pm.pkg.AndroidPackage",
                 "android.content.pm.PackageInfoLite",
                 new ReturnConstant(prefs, "downgrade", null));
+
+        findAndHookMethod("com.nothing.server.ex.NtConfigListServiceImpl", loadPackageParam.classLoader, "isInstallingAppForbidden", java.lang.String.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                param.setResult(false);
+            }
+        });
+
+        findAndHookMethod("com.nothing.server.ex.NtConfigListServiceImpl", loadPackageParam.classLoader, "isStartingAppForbidden", java.lang.String.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                param.setResult(false);
+            }
+        });
     }
 }
