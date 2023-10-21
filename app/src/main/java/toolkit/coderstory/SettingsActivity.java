@@ -19,7 +19,7 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        checkEdXposed();
+        checkXSharedPreferences();
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, new SettingsFragment()).commit();
@@ -27,15 +27,16 @@ public class SettingsActivity extends Activity {
     }
 
     @SuppressLint("WorldReadableFiles")
-    private void checkEdXposed() {
+    private void checkXSharedPreferences() {
         try {
-            // getSharedPreferences will hooked by LSPosed and change xml file path to /data/misc/edxp**
+            // getSharedPreferences will hooked by LSPosed
             // will not throw SecurityException
             //noinspection deprecation
             getSharedPreferences("conf", Context.MODE_WORLD_READABLE);
         } catch (SecurityException exception) {
             new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.not_supported))
+                    .setTitle(R.string.config_error)
+                    .setMessage(R.string.not_supported)
                     .setPositiveButton(android.R.string.ok, (dialog12, which) -> finish())
                     .setNegativeButton(R.string.ignore, null)
                     .show();
@@ -65,7 +66,7 @@ public class SettingsActivity extends Activity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals("UsePreSig") && sharedPreferences.getBoolean(key,false)) {
+            if (key.equals("UsePreSig") && sharedPreferences.getBoolean(key, false)) {
                 try {
                     final ClassLoader cl = getActivity().getClassLoader();
                     @SuppressLint("PrivateApi") final Class<?> SystemProperties = cl.loadClass("android.os.SystemProperties");
@@ -75,11 +76,12 @@ public class SettingsActivity extends Activity {
                     final Object[] params = new Object[1];
                     params[0] = "ro.miui.ui.version.code";
                     if (!((String) get.invoke(SystemProperties, params)).isEmpty()) {
-                        new AlertDialog.Builder(getActivity()).setMessage(R.string.miui_usepresig_warn).setPositiveButton("Kay", null).show();
+                        new AlertDialog.Builder(getActivity()).setMessage(R.string.miui_usepresig_warn).setPositiveButton(android.R.string.ok, null).show();
                     }
-                }catch (Exception ignored){}
+                } catch (Exception ignored) {
+                }
 
-                new AlertDialog.Builder(getActivity()).setMessage(R.string.usepresig_warn).setPositiveButton("Kay",null).show();
+                new AlertDialog.Builder(getActivity()).setMessage(R.string.usepresig_warn).setPositiveButton(android.R.string.ok, null).show();
             }
         }
 

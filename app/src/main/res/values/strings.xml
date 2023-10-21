@@ -12,6 +12,7 @@
     <string name="UsePreSig_summary">Always use signatures from already installed apps when installing.\n This is extremely <b>dangerous</b>.\n Only enable when really needed!</string>
     <string name="settings">Settings</string>
     <string name="ignore">Ignore</string>
+    <string name="config_error">Configuration initialization failed</string>
     <string name="not_supported">It seems that you are using an out dated version of LSPosed or LSPosed is not activated, please update LSPosed or try again after activated.</string>
     <string name="enhancedMode">Enhanced Mode</string>
     <string name="enhancedMode_summary">Pass some validation in the application</string>
