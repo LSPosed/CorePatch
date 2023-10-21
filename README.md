@@ -14,13 +14,13 @@ branch Q -> support android 9.0-10.0
 branch main -> support android 10-13
 ```
 
-## Fetures
+## Features
 ```
- allow downgrade application [INSTALL_FAILED_VERSION_DOWNGRADE]
+ allows to downgrade application, suppresses [INSTALL_FAILED_VERSION_DOWNGRADE]
 
- allows direct install apps after modify file in apk [ignore invalid digest error etc..]
+ allows to directly install apps after modifing APK file [ignore invalid digest error etc..]
 
- allow overlay install apps with inconsistent signatures
+ allows overlay install apps with inconsistent signatures
 ```
 
 ### History
@@ -36,14 +36,14 @@ lovesykun： Technical support
 Spring is released under the GPL V2 license. See LICENSE for details.
 
 ### CI
-you can download dev version from github actions
+You can download dev build from github actions
 https://github.com/coderstory/CorePatch/actions
 
-### community
+### Community
 [TG Chat](https://t.me/core_patch_chat)
 
 
-### donate
+### Donate
 [paypal](http://paypal.me/code620)
 
 
