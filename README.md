@@ -11,7 +11,7 @@ Disable signature verification For Android
 branch master -> support  android 4.4-7.x
 Android8.x ->  maybe you need find the commit what change version name to 2.1,then compile by you self
 branch Q -> support android 9.0-10.0
-branch main -> support android 10-13
+branch main -> support android 10-14
 ```
 
 ## Features
@@ -33,7 +33,7 @@ LSPosed Hook Framework for ART
 lovesykun： Technical support
 ```
 ### License
-Spring is released under the GPL V2 license. See LICENSE for details.
+CorePatch is released under the GPL V2 license. See LICENSE for details.
 
 ### CI
 You can download dev build from github actions
