@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">核心修補</string>
+    <string name="module_description">Android 10–14 核心修補</string>
+    <string name="corepatch">此版本只支援 Android 10–14\n請安裝最新版本的 LSPosed 框架，否則功能可能無法正確啟用。</string>
+    <string name="downgr">允許降版安裝應用程式</string>
+    <string name="downgr_summary">允許應用程式在安裝新版本的情況下直接覆蓋安裝舊版本</string>
+    <string name="authcreak">停用套裝安裝程式簽名驗證</string>
+    <string name="authcreak_summary">停用安裝應用程式時的簽名驗證，可以安裝被修改的應用程式</string>
+    <string name="digestCreak">停用 APK 簽名驗證</string>
+    <string name="digestCreak_summary">允許直接覆蓋安裝同套件名稱但不同簽名的應用程式</string>
+    <string name="UsePreSig">安裝時總是使用已安裝應用程式的簽名</string>
+    <string name="UsePreSig_summary">不是一般的<b>危險</b>，只在絕對需要時啟用</string>
+    <string name="settings">設定</string>
+    <string name="ignore">忽略</string>
+    <string name="not_supported">未啟用模組或正在使用舊版的 LSPosed，請啟用模組或是更新 LSPosed 模組後再試一次。</string>
+    <string name="enhancedMode">增強模式</string>
+    <string name="enhancedMode_summary">可以解決一些應用程式內部的完整性校驗，一般不需要開啟</string>
+    <string name="miui_usepresig_warn">由於 MIUI 大幅度修改了 Android 框架，UsePreSig 無法正常運作\n我們沒有時間分析</string>
+    <string name="usepresig_warn">！！所有安裝檔可以覆蓋已安裝的應用程式！！\n安裝未知的安裝檔時請務必小心</string>
+    <string name="bypassBlock">繞過黑名單</string>
+    <string name="bypassBlock_summary">繞過某些裝置如 Nothing Phone 上的黑名單</string>
+    <string name="config_error">配置初始化失敗</string>
+</resources>

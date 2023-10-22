@@ -15,5 +15,13 @@ public class CorePatchForU extends CorePatchForT {
                 "com.android.server.pm.pkg.AndroidPackage",
                 "android.content.pm.PackageInfoLite",
                 new ReturnConstant(prefs, "downgrade", null));
+
+        findAndHookMethod("com.nothing.server.ex.NtConfigListServiceImpl", loadPackageParam.classLoader,
+                "isInstallingAppForbidden", java.lang.String.class,
+                new ReturnConstant(prefs, "bypassBlock", false));
+
+        findAndHookMethod("com.nothing.server.ex.NtConfigListServiceImpl", loadPackageParam.classLoader,
+                "isStartingAppForbidden", java.lang.String.class,
+                new ReturnConstant(prefs, "bypassBlock", false));
     }
 }
