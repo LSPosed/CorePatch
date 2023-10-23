@@ -12,9 +12,12 @@
     <string name="UsePreSig_summary">Selalu gunakan signatures dari aplikasi yang sudah terpasang saat memasang.\n Ini sangat <b>berbahaya</b>.\n Hanya aktifkan jika diperlukan sangad!</string>
     <string name="settings">Pengaturan</string>
     <string name="ignore">Abaikan</string>
+    <string name="config_error">Inisialisasi konfigurasi gagal</string>
     <string name="not_supported">Sepertinya Anda menggunakan versi LSPosed yang jadul atau LSPosed tidak diaktifkan, harap perbarui LSPosed atau coba lagi setelah diaktifkan.</string>
     <string name="enhancedMode">Mode Peningkatan</string>
     <string name="enhancedMode_summary">Loloskan beberapa validasi dalam aplikasi</string>
+    <string name="bypassBlock">Lewati blokiran</string>												
+	<string name="bypassBlock_summary">Lewati daftar blokir dalam beberapa perangkat seperti Nothing Phone</string>
     <string name="miui_usepresig_warn">Gunakan signatures terpasang tidak bekerja di MiUI karena framework banyak dimodifikasi.\nKami tidak punya waktu untuk menyelidikinya.</string>
     <string name="usepresig_warn">!! Segala apk dapat menggantikan aplikasi yang terpasang !!\nBerhati-hati ketika memasang apk antah-berantah</string>
 </resources>
