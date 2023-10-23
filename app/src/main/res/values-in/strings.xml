@@ -17,7 +17,7 @@
     <string name="enhancedMode">Mode Peningkatan</string>
     <string name="enhancedMode_summary">Loloskan beberapa validasi dalam aplikasi</string>
     <string name="bypassBlock">Lewati blokiran</string>												
-	<string name="bypassBlock_summary">Lewati daftar blokir dalam beberapa perangkat seperti Nothing Phone</string>
+    <string name="bypassBlock_summary">Lewati daftar blokir dalam beberapa perangkat seperti Nothing Phone</string>
     <string name="miui_usepresig_warn">Gunakan signatures terpasang tidak bekerja di MiUI karena framework banyak dimodifikasi.\nKami tidak punya waktu untuk menyelidikinya.</string>
     <string name="usepresig_warn">!! Segala apk dapat menggantikan aplikasi yang terpasang !!\nBerhati-hati ketika memasang apk antah-berantah</string>
 </resources>
