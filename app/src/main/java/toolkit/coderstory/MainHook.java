@@ -1,7 +1,8 @@
 package toolkit.coderstory;
 
 import android.os.Build;
-import android.util.Log;
+
+import com.coderstory.toolkit.BuildConfig;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -14,7 +15,8 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (("android".equals(lpparam.packageName)) && (lpparam.processName.equals("android"))) {
-            Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
+            if (BuildConfig.DEBUG)
+                XposedBridge.log("D/" + TAG + " handleLoadPackage");
             switch (Build.VERSION.SDK_INT) {
                 case Build.VERSION_CODES.UPSIDE_DOWN_CAKE: // 34
                     new CorePatchForU().handleLoadPackage(lpparam);
@@ -33,16 +35,17 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     new CorePatchForQ().handleLoadPackage(lpparam);
                     break;
                 default:
-                    XposedBridge.log(TAG + ": Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
+                    XposedBridge.log("W/" + TAG + " Unsupported Version of Android " + Build.VERSION.SDK_INT);
                     break;
             }
         }
     }
 
     @Override
-    public void initZygote(StartupParam startupParam) throws Throwable {
+    public void initZygote(StartupParam startupParam) {
         if (startupParam.startsSystemServer) {
-            Log.d(TAG, "Current sdk version " + Build.VERSION.SDK_INT);
+            if (BuildConfig.DEBUG)
+                XposedBridge.log("D/" + TAG + " initZygote: Current sdk version " + Build.VERSION.SDK_INT);
             switch (Build.VERSION.SDK_INT) {
                 case Build.VERSION_CODES.UPSIDE_DOWN_CAKE: // 34
                     new CorePatchForU().initZygote(startupParam);
@@ -61,7 +64,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     new CorePatchForQ().initZygote(startupParam);
                     break;
                 default:
-                    XposedBridge.log(TAG + ": Warning: Unsupported Version of Android " + Build.VERSION.SDK_INT);
+                    XposedBridge.log("W/" + TAG + " Unsupported Version of Android " + Build.VERSION.SDK_INT);
                     break;
             }
         }

@@ -32,30 +32,58 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
-    XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
+    private final static Method deoptimizeMethod;
+
+    static {
+        Method m = null;
+        try {
+            m = XposedBridge.class.getDeclaredMethod("deoptimizeMethod", Member.class);
+        } catch (Throwable t) {
+            XposedBridge.log("E/" + MainHook.TAG + " " + Log.getStackTraceString(t));
+        }
+        deoptimizeMethod = m;
+    }
+
+    static void deoptimizeMethod(Class<?> c, String n) throws InvocationTargetException, IllegalAccessException {
+        for (Method m : c.getDeclaredMethods()) {
+            if (deoptimizeMethod != null && m.getName().equals(n)) {
+                deoptimizeMethod.invoke(null, m);
+                if (BuildConfig.DEBUG)
+                    XposedBridge.log("D/" + MainHook.TAG + " Deoptimized " + m.getName());
+            }
+        }
+    }
+
+    final XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (BuildConfig.DEBUG) {
+            XposedBridge.log("D/" + MainHook.TAG + " downgrade=" + prefs.getBoolean("downgrade", true));
+            XposedBridge.log("D/" + MainHook.TAG + " authcreak=" + prefs.getBoolean("authcreak", true));
+            XposedBridge.log("D/" + MainHook.TAG + " digestCreak=" + prefs.getBoolean("digestCreak", true));
+            XposedBridge.log("D/" + MainHook.TAG + " UsePreSig=" + prefs.getBoolean("UsePreSig", false));
+            XposedBridge.log("D/" + MainHook.TAG + " enhancedMode=" + prefs.getBoolean("enhancedMode", false));
+            XposedBridge.log("D/" + MainHook.TAG + " bypassBlock=" + prefs.getBoolean("bypassBlock", true));
+        }
 
-        Log.d(MainHook.TAG, "downgrade=" + prefs.getBoolean("downgrade", true));
-        Log.d(MainHook.TAG, "authcreak=" + prefs.getBoolean("authcreak", true));
-        Log.d(MainHook.TAG, "digestCreak=" + prefs.getBoolean("digestCreak", true));
-        Log.d(MainHook.TAG, "UsePreSig=" + prefs.getBoolean("UsePreSig", false));
-
-        // 允许降级
-        findAndHookMethod("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader,
-                "checkDowngrade",
-                "com.android.server.pm.parsing.pkg.AndroidPackage",
-                "android.content.pm.PackageInfoLite",
-                new ReturnConstant(prefs, "downgrade", null));
-
-        // exists on flyme 9(Android 11) only
-        findAndHookMethod("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader,
-                "checkDowngrade",
-                "android.content.pm.PackageInfoLite",
-                "android.content.pm.PackageInfoLite",
-                new ReturnConstant(prefs, "downgrade", true));
-
+        var pmService = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService",
+                loadPackageParam.classLoader);
+        if (pmService != null) {
+            var checkDowngrade = XposedHelpers.findMethodExactIfExists(pmService, "checkDowngrade",
+                    "com.android.server.pm.parsing.pkg.AndroidPackage",
+                    "android.content.pm.PackageInfoLite");
+            if (checkDowngrade != null) {
+                // 允许降级
+                XposedBridge.hookMethod(checkDowngrade, new ReturnConstant(prefs, "downgrade", null));
+            }
+            // exists on flyme 9(Android 11) only
+            var flymeCheckDowngrade = XposedHelpers.findMethodExactIfExists(pmService, "checkDowngrade",
+                    "android.content.pm.PackageInfoLite",
+                    "android.content.pm.PackageInfoLite");
+            if (flymeCheckDowngrade != null)
+                XposedBridge.hookMethod(flymeCheckDowngrade, new ReturnConstant(prefs, "downgrade", true));
+        }
 
         // apk内文件修改后 digest校验会失败
         hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest",
@@ -76,8 +104,12 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         // + " or newer for package " + apkPath
         findAndHookMethod("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "getMinimumSignatureSchemeVersionForTargetSdk", int.class,
                 new ReturnConstant(prefs, "authcreak", 0));
-        findAndHookMethod("com.android.apksig.ApkVerifier", loadPackageParam.classLoader, "getMinimumSignatureSchemeVersionForTargetSdk", int.class,
-                new ReturnConstant(prefs, "authcreak", 0));
+        var apkVerifierClass = XposedHelpers.findClassIfExists("com.android.apksig.ApkVerifier",
+                loadPackageParam.classLoader);
+        if (apkVerifierClass != null) {
+            findAndHookMethod(apkVerifierClass, "getMinimumSignatureSchemeVersionForTargetSdk", int.class,
+                    new ReturnConstant(prefs, "authcreak", 0));
+        }
 
         // Package " + packageName + " signatures do not match previously installed version; ignoring!"
         // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
@@ -146,7 +178,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                             if (prefs.getBoolean("UsePreSig", false)) {
                                 PackageManager PM = AndroidAppHelper.currentApplication().getPackageManager();
                                 if (PM == null) {
-                                    XposedBridge.log("E: " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
+                                    XposedBridge.log("E/" + MainHook.TAG + " " + BuildConfig.APPLICATION_ID + " Cannot get the Package Manager... Are you using MiUI?");
                                 } else {
                                     PackageInfo pI;
                                     if (parseErr != null) {
@@ -187,7 +219,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                         if (signingDetailsWithDigests != null) {
                             Constructor<?> signingDetailsWithDigestsConstructorExact = XposedHelpers.findConstructorExact(signingDetailsWithDigests, signingDetails, Map.class);
                             signingDetailsWithDigestsConstructorExact.setAccessible(true);
-                            newInstance = signingDetailsWithDigestsConstructorExact.newInstance(new Object[]{newInstance, null});
+                            newInstance = signingDetailsWithDigestsConstructorExact.newInstance(newInstance, null);
                         }
                         if (throwable != null) {
                             Throwable cause = throwable.getCause();
@@ -243,14 +275,10 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
 
         var utilClass = findClass("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
         if (utilClass != null) {
-            for (var m : utilClass.getDeclaredMethods()) {
-                if ("verifySignatures".equals(m.getName())) {
-                    try {
-                        XposedBridge.class.getDeclaredMethod("deoptimizeMethod", Member.class).invoke(null, m);
-                    } catch (Throwable e) {
-                        Log.e("CorePatch", "deoptimizing failed", e);
-                    }
-                }
+            try {
+                deoptimizeMethod(utilClass, "verifySignatures");
+            } catch (Throwable e) {
+                XposedBridge.log("E/" + MainHook.TAG + " deoptimizing failed" + Log.getStackTraceString(e));
             }
         }
 
@@ -259,7 +287,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             var shouldBypass = new ThreadLocal<Boolean>();
             hookAllMethods(keySetManagerClass, "shouldCheckUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                protected void afterHookedMethod(MethodHookParam param) {
                     if (prefs.getBoolean("digestCreak", true) && Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) -> "preparePackageLI".equals(o.getMethodName()))) {
                         shouldBypass.set(true);
                         param.setResult(true);
@@ -270,7 +298,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             });
             hookAllMethods(keySetManagerClass, "checkUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                protected void afterHookedMethod(MethodHookParam param) {
                     if (prefs.getBoolean("digestCreak", true) && shouldBypass.get()) {
                         param.setResult(true);
                     }

@@ -68,14 +68,9 @@ public class SettingsActivity extends Activity {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.equals("UsePreSig") && sharedPreferences.getBoolean(key, false)) {
                 try {
-                    final ClassLoader cl = getActivity().getClassLoader();
-                    @SuppressLint("PrivateApi") final Class<?> SystemProperties = cl.loadClass("android.os.SystemProperties");
-                    final Class<?>[] paramTypes = new Class[1];
-                    paramTypes[0] = String.class;
-                    final Method get = SystemProperties.getMethod("get", paramTypes);
-                    final Object[] params = new Object[1];
-                    params[0] = "ro.miui.ui.version.code";
-                    if (!((String) get.invoke(SystemProperties, params)).isEmpty()) {
+                    @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
+                    Method get = c.getMethod("get", String.class);
+                    if (!((String) get.invoke(c, "ro.miui.ui.version.code")).isEmpty()) {
                         new AlertDialog.Builder(getActivity()).setMessage(R.string.miui_usepresig_warn).setPositiveButton(android.R.string.ok, null).show();
                     }
                 } catch (Exception ignored) {
