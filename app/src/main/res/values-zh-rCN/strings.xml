@@ -6,15 +6,18 @@
     <string name="downgr_summary">允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
     <string name="authcreak">禁用软件包管理器签名验证</string>
     <string name="authcreak_summary">关闭安装应用时的签名验证，可以安装被篡改的应用</string>
-    <string name="digestCreak">禁用APK签名验证</string>
+    <string name="digestCreak">禁用 APK 签名验证</string>
     <string name="digestCreak_summary">允许直接覆盖安装同包名不同签名的应用</string>
-    <string name="UsePreSig">安装时始终使用已装app的签名</string>
-    <string name="UsePreSig_summary">不是一般的<b>危险</b> 仅在绝对需要时启用</string>
+    <string name="UsePreSig">安装时始终使用已装 APP 的签名</string>
+    <string name="UsePreSig_summary">不是一般的<b>危险</b>，仅在绝对需要时启用</string>
     <string name="settings">设置</string>
     <string name="ignore">忽略</string>
-    <string name="not_supported">您似乎正在使用过时的 LSPosed 版本或 LSPosed 未激活，请更新 LSPosed 或者激活后再试。</string>
+    <string name="not_supported">模块未激活或正使用旧版 LSPosed，请激活模块或更新 LSPosed 后再试。</string>
     <string name="enhancedMode">增强模式</string>
-    <string name="enhancedMode_summary">可以解决一些app内部的完整性校验,一般不需要开启</string>
-    <string name="miui_usepresig_warn">由于MiUI大幅度魔改了安卓框架,UsePreSig无法正常工作\n我们没有时间溯源</string>
-    <string name="usepresig_warn">!! 所有安装包可以覆盖已安装的app !!\n安装未知的安装包时请务必小心</string>
+    <string name="enhancedMode_summary">可以解决一些 APP 内部的完整性校验，一般不需要开启</string>
+    <string name="miui_usepresig_warn">由于 MIUI 大幅度魔改了安卓框架，UsePreSig 无法正常工作\n我们没有时间溯源</string>
+    <string name="usepresig_warn">！！所有安装包可以覆盖已安装的 APP！！\n安装未知的安装包时请务必小心</string>
+    <string name="bypassBlock">绕过黑名单</string>
+    <string name="bypassBlock_summary">绕过某些设备如 Nothing Phone 上的黑名单</string>
+    <string name="config_error">配置初始化失败</string>
 </resources>
