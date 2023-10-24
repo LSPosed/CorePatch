@@ -8,7 +8,7 @@
   <string name="authcreak">Digest の認証を無効化する</string>
   <string name="authcreak_summary">APK ファイルの変更後にアプリのインストールをできるようにします(無効な Digest エラーを無視します)。</string>
   <string name="digestCreak">比較の認証を無効化する</string>
-  <string name="digestCreak_summary">異なる署名のアプリでもアプリの再インストール許可します。</string>
+  <string name="digestCreak_summary">異なる署名のアプリでもアプリの再インストールを許可します。</string>
   <string name="UsePreSig">インストールされた署名を使用する</string>
   <string name="UsePreSig_summary">インストールをする際には、必ず既にインストールされているアプリの署名を使用してください。\n この操作は <b>非常に危険</b>です。\n 本当に必要となる時だけ有効化をしてください!</string>
   <string name="settings">設定</string>
