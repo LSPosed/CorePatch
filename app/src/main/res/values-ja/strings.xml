@@ -10,7 +10,7 @@
   <string name="digestCreak">比較の認証を無効化する</string>
   <string name="digestCreak_summary">異なる署名のアプリでもアプリの再インストールを許可します。</string>
   <string name="UsePreSig">インストールされた署名を使用する</string>
-  <string name="UsePreSig_summary">インストールをする際には、必ず既にインストールされているアプリの署名を使用してください。\nこの操作は、<b>非常に危険</b>です。\n本当に必要となる時だけ有効化をしてください!</string>
+  <string name="UsePreSig_summary">インストールをする際には、必ず既にインストールされているアプリの署名を使用してください。\n この操作は、<b>非常に危険</b>です。\n 本当に必要となる時のみ有効化をしてください!</string>
   <string name="settings">設定</string>
   <string name="ignore">無視</string>
   <string name="config_error">構成の初期化に失敗しました</string>
