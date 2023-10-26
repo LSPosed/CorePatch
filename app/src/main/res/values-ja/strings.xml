@@ -6,19 +6,19 @@
   <string name="downgr">ダウングレードを許可する</string>
   <string name="downgr_summary">アプリのダウングレードを許可します。</string>
   <string name="authcreak">Digest の認証を無効化する</string>
-  <string name="authcreak_summary">APK ファイルの変更後にアプリのインストールをできるようにします(無効な Digest エラーを無視します)。</string>
+  <string name="authcreak_summary">APK ファイルの変更後にアプリのインストールをできるようにします。(無効な Digest エラーを無視します)</string>
   <string name="digestCreak">比較の認証を無効化する</string>
   <string name="digestCreak_summary">異なる署名のアプリでもアプリの再インストールを許可します。</string>
   <string name="UsePreSig">インストールされた署名を使用する</string>
-  <string name="UsePreSig_summary">インストールをする際には、必ず既にインストールされているアプリの署名を使用してください。\n この操作は <b>非常に危険</b>です。\n 本当に必要となる時だけ有効化をしてください!</string>
+  <string name="UsePreSig_summary">インストールをする際には、必ず既にインストールされているアプリの署名を使用してください。\n この操作は、<b>非常に危険</b>です。\n 本当に必要となる時のみ有効化をしてください!</string>
   <string name="settings">設定</string>
   <string name="ignore">無視</string>
   <string name="config_error">構成の初期化に失敗しました</string>
   <string name="not_supported">古いバージョンの LSPosed を使用しているか、LSPosed が有効化されていないようです。LSPosed を更新、有効化をした後に再試行をしてください。</string>
   <string name="enhancedMode">エンハンスドモード</string>
-  <string name="enhancedMode_summary">アプリの認証をパスさせます</string>
+  <string name="enhancedMode_summary">アプリの認証をパスさせます。</string>
   <string name="bypassBlock">ブロックをバイパスする</string>
   <string name="bypassBlock_summary">Nothing Phone などの一部のデバイスのブロックリストをバイパスします。</string>
-  <string name="miui_usepresig_warn">UsePreSig はフレームワークが大幅に変更されるため、MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>
+  <string name="miui_usepresig_warn">インストールされた署名の使用は、フレームワークが大幅に変更されるため MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>
   <string name="usepresig_warn">!! どんな APK でもインストールされている APK を上書きできるようにします !!\n未知の APK をインストールする時は注意をしてください</string>
 </resources>
