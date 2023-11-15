@@ -19,6 +19,6 @@
   <string name="enhancedMode_summary">一部のアプリの検証をパスします。</string>
   <string name="bypassBlock">ブロックをバイパスする</string>
   <string name="bypassBlock_summary">Nothing Phone などの一部のデバイスのブロックリストをバイパスします。</string>
-  <string name="miui_usepresig_warn">インストールされてい署名の使用は、フレームワークが大幅に変更されるため MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>
+  <string name="miui_usepresig_warn">インストールされている署名の使用は、フレームワークが大幅に変更されるため MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>
   <string name="usepresig_warn">!! どんな APK でもインストールされている APK を上書きできるようにします !!\n未知の APK をインストールする際は注意してください</string>
 </resources>
