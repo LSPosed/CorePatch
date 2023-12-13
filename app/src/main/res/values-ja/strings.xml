@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Core Patch</string>
-  <string name="module_description">Android 10–14 コアパッチ</string>
-  <string name="corepatch">このバージョンは、 Android 10–14 のみで動作します。\n最新版の LSPosed を使用してください。</string>
+  <string name="module_description">Android 9–14 コアパッチ</string>
+  <string name="corepatch">このバージョンは、 Android 9–14 のみで動作します。\n最新版の LSPosed を使用してください。</string>
   <string name="downgr">ダウングレードを許可する</string>
   <string name="downgr_summary">アプリのダウングレードを許可します。</string>
   <string name="authcreak">ダイジェストの検証を無効化する</string>
