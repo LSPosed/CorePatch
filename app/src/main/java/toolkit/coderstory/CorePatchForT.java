@@ -47,7 +47,7 @@ public class CorePatchForT extends CorePatchForS {
                 // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("authcreak", true)) {
+                if (prefs.getBoolean("authcreak", false)) {
                     if ((Integer) param.args[1] != 4) {
                         param.setResult(true);
                     }
@@ -79,7 +79,7 @@ public class CorePatchForT extends CorePatchForS {
             XposedBridge.hookMethod(assertMinSignatureSchemeIsValid, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
-                    if (prefs.getBoolean("authcreak", true)) {
+                    if (prefs.getBoolean("authcreak", false)) {
                         param.setResult(null);
                     }
                 }
@@ -91,7 +91,7 @@ public class CorePatchForT extends CorePatchForS {
             XposedBridge.hookAllConstructors(strictJarVerifier, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
-                    if (prefs.getBoolean("authcreak", true)) {
+                    if (prefs.getBoolean("authcreak", false)) {
                         XposedHelpers.setBooleanField(param.thisObject, "signatureSchemeRollbackProtectionsEnforced", false);
                     }
                 }

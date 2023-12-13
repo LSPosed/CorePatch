@@ -64,7 +64,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         if (BuildConfig.DEBUG) {
             XposedBridge.log("D/" + MainHook.TAG + " downgrade=" + prefs.getBoolean("downgrade", true));
-            XposedBridge.log("D/" + MainHook.TAG + " authcreak=" + prefs.getBoolean("authcreak", true));
+            XposedBridge.log("D/" + MainHook.TAG + " authcreak=" + prefs.getBoolean("authcreak", false));
             XposedBridge.log("D/" + MainHook.TAG + " digestCreak=" + prefs.getBoolean("digestCreak", true));
             XposedBridge.log("D/" + MainHook.TAG + " UsePreSig=" + prefs.getBoolean("UsePreSig", false));
             XposedBridge.log("D/" + MainHook.TAG + " enhancedMode=" + prefs.getBoolean("enhancedMode", false));
@@ -124,7 +124,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("authcreak", true)) {
+                if (prefs.getBoolean("authcreak", false)) {
                     if ((Integer) param.args[1] != 4) {
                         param.setResult(true);
                     }
@@ -167,7 +167,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         });
         hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                if (prefs.getBoolean("authcreak", true)) {
+                if (prefs.getBoolean("authcreak", false)) {
                     Throwable throwable = methodHookParam.getThrowable();
                     Integer parseErr = null;
                     if (parseResult != null && ((Method) methodHookParam.method).getReturnType() == parseResult) {

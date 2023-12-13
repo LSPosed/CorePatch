@@ -66,7 +66,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                 super.afterHookedMethod(methodHookParam);
-                if (prefs.getBoolean("authcreak", true)) {
+                if (prefs.getBoolean("authcreak", false)) {
                     Throwable throwable = methodHookParam.getThrowable();
                     if (throwable != null) {
                         Throwable cause = throwable.getCause();
@@ -92,7 +92,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
-                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
+                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                         param.setResult(Boolean.TRUE);
                     }
                 }
@@ -104,7 +104,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         super.beforeHookedMethod(param);
                         if (prefs.getBoolean("digestCreak", true)) {
-                            if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
+                            if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                                 param.setResult(Boolean.TRUE);
                             }
                         }

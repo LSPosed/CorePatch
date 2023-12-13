@@ -11,7 +11,7 @@
             android:key="authcreak"
             android:title="@string/authcreak"
             android:summary="@string/authcreak_summary"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
         <SwitchPreference
             android:key="digestCreak"
             android:title="@string/digestCreak"

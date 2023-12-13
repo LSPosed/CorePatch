@@ -33,7 +33,7 @@ public class CorePatchForU extends CorePatchForT {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) {
-                        if (prefs.getBoolean("authcreak", true)) {
+                        if (prefs.getBoolean("authcreak", false)) {
                             param.setResult(null);
                         }
                     }
