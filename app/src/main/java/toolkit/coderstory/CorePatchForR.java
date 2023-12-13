@@ -1,11 +1,13 @@
 package toolkit.coderstory;
 
 
+import android.annotation.TargetApi;
 import android.app.AndroidAppHelper;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.os.Build;
 import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
@@ -20,6 +22,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -31,6 +34,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+@TargetApi(Build.VERSION_CODES.R)
 public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     private final static Method deoptimizeMethod;
 
@@ -186,8 +190,8 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                                     } else {
                                         pI = PM.getPackageArchiveInfo((String) methodHookParam.args[0], 0);
                                     }
-                                    PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNATURES);
-                                    lastSigs = InstpI.signatures;
+                                    PackageInfo InstpI = PM.getPackageInfo(pI.packageName, PackageManager.GET_SIGNING_CERTIFICATES);
+                                    lastSigs = InstpI.signingInfo.getSigningCertificateHistory();
                                 }
                             }
                         } catch (Throwable ignored) {
@@ -207,11 +211,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                             }
                         } catch (Throwable ignored) {
                         }
-                        if (lastSigs != null) {
-                            signingDetailsArgs[0] = lastSigs;
-                        } else {
-                            signingDetailsArgs[0] = new Signature[]{new Signature(SIGNATURE)};
-                        }
+                        signingDetailsArgs[0] = Objects.requireNonNullElseGet(lastSigs, () -> new Signature[]{new Signature(SIGNATURE)});
                         Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
 
                         //修复 java.lang.ClassCastException: Cannot cast android.content.pm.PackageParser$SigningDetails to android.util.apk.ApkSignatureVerifier$SigningDetailsWithDigests

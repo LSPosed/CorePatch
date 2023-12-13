@@ -5,14 +5,23 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Insets;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 
 import com.coderstory.toolkit.R;
 
 import java.lang.reflect.Method;
 
+@SuppressWarnings("deprecation")
 public class SettingsActivity extends Activity {
 
     @Override
@@ -49,18 +58,35 @@ public class SettingsActivity extends Activity {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName("conf");
             addPreferencesFromResource(R.xml.prefs);
-            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
-            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-            View list = view.findViewById(android.R.id.list);
-            list.setOnApplyWindowInsetsListener((v, insets) -> {
-                list.setPadding(insets.getSystemWindowInsetLeft(), insets.getSystemWindowInsetTop(), insets.getSystemWindowInsetRight(), insets.getStableInsetBottom());
-                return insets.consumeSystemWindowInsets();
+            view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            view.setOnApplyWindowInsetsListener((v, windowInsets) -> {
+                Insets insets = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    insets = windowInsets.getInsets(WindowInsets.Type.systemBars());
+                } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                    insets = windowInsets.getSystemWindowInsets();
+                }
+                ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    mlp.leftMargin = insets.left;
+                    mlp.bottomMargin = insets.bottom;
+                    mlp.rightMargin = insets.right;
+                    mlp.topMargin = insets.top;
+                } else {
+                    mlp.leftMargin = windowInsets.getSystemWindowInsetLeft();
+                    mlp.bottomMargin = windowInsets.getSystemWindowInsetBottom();
+                    mlp.rightMargin = windowInsets.getSystemWindowInsetRight();
+                    mlp.topMargin = windowInsets.getSystemWindowInsetTop();
+                }
+                v.setLayoutParams(mlp);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    return WindowInsets.CONSUMED;
+                } else return windowInsets.consumeSystemWindowInsets();
             });
-
             super.onViewCreated(view, savedInstanceState);
         }
 
@@ -81,9 +107,15 @@ public class SettingsActivity extends Activity {
         }
 
         @Override
-        public void onDestroy() {
-            super.onDestroy();
-            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        public void onResume() {
+            super.onResume();
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         }
     }
 }
