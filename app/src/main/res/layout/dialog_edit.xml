@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_margin="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/desc"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="3"
+                android:hint="@string/desc_hint" />
+            <EditText
+                android:layout_margin="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:id="@+id/signature"
+                android:inputType="text"
+                android:maxLines="3"
+                android:hint="@string/signature_hint" />
+        </LinearLayout>
+    </ScrollView>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="4dp"
+        android:id="@+id/ok"
+        android:text="@string/ok" />
+</LinearLayout>

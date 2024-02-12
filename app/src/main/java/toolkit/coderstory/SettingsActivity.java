@@ -4,13 +4,16 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Insets;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -52,12 +55,13 @@ public class SettingsActivity extends Activity {
         }
     }
 
-    public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             getPreferenceManager().setSharedPreferencesName("conf");
             addPreferencesFromResource(R.xml.prefs);
+            findPreference("trustedCerts").setOnPreferenceClickListener(this);
         }
 
         @Override
@@ -104,6 +108,14 @@ public class SettingsActivity extends Activity {
 
                 new AlertDialog.Builder(getActivity()).setMessage(R.string.usepresig_warn).setPositiveButton(android.R.string.ok, null).show();
             }
+        }
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            if ("trustedCerts".equals(preference.getKey())) {
+                startActivity(new Intent(getActivity(), TrustedCertsActivity.class));
+            }
+            return true;
         }
 
         @Override

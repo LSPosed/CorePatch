@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Core Patch</string>
-    <string name="module_description">Android 9–14 core patch</string>
-    <string name="corepatch">This version is for Android 9–14 only.\nPlease use the latest version of the LSPosed.</string>
+    <string name="module_description">Android 10–14 core patch</string>
+    <string name="corepatch">This version is for Android 10–14 only.\nPlease use the latest version of the LSPosed.</string>
     <string name="downgr">Allow downgrade</string>
     <string name="downgr_summary">Allow downgrade applications.</string>
     <string name="authcreak">Disable digest verify</string>
@@ -20,4 +20,24 @@
     <string name="bypassBlock_summary">Bypass blocklist in some devices like Nothing Phone</string>
     <string name="miui_usepresig_warn">UsePreSig won\'t work on MiUI because its framework changes too much.\nWe don\'t have time to track the case.</string>
     <string name="usepresig_warn">!! Any apk can override the installed one !!\nBe carefully when installing unknown apk</string>
+    <string name="trustedCerts">Trusted Certs</string>
+    <string name="trustedCerts_summary">Manage trusted certificates</string>
+    <string name="edit">edit</string>
+    <string name="remove">remove</string>
+    <string name="add">add</string>
+    <string name="clear">clear</string>
+    <string name="no_cert">No cert. Try share an APK to CorePatch</string>
+    <string name="desc_hint">Description</string>
+    <string name="signature_hint">Signature</string>
+    <string name="ok">OK</string>
+    <string name="desc_empty_toast">Description should not be empty</string>
+    <string name="sig_not_hex_toast">Signature should be a hex string</string>
+    <string name="msg_failed_to_resolve_apk">Failed to resolve APK file</string>
+    <string name="msg_get_signatures">Found %d signature(s)</string>
+    <string name="title_adding_signatures">Adding signatures</string>
+    <string name="msg_loading">Loading</string>
+    <string name="remove_all">Remove all?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel</string>
 </resources>

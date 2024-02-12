@@ -20,4 +20,24 @@
     <string name="bypassBlock">绕过黑名单</string>
     <string name="bypassBlock_summary">绕过某些设备如 Nothing Phone 上的黑名单</string>
     <string name="config_error">配置初始化失败</string>
+    <string name="trustedCerts">信任证书</string>
+    <string name="trustedCerts_summary">管理信任的证书</string>
+    <string name="edit">编辑</string>
+    <string name="remove">移除</string>
+    <string name="add">添加</string>
+    <string name="clear">清除</string>
+    <string name="no_cert">没有证书，请尝试给核心破解分享一个 APK 文件</string>
+    <string name="desc_hint">描述</string>
+    <string name="signature_hint">签名</string>
+    <string name="ok">好</string>
+    <string name="desc_empty_toast">描述不能为空</string>
+    <string name="sig_not_hex_toast">签名必须是十六进制字符串</string>
+    <string name="msg_failed_to_resolve_apk">无法解析 APK</string>
+    <string name="msg_get_signatures">找到 %d 个签名</string>
+    <string name="title_adding_signatures">添加签名</string>
+    <string name="msg_loading">加载中</string>
+    <string name="remove_all">全部移除？</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="cancel">取消</string>
 </resources>

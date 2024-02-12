@@ -34,6 +34,11 @@
             android:title="@string/bypassBlock"
             android:summary="@string/bypassBlock_summary"
             android:defaultValue="true" />
+        <Preference
+            android:key="trustedCerts"
+            android:title="@string/trustedCerts"
+            android:summary="@string/trustedCerts_summary"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>
