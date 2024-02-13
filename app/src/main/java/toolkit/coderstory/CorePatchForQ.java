@@ -3,7 +3,6 @@ package toolkit.coderstory;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.Signature;
-import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
 
@@ -21,29 +20,29 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
-    XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
+    final XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         // 允许降级
         Class<?> packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
-            hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", new XC_MethodHook() {
-                public void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                    super.beforeHookedMethod(methodHookParam);
-                    if (prefs.getBoolean("downgrade", true)) {
-                        Object packageInfoLite = methodHookParam.args[0];
+        hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", new XC_MethodHook() {
+            public void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                super.beforeHookedMethod(methodHookParam);
+                if (prefs.getBoolean("downgrade", true)) {
+                    Object packageInfoLite = methodHookParam.args[0];
 
-                        if (prefs.getBoolean("downgrade", true)) {
-                            Field field = packageClazz.getField("mVersionCode");
-                            field.setAccessible(true);
-                            field.set(packageInfoLite, 0);
-                            field = packageClazz.getField("mVersionCodeMajor");
-                            field.setAccessible(true);
-                            field.set(packageInfoLite, 0);
-                        }
+                    if (prefs.getBoolean("downgrade", true)) {
+                        Field field = packageClazz.getField("mVersionCode");
+                        field.setAccessible(true);
+                        field.set(packageInfoLite, 0);
+                        field = packageClazz.getField("mVersionCodeMajor");
+                        field.setAccessible(true);
+                        field.set(packageInfoLite, 0);
                     }
                 }
-            });
+            }
+        });
 
         hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyMessageDigest",
                 new ReturnConstant(prefs, "authcreak", true));
@@ -67,7 +66,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
                 super.afterHookedMethod(methodHookParam);
-                if (prefs.getBoolean("authcreak", true)) {
+                if (prefs.getBoolean("authcreak", false)) {
                     Throwable throwable = methodHookParam.getThrowable();
                     if (throwable != null) {
                         Throwable cause = throwable.getCause();
@@ -93,7 +92,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
-                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
+                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                         param.setResult(Boolean.TRUE);
                     }
                 }
@@ -105,7 +104,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                         super.beforeHookedMethod(param);
                         if (prefs.getBoolean("digestCreak", true)) {
-                            if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", true)) {
+                            if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                                 param.setResult(Boolean.TRUE);
                             }
                         }
@@ -115,7 +114,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         // if app is system app, allow to use hidden api, even if app not using a system signature
         findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
             @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
@@ -125,7 +124,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                     }
                 }
             }
-            });
+        });
 
         var keySetManagerClass = findClass("com.android.server.pm.KeySetManagerService", loadPackageParam.classLoader);
         if (keySetManagerClass != null) {
@@ -133,7 +132,9 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
             hookAllMethods(keySetManagerClass, "shouldCheckUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (prefs.getBoolean("digestCreak", true) && Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) -> "preparePackageLI".equals(o.getMethodName()))) {
+                    if (prefs.getBoolean("digestCreak", true) &&
+                            Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) ->
+                                    (/* API 29 */ "preparePackageLI".equals(o.getMethodName()) || /* API 28 */ "installPackageLI".equals(o.getMethodName())))) {
                         shouldBypass.set(true);
                         param.setResult(true);
                     } else {

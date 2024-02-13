@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Core Patch</string>
+  <string name="module_description">Android 9–14 コアパッチ</string>
+  <string name="corepatch">このバージョンは、 Android 9–14 のみで動作します。\n最新版の LSPosed を使用してください。</string>
+  <string name="downgr">ダウングレードを許可する</string>
+  <string name="downgr_summary">アプリのダウングレードを許可します。</string>
+  <string name="authcreak">ダイジェストの検証を無効化する</string>
+  <string name="authcreak_summary">APK ファイルの変更後にアプリをインストールできるようにします。(無効なダイジェストのエラーを無視します)</string>
+  <string name="digestCreak">署名の比較を無効化する</string>
+  <string name="digestCreak_summary">署名が異なるアプリの再インストールを許可します。</string>
+  <string name="UsePreSig">インストールされている署名を使用する</string>
+  <string name="UsePreSig_summary">インストール時に、既にインストールされているアプリの署名を使用します。\nこの操作は、<b>非常に危険</b>です。\n本当に必要となる時のみ有効化してください！</string>
+  <string name="settings">設定</string>
+  <string name="ignore">無視</string>
+  <string name="config_error">構成の初期化に失敗しました</string>
+  <string name="not_supported">古いバージョンの LSPosed を使用しているか、LSPosed が有効化されていないようです。LSPosed を更新、有効化をした後に再試行をしてください。</string>
+  <string name="enhancedMode">拡張モード</string>
+  <string name="enhancedMode_summary">一部のアプリの検証をパスします。</string>
+  <string name="bypassBlock">ブロックをバイパスする</string>
+  <string name="bypassBlock_summary">Nothing Phone などの一部のデバイスのブロックリストをバイパスします。</string>
+  <string name="miui_usepresig_warn">インストールされている署名の使用は、フレームワークが大幅に変更されるため MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>
+  <string name="usepresig_warn">!! どんな APK でもインストールされている APK を上書きできるようにします !!\n未知の APK をインストールする際は注意してください</string>
+</resources>

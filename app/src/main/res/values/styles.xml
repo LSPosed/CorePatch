@@ -3,6 +3,7 @@
     <style name="AppTheme" parent="android:Theme.Material.Light.LightStatusBar">
         <item name="android:colorAccent">#3F51B5</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
 </resources>

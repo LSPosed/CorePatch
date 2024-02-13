@@ -14,10 +14,10 @@ android {
     buildToolsVersion = "34.0.0"
     defaultConfig {
         applicationId = "com.coderstory.toolkit"
-        minSdk = 29
+        minSdk = 28
         targetSdk = 34
-        versionCode = 2000
-        versionName = "4.3"
+        versionCode = 2016
+        versionName = "4.4"
     }
 
     signingConfigs {
@@ -30,7 +30,7 @@ android {
             }
         }
     }
-    packagingOptions {
+    packaging {
         jniLibs {
             excludes += "META-INF/**"
         }
@@ -61,6 +61,9 @@ android {
         abortOnError = false
     }
     namespace = "com.coderstory.toolkit"
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -72,7 +75,7 @@ val optimizeReleaseRes = task("optimizeReleaseRes").doLast {
         "build-tools", project.android.buildToolsVersion, "aapt2"
     )
     val zip = Paths.get(
-        project.buildDir.path, "intermediates",
+        project.layout.buildDirectory.get().asFile.path, "intermediates",
         "optimized_processed_res", "release", "resources-release-optimize.ap_"
     )
     val optimized = File("${zip}.opt")
