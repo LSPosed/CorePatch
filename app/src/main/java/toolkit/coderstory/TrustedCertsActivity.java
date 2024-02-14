@@ -1,5 +1,6 @@
 package toolkit.coderstory;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -25,9 +26,7 @@ import android.widget.Toast;
 import com.coderstory.toolkit.R;
 
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -108,6 +107,8 @@ public class TrustedCertsActivity extends Activity implements SharedPreferences.
         CheckBox checkBox;
     }
 
+    @SuppressLint("WorldReadableFiles")
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +117,7 @@ public class TrustedCertsActivity extends Activity implements SharedPreferences.
         emptyView = findViewById(R.id.empty);
         adapter = new Adapter();
         listView.setAdapter(adapter);
-        sp = getSharedPreferences("trusted_certs", Context.MODE_WORLD_READABLE);
+        sp = App.createDelegate(getSharedPreferences("trusted_certs", Context.MODE_WORLD_READABLE), Constants.ACTION_UPDATE_CERTS);
         sp.registerOnSharedPreferenceChangeListener(this);
         sp.getAll();
         refreshList();
@@ -154,6 +155,7 @@ public class TrustedCertsActivity extends Activity implements SharedPreferences.
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (!"count".equals(s)) return;
         refreshList();
     }
 

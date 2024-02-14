@@ -1,5 +1,6 @@
 package toolkit.coderstory;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class TrustedCertsUtils {
     private static final String KEY_ENABLED_PREFIX = "enabled_";
     private static final String KEY_DISABLED_PREFIX = "disabled_";
     private static final String KEY_DESC_PREFIX = "desc_";
+
     public static void persistTrustedCerts(SharedPreferences sp, List<TrustedCert> certs) {
         SharedPreferences.Editor editor = sp.edit();
         editor.clear();

@@ -19,8 +19,7 @@ import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
-    final XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
+public class CorePatchForQ extends XposedHelper {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -94,6 +93,8 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 if (prefs.getBoolean("digestCreak", true)) {
                     if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                         param.setResult(Boolean.TRUE);
+                    } else {
+                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
                     }
                 }
             }
@@ -106,6 +107,8 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                         if (prefs.getBoolean("digestCreak", true)) {
                             if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                                 param.setResult(Boolean.TRUE);
+                            } else {
+                                param.setResult(MainHook.isSignatureTrusted(param.args[0]));
                             }
                         }
                     }

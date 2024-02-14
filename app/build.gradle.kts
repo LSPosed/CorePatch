@@ -68,6 +68,7 @@ android {
 
 dependencies {
     compileOnly("de.robv.android.xposed:api:82")
+    compileOnly(project(":stub"))
 }
 val optimizeReleaseRes = task("optimizeReleaseRes").doLast {
     val aapt2 = Paths.get(

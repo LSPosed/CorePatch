@@ -35,7 +35,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 @TargetApi(Build.VERSION_CODES.R)
-public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class CorePatchForR extends XposedHelper {
     private final static Method deoptimizeMethod;
 
     static {
@@ -57,8 +57,6 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             }
         }
     }
-
-    final XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -127,6 +125,8 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 if (prefs.getBoolean("authcreak", false)) {
                     if ((Integer) param.args[1] != 4) {
                         param.setResult(true);
+                    } else {
+                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
                     }
                 }
             }
@@ -253,8 +253,12 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (((Integer) param.args[1] != 4) && prefs.getBoolean("digestCreak", true)) {
-                    param.setResult(true);
+                if (prefs.getBoolean("digestCreak", true)) {
+                    if (((Integer) param.args[1] != 4)) {
+                        param.setResult(true);
+                    } else {
+                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
+                    }
                 }
             }
         });

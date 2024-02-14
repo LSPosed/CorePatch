@@ -31,25 +31,10 @@ public class CorePatchForT extends CorePatchForS {
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
                 if (prefs.getBoolean("digestCreak", true)) {
-                    if ((Integer) param.args[1] != 4) {
+                    if (((Integer) param.args[1] != 4)) {
                         param.setResult(true);
-                    }
-                }
-            }
-        });
-
-        // Package " + packageName + " signatures do not match previously installed version; ignoring!"
-        // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
-        // public boolean checkCapability(SigningDetails oldDetails, @CertCapabilities int flags)
-        hookAllMethods("android.content.pm.PackageParser", loadPackageParam.classLoader, "checkCapability", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
-                // Or applications will have all privileged permissions
-                // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("authcreak", false)) {
-                    if ((Integer) param.args[1] != 4) {
-                        param.setResult(true);
+                    } else {
+                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
                     }
                 }
             }
@@ -97,9 +82,14 @@ public class CorePatchForT extends CorePatchForS {
                 }
             });
         }
+
+        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/permission/PermissionManagerServiceImpl.java;l=3437;drc=a6142601d7cc5b79e9e7f209c2a0cb9f5e79fd2d
+        var pms = XposedHelpers.findClassIfExists("com.android.server.pm.permission.PermissionManagerServiceImpl", loadPackageParam.classLoader);
+        if (pms != null) {
+            deoptimizeMethod(pms, "shouldGrantPermissionBySignature");
+        }
     }
 
-    @Override
     Class<?> getSigningDetails(ClassLoader classLoader) {
         return XposedHelpers.findClassIfExists("android.content.pm.SigningDetails", classLoader);
     }
