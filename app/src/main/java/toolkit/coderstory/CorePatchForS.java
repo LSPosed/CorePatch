@@ -9,7 +9,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CorePatchForS extends CorePatchForR {
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
         super.handleLoadPackage(loadPackageParam);
         var pmService = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService",
                 loadPackageParam.classLoader);

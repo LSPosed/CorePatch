@@ -1,17 +1,24 @@
 package toolkit.coderstory;
 
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AndroidAppHelper;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageParser;
 import android.content.pm.Signature;
+import android.content.pm.SigningDetails;
 import android.os.Build;
+import android.os.ShellCommand;
+import android.util.ArrayMap;
+import android.util.ArraySet;
 import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -58,8 +66,14 @@ public class CorePatchForR extends XposedHelper {
         }
     }
 
+    static void deoptimizeMethod(Method m) throws InvocationTargetException, IllegalAccessException {
+        deoptimizeMethod.invoke(null, m);
+        if (BuildConfig.DEBUG)
+            XposedBridge.log("D/" + MainHook.TAG + " Deoptimized " + m.getName());
+    }
+
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
         if (BuildConfig.DEBUG) {
             XposedBridge.log("D/" + MainHook.TAG + " downgrade=" + prefs.getBoolean("downgrade", true));
             XposedBridge.log("D/" + MainHook.TAG + " authcreak=" + prefs.getBoolean("authcreak", false));
@@ -277,15 +291,6 @@ public class CorePatchForR extends XposedHelper {
             }
         });
 
-        var utilClass = findClass("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
-        if (utilClass != null) {
-            try {
-                deoptimizeMethod(utilClass, "verifySignatures");
-            } catch (Throwable e) {
-                XposedBridge.log("E/" + MainHook.TAG + " deoptimizing failed" + Log.getStackTraceString(e));
-            }
-        }
-
         var keySetManagerClass = findClass("com.android.server.pm.KeySetManagerService", loadPackageParam.classLoader);
         if (keySetManagerClass != null) {
             var shouldBypass = new ThreadLocal<Boolean>();
@@ -309,6 +314,95 @@ public class CorePatchForR extends XposedHelper {
                 }
             });
         }
+
+        // We need to initialize this class because of LSPosed's bug
+        @SuppressLint("PrivateApi") var utilClass = Class.forName("com.android.server.pm.PackageManagerServiceUtils", true, loadPackageParam.classLoader);
+        if (utilClass != null) {
+            Method method = null;
+            for (var m: utilClass.getDeclaredMethods()) {
+                if (m.getName().equals("verifySignatures")) {
+                    method = m;
+                    break;
+                }
+            }
+
+            assert method != null;
+
+            int signingDetailsIdx = -1;
+
+            for (var t: method.getParameterTypes()) {
+                signingDetailsIdx++;
+                if (t.getName().endsWith("SigningDetails"))
+                     break;
+            }
+
+            try {
+                deoptimizeMethod(utilClass, "verifySignatures");
+            } catch (Throwable e) {
+                XposedBridge.log("E/" + MainHook.TAG + " deoptimizing failed" + Log.getStackTraceString(e));
+            }
+
+            int finalSigningDetailsIdx = signingDetailsIdx;
+            XposedBridge.hookAllMethods(utilClass, "verifySignatures", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (!prefs.getBoolean("digestCreak", true)) return;
+                    if (param.hasThrowable()) {
+                        var err = param.getThrowable();
+                        if (err == null) return;
+                        var code = XposedHelpers.getObjectField(err, "error");
+                        var signature = param.args[finalSigningDetailsIdx];
+                        if ((int) code == -8 // PackageManager.INSTALL_FAILED_SHARED_USER_INCOMPATIBLE
+                                && MainHook.isSignatureTrusted(signature)) {
+                            XposedBridge.log("CorePatch: allow shared user upgrade");
+                            param.setResult(true);
+                        }
+                    }
+                }
+            });
+        }
+
+        // choose a signature after all old signed packages are removed
+        XposedBridge.hookAllMethods(
+                XposedHelpers.findClass("com.android.server.pm.SharedUserSetting", loadPackageParam.classLoader),
+                "removePackage",
+                new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        var toRemove = param.args[0]; // PackageSetting
+                        if (toRemove == null) return;
+                        var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
+                        if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
+                        var removed = false; // Is toRemove really needed to be removed
+                        var selfSig = Setting_getSigningDetails(param.thisObject);
+                        Object trustedSig = null;
+                        var packages = /*Watchable?ArraySet<PackageSetting>*/ SharedUserSetting_packages(param.thisObject);
+                        var size = (int) XposedHelpers.callMethod(packages, "size");
+                        for (var i = 0; i < size; i++) {
+                            var p = XposedHelpers.callMethod(packages, "valueAt", i);
+                            if (toRemove.equals(p)) {
+                                removed = true;
+                                continue;
+                            }
+                            var signings = Setting_getSigningDetails(p);
+                            // check if it is trusted certs first
+                            if (MainHook.isSignatureTrusted(signings)) {
+                                trustedSig = signings;
+                                continue;
+                            }
+                            if ((boolean) XposedHelpers.callMethod(signings, "checkCapability", selfSig, 0) || (boolean) XposedHelpers.callMethod(selfSig, "checkCapability", signings, 0)) {
+                                // old signing exists
+                                return;
+                            }
+                        }
+                        if (!removed || trustedSig == null) return;
+                        XposedBridge.log("updating signature in sharedUser " + param.thisObject);
+                        Setting_setSigningDetails(param.thisObject, trustedSig);
+                    }
+                }
+        );
+
+        if (BuildConfig.DEBUG) initializeDebugHook(loadPackageParam);
     }
 
     Class<?> getSigningDetails(ClassLoader classLoader) {
@@ -328,5 +422,117 @@ public class CorePatchForR extends XposedHelper {
                 }
             }
         });
+    }
+
+    Object mPMS = null;
+
+    void initializeDebugHook(XC_LoadPackage.LoadPackageParam lpparam) throws IllegalAccessException, InvocationTargetException {
+        XposedBridge.hookAllMethods(
+                XposedHelpers.findClass("com.android.server.pm.PackageManagerShellCommand", lpparam.classLoader),
+                "onCommand",
+                new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        try {
+                            var pms = mPMS;
+                            if (pms == null) return;
+                            var cmd = (String) param.args[0];
+                            if (!"corepatch".equals(cmd)) return;
+                            var self = (ShellCommand) param.thisObject;
+                            var pw = self.getOutPrintWriter();
+                            var type = self.getNextArgRequired();
+                            var settings = XposedHelpers.getObjectField(pms, "mSettings");
+                            if ("p".equals(type) || "package".equals(type)) {
+                                var packageName = self.getNextArgRequired();
+                                var packageSetting = XposedHelpers.callMethod(settings, "getPackageLPr", packageName);
+                                if (packageSetting != null) {
+                                    dumpPackageSetting(packageSetting, pw, settings);
+                                } else {
+                                    pw.println("no package " + packageName + " found");
+                                }
+                            } else if ("su".equals(type) || "shareduser".equals(type)) {
+                                var name = self.getNextArgRequired();
+                                var su = getSharedUser(name, settings);
+                                if (su != null) {
+                                    dumpSharedUserSetting(su, pw);
+                                } else {
+                                    pw.println("no shared user " + name + " found");
+                                }
+                            } else {
+                                pw.println("usage: <p|package|su|shareduser> <name>");
+                            }
+                            param.setResult(0);
+                        } catch (Throwable t) {
+                            XposedBridge.log(t);
+                            param.setThrowable(t);
+                        }
+                    }
+                }
+        );
+
+        var pmsClass = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerService",
+                lpparam.classLoader);
+
+        XposedBridge.hookAllConstructors(pmsClass, new XC_MethodHook() {
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                        mPMS = param.thisObject;
+                    }
+                }
+        );
+
+        deoptimizeMethod(pmsClass, "onShellCommand");
+    }
+
+    void dumpPackageSetting(Object packageSetting, PrintWriter pw, Object /*Settings*/ settings) {
+        var signingDetails = Setting_getSigningDetails(packageSetting);
+        pw.println("signing for package " + packageSetting);
+        dumpSigningDetails(signingDetails, pw);
+        var pkg = XposedHelpers.getObjectField(packageSetting, "pkg"); // AndroidPackage
+        if (pkg == null) {
+            pw.println("android package is null!");
+            return;
+        }
+        var id = (String) XposedHelpers.callMethod(pkg, "getSharedUserId");
+        pw.println("shared user id:" + id);
+        if (settings != null) {
+            var su = getSharedUser(id, settings);
+            if (su != null) {
+                dumpSharedUserSetting(su, pw);
+            }
+        }
+    }
+
+    Object getSharedUser(String id, Object /*Settings*/ settings) {
+        var sharedUserSettings = XposedHelpers.getObjectField(settings, "mSharedUsers");
+        if (sharedUserSettings == null) return null;
+        return XposedHelpers.callMethod(sharedUserSettings, "get", id);
+    }
+
+    void dumpSharedUserSetting(Object sharedUser, PrintWriter pw) {
+        var signingDetails = Setting_getSigningDetails(sharedUser);
+        pw.println("signing for shared user " + sharedUser);
+        dumpSigningDetails(signingDetails, pw);
+    }
+
+    protected void dumpSigningDetails(Object signingDetails, PrintWriter pw) {
+        var i = 0;
+        for (var sign : ((PackageParser.SigningDetails) signingDetails).signatures) {
+            i++;
+            pw.println(i + ": " + sign.toCharsString() + " trusted=" + MainHook.isSignatureTrusted(sign));
+        }
+    }
+
+    Object Setting_getSigningDetails(Object pkgOrSharedUser) {
+        // PackageSettingBase(A11)|PackageSetting(A13)|SharedUserSetting.<PackageSignatures>signatures.<PackageParser.SigningDetails>mSigningDetails
+        return XposedHelpers.getObjectField(XposedHelpers.getObjectField(pkgOrSharedUser, "signatures"), "mSigningDetails");
+    }
+
+    void Setting_setSigningDetails(Object pkgOrSharedUser, Object signingDetails) {
+        XposedHelpers.setObjectField(XposedHelpers.getObjectField(pkgOrSharedUser, "signatures"), "mSigningDetails", signingDetails);
+    }
+
+    protected Object SharedUserSetting_packages(Object /*SharedUserSetting*/ sharedUser) {
+        return XposedHelpers.getObjectField(sharedUser, "packages");
     }
 }

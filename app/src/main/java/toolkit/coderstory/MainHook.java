@@ -130,10 +130,14 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             }
             if (signatures == null) return false;
             for (var sig: signatures) {
-                if (trustedCerts.contains(sig.toCharsString())) return true;
+                if (isSignatureTrusted(sig)) return true;
             }
         }
         return false;
+    }
+
+    public static boolean isSignatureTrusted(Signature signature) {
+        return trustedCerts.contains(signature.toCharsString());
     }
 
     @Override

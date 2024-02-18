@@ -1,8 +1,13 @@
 package toolkit.coderstory;
 
+import android.content.pm.PackageParser;
+import android.content.pm.SigningDetails;
 import android.util.Log;
 
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -11,7 +16,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CorePatchForT extends CorePatchForS {
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
         super.handleLoadPackage(loadPackageParam);
         var checkDowngrade = XposedHelpers.findMethodExactIfExists("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader,
                 "checkDowngrade",
@@ -92,5 +97,27 @@ public class CorePatchForT extends CorePatchForS {
 
     Class<?> getSigningDetails(ClassLoader classLoader) {
         return XposedHelpers.findClassIfExists("android.content.pm.SigningDetails", classLoader);
+    }
+
+    @Override
+    protected void dumpSigningDetails(Object signingDetails, PrintWriter pw) {
+        if (signingDetails instanceof PackageParser.SigningDetails) {
+            var i = 0;
+            for (var sign : ((PackageParser.SigningDetails) signingDetails).signatures) {
+                i++;
+                pw.println(i + ": " + sign.toCharsString() + " trusted=" + MainHook.isSignatureTrusted(sign));
+            }
+        } else if (signingDetails instanceof SigningDetails) {
+            var i = 0;
+            for (var sign : ((SigningDetails) signingDetails).getSignatures()) {
+                i++;
+                pw.println(i + ": " + sign.toCharsString() + " trusted=" + MainHook.isSignatureTrusted(sign));
+            }
+        }
+    }
+
+    @Override
+    protected Object SharedUserSetting_packages(Object sharedUser) {
+        return XposedHelpers.getObjectField(sharedUser, "mPackages");
     }
 }
