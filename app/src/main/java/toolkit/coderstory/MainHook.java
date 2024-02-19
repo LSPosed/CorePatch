@@ -141,7 +141,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     }
 
     @Override
-    public void initZygote(StartupParam startupParam) {
+    public void initZygote(StartupParam startupParam) throws Throwable {
         if (startupParam.startsSystemServer) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log("D/" + TAG + " initZygote: Current sdk version " + Build.VERSION.SDK_INT);
@@ -167,6 +167,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     XposedBridge.log("W/" + TAG + " Unsupported Version of Android " + Build.VERSION.SDK_INT);
                     break;
             }
+            mHelper.initZygote(startupParam);
         }
     }
 }
