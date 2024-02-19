@@ -71,6 +71,7 @@ public class CorePatchForR extends XposedHelper {
         if (BuildConfig.DEBUG)
             XposedBridge.log("D/" + MainHook.TAG + " Deoptimized " + m.getName());
     }
+    ThreadLocal<Boolean> isVerifyingSignature = new ThreadLocal<>();
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
@@ -272,6 +273,13 @@ public class CorePatchForR extends XposedHelper {
                 }
             }
         });
+        hookAllMethods(signingDetails, "hasCommonAncestor", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (isVerifyingSignature.get() && trustedSharedUserEnabled(param.thisObject))
+                    param.setResult(true);
+            }
+        });
         // if app is system app, allow to use hidden api, even if app not using a system signature
         findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
             @Override
@@ -314,45 +322,21 @@ public class CorePatchForR extends XposedHelper {
         // We need to initialize this class because of LSPosed's bug
         @SuppressLint("PrivateApi") var utilClass = Class.forName("com.android.server.pm.PackageManagerServiceUtils", true, loadPackageParam.classLoader);
         if (utilClass != null) {
-            Method method = null;
-            for (var m: utilClass.getDeclaredMethods()) {
-                if (m.getName().equals("verifySignatures")) {
-                    method = m;
-                    break;
-                }
-            }
-
-            assert method != null;
-
-            int signingDetailsIdx = -1;
-
-            for (var t: method.getParameterTypes()) {
-                signingDetailsIdx++;
-                if (t.getName().endsWith("SigningDetails"))
-                     break;
-            }
-
             try {
                 deoptimizeMethod(utilClass, "verifySignatures");
             } catch (Throwable e) {
                 XposedBridge.log("E/" + MainHook.TAG + " deoptimizing failed" + Log.getStackTraceString(e));
             }
 
-            int finalSigningDetailsIdx = signingDetailsIdx;
             XposedBridge.hookAllMethods(utilClass, "verifySignatures", new XC_MethodHook() {
                 @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    isVerifyingSignature.set(true);
+                }
+
+                @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (param.hasThrowable()) {
-                        var err = param.getThrowable();
-                        if (err == null) return;
-                        var code = XposedHelpers.getObjectField(err, "error");
-                        var signature = param.args[finalSigningDetailsIdx];
-                        if ((int) code == -8 // PackageManager.INSTALL_FAILED_SHARED_USER_INCOMPATIBLE
-                                && trustedSharedUserEnabled(signature)) {
-                            XposedBridge.log("CorePatch: allow shared user upgrade");
-                            param.setResult(true);
-                        }
-                    }
+                    isVerifyingSignature.set(false);
                 }
             });
         }

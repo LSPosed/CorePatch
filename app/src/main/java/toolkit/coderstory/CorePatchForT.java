@@ -91,6 +91,20 @@ public class CorePatchForT extends CorePatchForS {
         if (pms != null) {
             deoptimizeMethod(pms, "shouldGrantPermissionBySignature");
         }
+
+        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/PackageManagerServiceUtils.java;l=621;drc=2e50991320cbef77d3e8504a4b284adae8c2f4d2
+        var utils = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
+        if (utils != null) {
+            deoptimizeMethod(utils, "canJoinSharedUserId");
+        }
+
+        hookAllMethods(signingDetails, "hasCommonAncestor", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (isVerifyingSignature.get() && trustedSharedUserEnabled(param.thisObject))
+                    param.setResult(true);
+            }
+        });
     }
 
     Class<?> getSigningDetails(ClassLoader classLoader) {
