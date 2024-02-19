@@ -132,4 +132,9 @@ public class CorePatchForT extends CorePatchForS {
     protected Object SharedUserSetting_packages(Object sharedUser) {
         return XposedHelpers.getObjectField(sharedUser, "mPackages");
     }
+
+    @Override
+    protected Object SigningDetails_mergeLineageWith(Object self, Object other) {
+        return XposedHelpers.callMethod(self, "mergeLineageWith", other, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
+    }
 }

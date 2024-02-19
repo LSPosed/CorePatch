@@ -375,7 +375,7 @@ public class CorePatchForR extends XposedHelper {
                                 // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
                                 // respect to system
                                 if (newSig == null) newSig = packageSig;
-                                else newSig = XposedHelpers.callMethod(newSig, "mergeLineageWith", packageSig, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
+                                else newSig = SigningDetails_mergeLineageWith(newSig, packageSig);
                             }
                         }
                         if (!removed || newSig == null) return;
@@ -417,7 +417,7 @@ public class CorePatchForR extends XposedHelper {
                                 // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
                                 // respect to system
                                 if (newSig == null) newSig = packageSig;
-                                else newSig = XposedHelpers.callMethod(newSig, "mergeLineageWith", packageSig, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
+                                else newSig = SigningDetails_mergeLineageWith(newSig, packageSig);
                             }
                         }
                         if (!added || newSig == null) return;
@@ -602,5 +602,9 @@ public class CorePatchForR extends XposedHelper {
 
     boolean trustedSharedUserEnabled() {
         return prefs.getBoolean("trusted_sharedUser", true);
+    }
+
+    protected Object SigningDetails_mergeLineageWith(Object self, Object other) {
+        return XposedHelpers.callMethod(self, "mergeLineageWith", other);
     }
 }
