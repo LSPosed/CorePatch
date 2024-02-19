@@ -363,19 +363,20 @@ public class CorePatchForR extends XposedHelper {
         }
 
         // choose a signature after all old signed packages are removed
+        var sharedUserSettingClass = XposedHelpers.findClass("com.android.server.pm.SharedUserSetting", loadPackageParam.classLoader);
         XposedBridge.hookAllMethods(
-                XposedHelpers.findClass("com.android.server.pm.SharedUserSetting", loadPackageParam.classLoader),
+                sharedUserSettingClass,
                 "removePackage",
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        var toRemove = param.args[0]; // PackageSetting
-                        if (toRemove == null) return;
                         var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
                         if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
+                        var toRemove = param.args[0]; // PackageSetting
+                        if (toRemove == null) return;
                         var removed = false; // Is toRemove really needed to be removed
-                        var selfSig = Setting_getSigningDetails(param.thisObject);
-                        Object trustedSig = null;
+                        var sharedUserSig = Setting_getSigningDetails(param.thisObject);
+                        Object newSig = null;
                         var packages = /*Watchable?ArraySet<PackageSetting>*/ SharedUserSetting_packages(param.thisObject);
                         var size = (int) XposedHelpers.callMethod(packages, "size");
                         for (var i = 0; i < size; i++) {
@@ -384,25 +385,83 @@ public class CorePatchForR extends XposedHelper {
                                 removed = true;
                                 continue;
                             }
-                            var signings = Setting_getSigningDetails(p);
-                            // check if it is trusted certs first
-                            if (MainHook.isSignatureTrusted(signings)) {
-                                trustedSig = signings;
-                                continue;
-                            }
-                            if ((boolean) XposedHelpers.callMethod(signings, "checkCapability", selfSig, 0) || (boolean) XposedHelpers.callMethod(selfSig, "checkCapability", signings, 0)) {
+                            var packageSig = Setting_getSigningDetails(p);
+                            if ((boolean) callOriginMethod(packageSig, "checkCapability", sharedUserSig, 0) || (boolean) callOriginMethod(sharedUserSig, "checkCapability", packageSig, 0)) {
                                 // old signing exists
                                 return;
                             }
+                            // check if it is trusted certs first
+                            if (MainHook.isSignatureTrusted(packageSig)) {
+                                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
+                                // respect to system
+                                if (newSig == null) newSig = packageSig;
+                                else newSig = XposedHelpers.callMethod(newSig, "mergeLineageWith", packageSig, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
+                            }
                         }
-                        if (!removed || trustedSig == null) return;
-                        XposedBridge.log("updating signature in sharedUser " + param.thisObject);
-                        Setting_setSigningDetails(param.thisObject, trustedSig);
+                        if (!removed || newSig == null) return;
+                        XposedBridge.log("updating signature in sharedUser during remove: " + param.thisObject);
+                        Setting_setSigningDetails(param.thisObject, newSig);
+                    }
+                }
+        );
+
+        XposedBridge.hookAllMethods(
+                sharedUserSettingClass,
+                "addPackage",
+                new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
+                        if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
+                        var toAdd = param.args[0]; // PackageSetting
+                        if (toAdd == null) return;
+                        var added = false;
+                        var sharedUserSig = Setting_getSigningDetails(param.thisObject);
+                        Object newSig = null;
+                        var packages = /*Watchable?ArraySet<PackageSetting>*/ SharedUserSetting_packages(param.thisObject);
+                        var size = (int) XposedHelpers.callMethod(packages, "size");
+                        for (var i = 0; i < size; i++) {
+                            var p = XposedHelpers.callMethod(packages, "valueAt", i);
+                            if (toAdd.equals(p)) {
+                                // must be an existing package
+                                added = true;
+                                p = toAdd;
+                            }
+                            var packageSig = Setting_getSigningDetails(p);
+                            if ((boolean) callOriginMethod(packageSig, "checkCapability", sharedUserSig, 0) || (boolean) callOriginMethod(sharedUserSig, "checkCapability", packageSig, 0)) {
+                                // signature is valid, do not touch
+                                return;
+                            }
+                            if (MainHook.isSignatureTrusted(packageSig)) {
+                                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
+                                // respect to system
+                                if (newSig == null) newSig = packageSig;
+                                else newSig = XposedHelpers.callMethod(newSig, "mergeLineageWith", packageSig, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
+                            }
+                        }
+                        if (!added || newSig == null) return;
+                        XposedBridge.log("CorePatch: updating signature in sharedUser during add " + toAdd + ": " + param.thisObject);
+                        Setting_setSigningDetails(param.thisObject, newSig);
                     }
                 }
         );
 
         if (BuildConfig.DEBUG) initializeDebugHook(loadPackageParam);
+    }
+
+    static Object callOriginMethod(Object obj, String methodName, Object... args) {
+        try {
+            var method =  XposedHelpers.findMethodBestMatch(obj.getClass(), methodName, args);
+            return XposedBridge.invokeOriginalMethod(method, obj, args);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            XposedBridge.log(e);
+            throw new IllegalAccessError(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e.getCause());
+        }
     }
 
     Class<?> getSigningDetails(ClassLoader classLoader) {
@@ -504,6 +563,7 @@ public class CorePatchForR extends XposedHelper {
     }
 
     Object getSharedUser(String id, Object /*Settings*/ settings) {
+        // TODO: use Setting.getSharedUserSettingLPr(appId)?
         var sharedUserSettings = XposedHelpers.getObjectField(settings, "mSharedUsers");
         if (sharedUserSettings == null) return null;
         return XposedHelpers.callMethod(sharedUserSettings, "get", id);
@@ -523,11 +583,17 @@ public class CorePatchForR extends XposedHelper {
         }
     }
 
+    /**
+     * Get signing details for PackageSetting or SharedUserSetting
+     */
     Object Setting_getSigningDetails(Object pkgOrSharedUser) {
         // PackageSettingBase(A11)|PackageSetting(A13)|SharedUserSetting.<PackageSignatures>signatures.<PackageParser.SigningDetails>mSigningDetails
         return XposedHelpers.getObjectField(XposedHelpers.getObjectField(pkgOrSharedUser, "signatures"), "mSigningDetails");
     }
 
+    /**
+     * Set signing details for PackageSetting or SharedUserSetting
+     */
     void Setting_setSigningDetails(Object pkgOrSharedUser, Object signingDetails) {
         XposedHelpers.setObjectField(XposedHelpers.getObjectField(pkgOrSharedUser, "signatures"), "mSigningDetails", signingDetails);
     }
