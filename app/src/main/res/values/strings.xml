@@ -29,7 +29,6 @@
     <string name="no_cert">No cert. Try share an APK to CorePatch</string>
     <string name="desc_hint">Description</string>
     <string name="signature_hint">Signature</string>
-    <string name="ok">OK</string>
     <string name="desc_empty_toast">Description should not be empty</string>
     <string name="sig_not_hex_toast">Signature should be a hex string</string>
     <string name="msg_failed_to_resolve_apk">Failed to resolve APK file</string>
@@ -37,7 +36,4 @@
     <string name="title_adding_signatures">Adding signatures</string>
     <string name="msg_loading">Loading</string>
     <string name="remove_all">Remove all?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="cancel">Cancel</string>
 </resources>

@@ -36,5 +36,5 @@
         android:layout_gravity="end"
         android:layout_margin="4dp"
         android:id="@+id/ok"
-        android:text="@string/ok" />
+        android:text="@android:string/ok" />
 </LinearLayout>

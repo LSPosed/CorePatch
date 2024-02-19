@@ -88,10 +88,10 @@ public class TrustedCertsActivity extends Activity implements SharedPreferences.
         if (id == R.id.remove) {
             new AlertDialog.Builder(this)
                     .setMessage(R.string.remove)
-                    .setPositiveButton(R.string.yes, (_1, _2) -> {
+                    .setPositiveButton(android.R.string.yes, (_1, _2) -> {
                         removeCert(selectedCert);
                     })
-                    .setNegativeButton(R.string.no, null)
+                    .setNegativeButton(android.R.string.no, null)
                     .show();
             return true;
         } else if (id == R.id.edit) {
@@ -145,7 +145,7 @@ public class TrustedCertsActivity extends Activity implements SharedPreferences.
             if (!list.isEmpty())
                 new AlertDialog.Builder(this)
                         .setMessage(R.string.remove_all)
-                        .setPositiveButton(R.string.yes, (_1, _2) -> {
+                        .setPositiveButton(android.R.string.yes, (_1, _2) -> {
                             removeAllCerts();
                         })
                         .show();
@@ -215,7 +215,7 @@ public class TrustedCertsActivity extends Activity implements SharedPreferences.
                         }
                         addCerts(list);
                     })
-                    .setNegativeButton(R.string.cancel, null)
+                    .setNegativeButton(android.R.string.cancel, null)
                     .show();
             loadingDialog.dismiss();
         });
