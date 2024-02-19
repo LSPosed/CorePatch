@@ -110,7 +110,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         trustedCerts.clear();
         for (var c: certs) {
             trustedCerts.add(c.hex);
-            XposedBridge.log("CorePatch: new sig " + c.hex);
+            // XposedBridge.log("CorePatch: new sig " + c.hex);
         }
         XposedBridge.log("updated " + trustedCerts.size() + " trusted certs");
     }

@@ -139,8 +139,6 @@ public class CorePatchForR extends XposedHelper {
                 if (prefs.getBoolean("authcreak", false)) {
                     if ((Integer) param.args[1] != 4) {
                         param.setResult(true);
-                    } else {
-                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
                     }
                 }
             }
@@ -167,7 +165,7 @@ public class CorePatchForR extends XposedHelper {
         hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyBytes", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
-                if (prefs.getBoolean("digestCreak", true)) {
+                if (digestCrackEnabled()) {
                     if (!prefs.getBoolean("UsePreSig", false)) {
                         final Object block = constructor.newInstance(param.args[0]);
                         Object[] infos = (Object[]) XposedHelpers.callMethod(block, "getSignerInfos");
@@ -212,7 +210,7 @@ public class CorePatchForR extends XposedHelper {
 
                         }
                         try {
-                            if (lastSigs == null && prefs.getBoolean("digestCreak", true)) {
+                            if (lastSigs == null && digestCrackEnabled()) {
                                 final Object origJarFile = constructorExact.newInstance(methodHookParam.args[parseErr == null ? 0 : 1], true, false);
                                 final ZipEntry manifestEntry = (ZipEntry) XposedHelpers.callMethod(origJarFile, "findEntry", "AndroidManifest.xml");
                                 final Certificate[][] lastCerts;
@@ -267,12 +265,10 @@ public class CorePatchForR extends XposedHelper {
                 // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("digestCreak", true)) {
-                    if (((Integer) param.args[1] != 4)) {
-                        param.setResult(true);
-                    } else {
-                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
-                    }
+                if ((int) param.args[1] != 4) {
+                    param.setResult(trustedDigestCrackEnabled(param.args[0]));
+                } else {
+                    param.setResult(trustedSigPermEnabled(param.args[0]));
                 }
             }
         });
@@ -281,7 +277,7 @@ public class CorePatchForR extends XposedHelper {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
-                if (prefs.getBoolean("digestCreak", true)) {
+                if (digestCrackEnabled()) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
@@ -297,7 +293,7 @@ public class CorePatchForR extends XposedHelper {
             hookAllMethods(keySetManagerClass, "shouldCheckUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
-                    if (prefs.getBoolean("digestCreak", true) && Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) -> "preparePackageLI".equals(o.getMethodName()))) {
+                    if (digestCrackEnabled() && Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) -> "preparePackageLI".equals(o.getMethodName()))) {
                         shouldBypass.set(true);
                         param.setResult(true);
                     } else {
@@ -308,7 +304,7 @@ public class CorePatchForR extends XposedHelper {
             hookAllMethods(keySetManagerClass, "checkUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
-                    if (prefs.getBoolean("digestCreak", true) && shouldBypass.get()) {
+                    if (digestCrackEnabled() && shouldBypass.get()) {
                         param.setResult(true);
                     }
                 }
@@ -346,14 +342,13 @@ public class CorePatchForR extends XposedHelper {
             XposedBridge.hookAllMethods(utilClass, "verifySignatures", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (!prefs.getBoolean("digestCreak", true)) return;
                     if (param.hasThrowable()) {
                         var err = param.getThrowable();
                         if (err == null) return;
                         var code = XposedHelpers.getObjectField(err, "error");
                         var signature = param.args[finalSigningDetailsIdx];
                         if ((int) code == -8 // PackageManager.INSTALL_FAILED_SHARED_USER_INCOMPATIBLE
-                                && MainHook.isSignatureTrusted(signature)) {
+                                && trustedSharedUserEnabled(signature)) {
                             XposedBridge.log("CorePatch: allow shared user upgrade");
                             param.setResult(true);
                         }
@@ -370,6 +365,7 @@ public class CorePatchForR extends XposedHelper {
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        if (!trustedSharedUserEnabled()) return;
                         var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
                         if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
                         var toRemove = param.args[0]; // PackageSetting
@@ -411,6 +407,7 @@ public class CorePatchForR extends XposedHelper {
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                        if (!trustedSharedUserEnabled()) return;
                         var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
                         if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
                         var toAdd = param.args[0]; // PackageSetting
@@ -600,5 +597,26 @@ public class CorePatchForR extends XposedHelper {
 
     protected Object SharedUserSetting_packages(Object /*SharedUserSetting*/ sharedUser) {
         return XposedHelpers.getObjectField(sharedUser, "packages");
+    }
+
+    boolean digestCrackEnabled() {
+        // TODO: check signature for trusted_digestCreak
+        return prefs.getBoolean("digestCreak", true) || prefs.getBoolean("trusted_digestCrack", true);
+    }
+
+    boolean trustedDigestCrackEnabled(Object signingDetails) {
+        return prefs.getBoolean("digestCreak", true) || prefs.getBoolean("trusted_digestCrack", true) && MainHook.isSignatureTrusted(signingDetails);
+    }
+
+    boolean trustedSigPermEnabled(Object signingDetails) {
+        return prefs.getBoolean("trusted_signaturePermission", true) && MainHook.isSignatureTrusted(signingDetails);
+    }
+
+    boolean trustedSharedUserEnabled(Object signingDetails) {
+        return prefs.getBoolean("trusted_sharedUser", true) && MainHook.isSignatureTrusted(signingDetails);
+    }
+
+    boolean trustedSharedUserEnabled() {
+        return prefs.getBoolean("trusted_sharedUser", true);
     }
 }

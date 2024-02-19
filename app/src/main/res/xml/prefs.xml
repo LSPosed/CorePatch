@@ -34,6 +34,21 @@
             android:title="@string/bypassBlock"
             android:summary="@string/bypassBlock_summary"
             android:defaultValue="true" />
+        <SwitchPreference
+            android:key="trusted_digestCrack"
+            android:title="@string/trusted_digestCrack_title"
+            android:summary="@string/trusted_digestCrack_summary"
+            android:defaultValue="true" />
+        <SwitchPreference
+            android:key="trusted_signaturePermission"
+            android:title="@string/trusted_signaturePermission_title"
+            android:summary="@string/trusted_signaturePermission_summary"
+            android:defaultValue="true" />
+        <SwitchPreference
+            android:key="trusted_sharedUser"
+            android:title="@string/trusted_sharedUser_title"
+            android:summary="@string/trusted_sharedUser_summary"
+            android:defaultValue="true" />
         <Preference
             android:key="trustedCerts"
             android:title="@string/trustedCerts"

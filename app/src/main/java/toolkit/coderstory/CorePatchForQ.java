@@ -89,13 +89,10 @@ public class CorePatchForQ extends XposedHelper {
         hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("digestCreak", true)) {
-                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
-                        param.setResult(Boolean.TRUE);
-                    } else {
-                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
-                    }
+                if ((int) param.args[1] != 4) {
+                    param.setResult(trustedDigestCrackEnabled(param.args[0]));
+                } else {
+                    param.setResult(trustedSigPermEnabled(param.args[0]));
                 }
             }
         });
@@ -103,13 +100,10 @@ public class CorePatchForQ extends XposedHelper {
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        if (prefs.getBoolean("digestCreak", true)) {
-                            if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
-                                param.setResult(Boolean.TRUE);
-                            } else {
-                                param.setResult(MainHook.isSignatureTrusted(param.args[0]));
-                            }
+                        if ((int) param.args[1] != 4) {
+                            param.setResult(trustedDigestCrackEnabled(param.args[0]));
+                        } else {
+                            param.setResult(trustedSigPermEnabled(param.args[0]));
                         }
                     }
                 });
@@ -119,7 +113,7 @@ public class CorePatchForQ extends XposedHelper {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
-                if (prefs.getBoolean("digestCreak", true)) {
+                if (digestCrackEnabled()) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
@@ -135,7 +129,7 @@ public class CorePatchForQ extends XposedHelper {
             hookAllMethods(keySetManagerClass, "shouldCheckUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (prefs.getBoolean("digestCreak", true) &&
+                    if (digestCrackEnabled() &&
                             Arrays.stream(Thread.currentThread().getStackTrace()).anyMatch((o) ->
                                     (/* API 29 */ "preparePackageLI".equals(o.getMethodName()) || /* API 28 */ "installPackageLI".equals(o.getMethodName())))) {
                         shouldBypass.set(true);
@@ -148,7 +142,7 @@ public class CorePatchForQ extends XposedHelper {
             hookAllMethods(keySetManagerClass, "checkUpgradeKeySetLocked", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (prefs.getBoolean("digestCreak", true) && shouldBypass.get()) {
+                    if (digestCrackEnabled() && shouldBypass.get()) {
                         param.setResult(true);
                     }
                 }
@@ -168,5 +162,18 @@ public class CorePatchForQ extends XposedHelper {
                 }
             }
         });
+    }
+
+    boolean digestCrackEnabled() {
+        // TODO: check signature for trusted_digestCreak
+        return prefs.getBoolean("digestCreak", true) || prefs.getBoolean("trusted_digestCrack", true);
+    }
+
+    boolean trustedDigestCrackEnabled(Object signingDetails) {
+        return prefs.getBoolean("digestCreak", true) || prefs.getBoolean("trusted_digestCrack", true) && MainHook.isSignatureTrusted(signingDetails);
+    }
+
+    boolean trustedSigPermEnabled(Object signingDetails) {
+        return prefs.getBoolean("trusted_signaturePermission", true) && MainHook.isSignatureTrusted(signingDetails);
     }
 }

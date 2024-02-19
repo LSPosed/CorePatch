@@ -35,12 +35,10 @@ public class CorePatchForT extends CorePatchForS {
                 // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("digestCreak", true)) {
-                    if (((Integer) param.args[1] != 4)) {
-                        param.setResult(true);
-                    } else {
-                        param.setResult(MainHook.isSignatureTrusted(param.args[0]));
-                    }
+                if ((int) param.args[1] != 4) {
+                    param.setResult(trustedDigestCrackEnabled(param.args[0]));
+                } else {
+                    param.setResult(trustedSigPermEnabled(param.args[0]));
                 }
             }
         });

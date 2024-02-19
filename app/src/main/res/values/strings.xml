@@ -20,7 +20,7 @@
     <string name="bypassBlock_summary">Bypass blocklist in some devices like Nothing Phone</string>
     <string name="miui_usepresig_warn">UsePreSig won\'t work on MiUI because its framework changes too much.\nWe don\'t have time to track the case.</string>
     <string name="usepresig_warn">!! Any apk can override the installed one !!\nBe carefully when installing unknown apk</string>
-    <string name="trustedCerts">Trusted Certs</string>
+    <string name="trustedCerts">Trusted Signers</string>
     <string name="trustedCerts_summary">Manage trusted certificates</string>
     <string name="edit">edit</string>
     <string name="remove">remove</string>
@@ -36,4 +36,10 @@
     <string name="title_adding_signatures">Adding signatures</string>
     <string name="msg_loading">Loading</string>
     <string name="remove_all">Remove all?</string>
+    <string name="trusted_digestCrack_title">Disable digest verify (trusted signers)</string>
+    <string name="trusted_digestCrack_summary">Allow re-install app with different signatures, but only for trusted signers</string>
+    <string name="trusted_signaturePermission_title">Bypass permission check for trusted signers</string>
+    <string name="trusted_signaturePermission_summary">Allow apps with trusted signers get all it needed signature permissions</string>
+    <string name="trusted_sharedUser_title">Bypass shared user signature check</string>
+    <string name="trusted_sharedUser_summary">Allow install app with different signature from shared user if it has trusted signers</string>
 </resources>

@@ -20,7 +20,7 @@
     <string name="bypassBlock">绕过黑名单</string>
     <string name="bypassBlock_summary">绕过某些设备如 Nothing Phone 上的黑名单</string>
     <string name="config_error">配置初始化失败</string>
-    <string name="trustedCerts">信任证书</string>
+    <string name="trustedCerts">信任签名者</string>
     <string name="trustedCerts_summary">管理信任的证书</string>
     <string name="edit">编辑</string>
     <string name="remove">移除</string>
@@ -36,4 +36,10 @@
     <string name="title_adding_signatures">添加签名</string>
     <string name="msg_loading">加载中</string>
     <string name="remove_all">全部移除？</string>
+    <string name="trusted_digestCrack_title">禁用签名验证（信任签名者）</string>
+    <string name="trusted_digestCrack_summary">允许直接覆盖安装同包名不同签名的应用，但只对信任签名者生效</string>
+    <string name="trusted_signaturePermission_title">绕过权限签名验证（信任签名者）</string>
+    <string name="trusted_signaturePermission_summary">允许被信任签名的应用获得它所需的所有签名权限</string>
+    <string name="trusted_sharedUser_title">绕过共享用户签名验证（信任签名者）</string>
+    <string name="trusted_sharedUser_summary">允许具有信任签名的应用安装到与其不同签名的共享用户中</string>
 </resources>
