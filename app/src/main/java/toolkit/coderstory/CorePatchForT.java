@@ -1,7 +1,9 @@
 package toolkit.coderstory;
 
+import android.content.pm.Signature;
 import android.util.Log;
 
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -80,10 +82,35 @@ public class CorePatchForT extends CorePatchForS {
                 }
             });
         }
+
+        // ensure verifySignatures success
+        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/PackageManagerServiceUtils.java;l=621;drc=2e50991320cbef77d3e8504a4b284adae8c2f4d2
+        var utils = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
+        if (utils != null) {
+            deoptimizeMethod(utils, "canJoinSharedUserId");
+        }
+    }
+
+    Class<?> getSigningDetails(ClassLoader classLoader) {
+        return XposedHelpers.findClassIfExists("android.content.pm.SigningDetails", classLoader);
     }
 
     @Override
-    Class<?> getSigningDetails(ClassLoader classLoader) {
-        return XposedHelpers.findClassIfExists("android.content.pm.SigningDetails", classLoader);
+    protected void dumpSigningDetails(Object signingDetails, PrintWriter pw) {
+        var i = 0;
+        for (var sign : (Signature[]) XposedHelpers.callMethod(signingDetails, "getSignatures")) {
+            i++;
+            pw.println(i + ": " + sign.toCharsString());
+        }
+    }
+
+    @Override
+    protected Object SharedUserSetting_packages(Object sharedUser) {
+        return XposedHelpers.getObjectField(sharedUser, "mPackages");
+    }
+
+    @Override
+    protected Object SigningDetails_mergeLineageWith(Object self, Object other) {
+        return XposedHelpers.callMethod(self, "mergeLineageWith", other, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
     }
 }
