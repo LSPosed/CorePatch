@@ -38,23 +38,6 @@ public class CorePatchForT extends CorePatchForS {
             }
         });
 
-        // Package " + packageName + " signatures do not match previously installed version; ignoring!"
-        // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
-        // public boolean checkCapability(SigningDetails oldDetails, @CertCapabilities int flags)
-        hookAllMethods("android.content.pm.PackageParser", loadPackageParam.classLoader, "checkCapability", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
-                // Or applications will have all privileged permissions
-                // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("authcreak", false)) {
-                    if ((Integer) param.args[1] != 4) {
-                        param.setResult(true);
-                    }
-                }
-            }
-        });
-
         findAndHookMethod("com.android.server.pm.InstallPackageHelper", loadPackageParam.classLoader,
                 "doesSignatureMatchForPermissions", String.class,
                 "com.android.server.pm.parsing.pkg.ParsedPackage", int.class, new XC_MethodHook() {

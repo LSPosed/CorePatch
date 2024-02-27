@@ -1,7 +1,10 @@
 package toolkit.coderstory;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 
 public class ReturnConstant extends XC_MethodHook {
     private final XSharedPreferences prefs;
@@ -16,7 +19,6 @@ public class ReturnConstant extends XC_MethodHook {
 
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        super.beforeHookedMethod(param);
         prefs.reload();
         if (prefs.getBoolean(prefsKey, true)) {
             param.setResult(value);

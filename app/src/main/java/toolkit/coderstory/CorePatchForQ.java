@@ -28,8 +28,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         Class<?> packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
         hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", new XC_MethodHook() {
             public void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                super.beforeHookedMethod(methodHookParam);
-                if (prefs.getBoolean("downgrade", true)) {
+                                if (prefs.getBoolean("downgrade", true)) {
                     Object packageInfoLite = methodHookParam.args[0];
 
                     if (prefs.getBoolean("downgrade", true)) {
@@ -65,7 +64,6 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         final Object newInstance = findConstructorExact.newInstance(signingDetailsArgs);
         hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV1Signature", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                super.afterHookedMethod(methodHookParam);
                 if (prefs.getBoolean("authcreak", false)) {
                     Throwable throwable = methodHookParam.getThrowable();
                     if (throwable != null) {
@@ -90,7 +88,6 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
                     if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                         param.setResult(Boolean.TRUE);
@@ -102,8 +99,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        super.beforeHookedMethod(param);
-                        if (prefs.getBoolean("digestCreak", true)) {
+                                                if (prefs.getBoolean("digestCreak", true)) {
                             if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                                 param.setResult(Boolean.TRUE);
                             }
@@ -115,8 +111,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("digestCreak", true)) {
+                                if (prefs.getBoolean("digestCreak", true)) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
@@ -159,8 +154,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("enhancedMode", false)) {
+                                if (prefs.getBoolean("enhancedMode", false)) {
                     param.args[3] = Boolean.FALSE;
                 }
             }

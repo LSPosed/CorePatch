@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.coderstory.toolkit.BuildConfig;
 
+import java.util.Set;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -34,12 +36,10 @@ public class XposedHelper {
     public static void hookAllMethods(String className, ClassLoader classLoader, String methodName, XC_MethodHook callback) {
         try {
             Class<?> packageParser = findClass(className, classLoader);
-            XposedBridge.hookAllMethods(packageParser, methodName, callback);
         } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log("E/" + MainHook.TAG + " " + Log.getStackTraceString(e));
         }
-
     }
 
     public void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {

@@ -115,23 +115,6 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                     new ReturnConstant(prefs, "authcreak", 0));
         }
 
-        // Package " + packageName + " signatures do not match previously installed version; ignoring!"
-        // public boolean checkCapability(String sha256String, @CertCapabilities int flags) {
-        // public boolean checkCapability(SigningDetails oldDetails, @CertCapabilities int flags)
-        hookAllMethods("android.content.pm.PackageParser", loadPackageParam.classLoader, "checkCapability", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
-                // Or applications will have all privileged permissions
-                // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (prefs.getBoolean("authcreak", false)) {
-                    if ((Integer) param.args[1] != 4) {
-                        param.setResult(true);
-                    }
-                }
-            }
-        });
-
         // 当verifyV1Signature抛出转换异常时，替换一个签名作为返回值
         // 如果用户已安装apk，并且其定义了私有权限，则安装时会因签名与模块内硬编码的不一致而被拒绝。尝试从待安装apk中获取签名。如果其中apk的签名和已安装的一致（只动了内容）就没有问题。此策略可能有潜在的安全隐患。
         Class<?> pkc = XposedHelpers.findClass("sun.security.pkcs.PKCS7", loadPackageParam.classLoader);
@@ -152,7 +135,6 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         Class<?> parseResult = XposedHelpers.findClassIfExists("android.content.pm.parsing.result.ParseResult", loadPackageParam.classLoader);
         hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyBytes", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
                 if (prefs.getBoolean("digestCreak", true)) {
                     if (!prefs.getBoolean("UsePreSig", false)) {
                         final Object block = constructor.newInstance(param.args[0]);
@@ -262,8 +244,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                super.beforeHookedMethod(param);
-                if (prefs.getBoolean("digestCreak", true)) {
+                                if (prefs.getBoolean("digestCreak", true)) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
@@ -319,8 +300,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (prefs.getBoolean("enhancedMode", false)) {
-                    super.beforeHookedMethod(param);
-                    param.args[3] = Boolean.FALSE;
+                                        param.args[3] = Boolean.FALSE;
                 }
             }
         });
