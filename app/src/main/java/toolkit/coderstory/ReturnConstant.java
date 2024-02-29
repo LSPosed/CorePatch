@@ -1,10 +1,7 @@
 package toolkit.coderstory;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 
 public class ReturnConstant extends XC_MethodHook {
     private final XSharedPreferences prefs;

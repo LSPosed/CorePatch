@@ -28,7 +28,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         Class<?> packageClazz = XposedHelpers.findClass("android.content.pm.PackageParser.Package", loadPackageParam.classLoader);
         hookAllMethods("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader, "checkDowngrade", new XC_MethodHook() {
             public void beforeHookedMethod(MethodHookParam methodHookParam) throws Throwable {
-                                if (prefs.getBoolean("downgrade", true)) {
+                if (prefs.getBoolean("downgrade", true)) {
                     Object packageInfoLite = methodHookParam.args[0];
 
                     if (prefs.getBoolean("downgrade", true)) {
@@ -99,7 +99,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                                if (prefs.getBoolean("digestCreak", true)) {
+                        if (prefs.getBoolean("digestCreak", true)) {
                             if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
                                 param.setResult(Boolean.TRUE);
                             }
@@ -111,7 +111,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                if (prefs.getBoolean("digestCreak", true)) {
+                if (prefs.getBoolean("digestCreak", true)) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
@@ -154,7 +154,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
         hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                if (prefs.getBoolean("enhancedMode", false)) {
+                if (prefs.getBoolean("enhancedMode", false)) {
                     param.args[3] = Boolean.FALSE;
                 }
             }

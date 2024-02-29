@@ -1,7 +1,6 @@
 package toolkit.coderstory;
 
 import android.content.pm.Signature;
-import android.util.Log;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;

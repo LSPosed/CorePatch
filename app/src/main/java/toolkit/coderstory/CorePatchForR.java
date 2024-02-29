@@ -1,7 +1,6 @@
 package toolkit.coderstory;
 
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AndroidAppHelper;
 import android.content.pm.ApplicationInfo;
@@ -247,7 +246,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         findAndHookMethod("android.content.pm.ApplicationInfo", loadPackageParam.classLoader, "isPackageWhitelistedForHiddenApis", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                                if (prefs.getBoolean("digestCreak", true)) {
+                if (prefs.getBoolean("digestCreak", true)) {
                     ApplicationInfo info = (ApplicationInfo) param.thisObject;
                     if ((info.flags & ApplicationInfo.FLAG_SYSTEM) != 0
                             || (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0) {
@@ -313,9 +312,11 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        if (!prefs.getBoolean("digestCreak", true) || !prefs.getBoolean("sharedUser", false)) return;
+                        if (!prefs.getBoolean("digestCreak", true) || !prefs.getBoolean("sharedUser", false))
+                            return;
                         var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
-                        if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
+                        if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0)
+                            return; // do not modify system's signature
                         var toRemove = param.args[0]; // PackageSetting
                         if (toRemove == null) return;
                         var removed = false; // Is toRemove really needed to be removed
@@ -354,9 +355,11 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                        if (!prefs.getBoolean("digestCreak", true) || !prefs.getBoolean("sharedUser", false)) return;
+                        if (!prefs.getBoolean("digestCreak", true) || !prefs.getBoolean("sharedUser", false))
+                            return;
                         var flags = (int) XposedHelpers.getObjectField(param.thisObject, "uidFlags");
-                        if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) return; // do not modify system's signature
+                        if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0)
+                            return; // do not modify system's signature
                         var toAdd = param.args[0]; // PackageSetting
                         if (toAdd == null) return;
                         var added = false;
@@ -419,7 +422,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (prefs.getBoolean("enhancedMode", false)) {
-                                        param.args[3] = Boolean.FALSE;
+                    param.args[3] = Boolean.FALSE;
                 }
             }
         });
