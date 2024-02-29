@@ -16,7 +16,6 @@ public class ReturnConstant extends XC_MethodHook {
 
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        super.beforeHookedMethod(param);
         prefs.reload();
         if (prefs.getBoolean(prefsKey, true)) {
             param.setResult(value);

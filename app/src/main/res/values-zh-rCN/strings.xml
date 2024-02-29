@@ -20,4 +20,6 @@
     <string name="bypassBlock">绕过黑名单</string>
     <string name="bypassBlock_summary">绕过某些设备如 Nothing Phone 上的黑名单</string>
     <string name="config_error">配置初始化失败</string>
+    <string name="shared_user_title">绕过共享用户签名验证</string>
+    <string name="shared_user_summary">允许安装与其共享用户签名不同的 app（<b>需要同时打开“禁用APK签名验证”</b>）</string>
 </resources>

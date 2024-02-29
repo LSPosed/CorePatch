@@ -21,6 +21,7 @@ public class XposedHelper {
                 XposedBridge.log("E/" + MainHook.TAG + " " + Log.getStackTraceString(e));
         }
     }
+
     public static void findAndHookMethod(Class<?> clazz, String methodName, Object... parameterTypesAndCallback) {
         try {
             if (clazz != null) {
@@ -31,6 +32,7 @@ public class XposedHelper {
                 XposedBridge.log("E/" + MainHook.TAG + " " + Log.getStackTraceString(e));
         }
     }
+
     public static void hookAllMethods(String className, ClassLoader classLoader, String methodName, XC_MethodHook callback) {
         try {
             Class<?> packageParser = findClass(className, classLoader);
@@ -39,7 +41,6 @@ public class XposedHelper {
             if (BuildConfig.DEBUG)
                 XposedBridge.log("E/" + MainHook.TAG + " " + Log.getStackTraceString(e));
         }
-
     }
 
     public void hookAllMethods(Class<?> hookClass, String methodName, XC_MethodHook callback) {
