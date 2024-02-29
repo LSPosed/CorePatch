@@ -20,4 +20,6 @@
     <string name="bypassBlock_summary">Ignore a lista de bloqueio em alguns dispositivos como Nothing Phone</string>
     <string name="miui_usepresig_warn">Usar assinaturas instaladas não funcionará na MIUI porque sua estrutura muda muito.\nNão temos tempo para acompanhar o caso.</string>
     <string name="usepresig_warn">!! Qualquer apk pode substituir o instalado !!\nTenha cuidado ao instalar apk desconhecido.</string>
+    <string name="shared_user_title">Ignorar verificação de usuário compartilhado</string>
+    <string name="shared_user_summary">Permite instalar apps com assinaturas diferentes do usuário compartilhado. (<b>\'Desativar comparação de assinaturas\' também deve estar ativado.</b>)</string>
 </resources>
