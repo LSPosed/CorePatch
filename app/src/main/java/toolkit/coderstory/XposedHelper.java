@@ -36,6 +36,7 @@ public class XposedHelper {
     public static void hookAllMethods(String className, ClassLoader classLoader, String methodName, XC_MethodHook callback) {
         try {
             Class<?> packageParser = findClass(className, classLoader);
+            XposedBridge.hookAllMethods(packageParser, methodName, callback);
         } catch (Throwable e) {
             if (BuildConfig.DEBUG)
                 XposedBridge.log("E/" + MainHook.TAG + " " + Log.getStackTraceString(e));
