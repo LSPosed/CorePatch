@@ -34,6 +34,12 @@
             android:title="@string/bypassBlock"
             android:summary="@string/bypassBlock_summary"
             android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="sharedUser"
+            android:title="@string/shared_user_title"
+            android:summary="@string/shared_user_summary"
+            android:defaultValue="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>
