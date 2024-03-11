@@ -52,3 +52,9 @@ dependencies {
     compileOnly(libs.libxposed.api)
     implementation(libs.libxposed.service)
 }
+
+afterEvaluate {
+    tasks.getByPath("mergeReleaseArtProfile").enabled = false
+    tasks.getByPath("compileReleaseArtProfile").enabled = false
+    tasks.getByPath("extractReleaseVersionControlInfo").enabled = false
+}
