@@ -22,8 +22,7 @@ android {
             isShrinkResources = true
             signingConfig = signingConfigs["debug"]
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -52,6 +51,4 @@ android {
 dependencies {
     compileOnly(libs.libxposed.api)
     implementation(libs.libxposed.service)
-
-    implementation(libs.recyclerview)
 }

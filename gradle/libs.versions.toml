@@ -5,7 +5,6 @@ kotlin = "1.9.22"
 [libraries]
 libxposed-api = { group = "io.github.libxposed", name = "api", version = "100" }
 libxposed-service = { group = "io.github.libxposed", name = "service", version = "100-1.0.0" }
-recyclerview = { group = "com.android.support", name = "recyclerview-v7", version = "28.0.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -2,12 +2,10 @@ package org.lsposed.corepatch
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.widget.ListView
 import org.lsposed.corepatch.App.Companion.mService
 import org.lsposed.corepatch.App.Companion.reloadListener
-import org.lsposed.corepatch.adapter.MultiTypeAdapter
+import org.lsposed.corepatch.adapter.MultiTypeListAdapter
 import org.lsposed.corepatch.data.SwitchData
 
 class MainActivity : Activity() {
@@ -24,39 +22,24 @@ class MainActivity : Activity() {
     }
 
     private fun loadPrefs() {
-        val bypassDowngrade =
-            SwitchData(
-                getString(R.string.bypass_downgrade),
-                "",
-                Config.BYPASS_DOWNGRADE
-            )
-        val bypassVerification =
-            SwitchData(
-                getString(R.string.bypass_verification),
-                "",
-                Config.BYPASS_VERIFICATION
-            )
+        val bypassDowngrade = SwitchData(
+            getString(R.string.bypass_downgrade), "", Config.BYPASS_DOWNGRADE
+        )
+        val bypassVerification = SwitchData(
+            getString(R.string.bypass_verification), "", Config.BYPASS_VERIFICATION
+        )
         val bypassDigest = SwitchData(
-            getString(R.string.bypass_digest),
-            "",
-            Config.BYPASS_DIGEST
+            getString(R.string.bypass_digest), "", Config.BYPASS_DIGEST
         )
         val enhancedMode = SwitchData(
-            getString(R.string.enhanced_mode),
-            "",
-            Config.ENHANCED_MODE
+            getString(R.string.enhanced_mode), "", Config.ENHANCED_MODE
         )
         val usePreviousSignatures = SwitchData(
-            getString(R.string.use_previous_signatures),
-            "",
-            Config.USE_PREVIOUS_SIGNATURES
+            getString(R.string.use_previous_signatures), "", Config.USE_PREVIOUS_SIGNATURES
         )
-        val bypassSharedUser =
-            SwitchData(
-                getString(R.string.bypass_shared_user),
-                "",
-                Config.BYPASS_SHARED_USER
-            )
+        val bypassSharedUser = SwitchData(
+            getString(R.string.bypass_shared_user), "", Config.BYPASS_SHARED_USER
+        )
 
         val dataSet = arrayListOf(
             bypassDowngrade,
@@ -67,18 +50,13 @@ class MainActivity : Activity() {
             bypassSharedUser
         )
 
-        val adapter = MultiTypeAdapter(dataSet)
+        val adapter = MultiTypeListAdapter(dataSet)
 
-        val recyclerView = RecyclerView(this)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                this, DividerItemDecoration.VERTICAL
-            )
-        )
-        recyclerView.adapter = adapter
+        val listView = ListView(this)
+        listView.adapter = adapter
+        setContentView(listView)
 
-        setContentView(recyclerView)
+        setContentView(listView)
     }
 
     override fun onStop() {
