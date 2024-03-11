@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+
+    <string name="bypass_downgrade">Bypass downgrade</string>
+    <string name="bypass_verification">Bypass verification</string>
+    <string name="bypass_digest">Bypass digest</string>
+    <string name="enhanced_mode">Enhanced mode</string>
+    <string name="use_previous_signatures">Use previous signatures</string>
+    <string name="bypass_shared_user">Bypass shared user verification</string>
+</resources>
