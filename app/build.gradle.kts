@@ -41,6 +41,9 @@ android {
             merges += "META-INF/xposed/*"
             excludes += "**"
         }
+        dex {
+            useLegacyPackaging = true
+        }
     }
 
     buildFeatures {
