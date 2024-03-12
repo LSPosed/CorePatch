@@ -2,10 +2,10 @@ package org.lsposed.corepatch.hook
 
 import android.annotation.SuppressLint
 import android.os.Build
-import io.github.libxposed.api.XposedInterface.AfterHookCallback
+import io.github.libxposed.api.XposedInterface.BeforeHookCallback
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.AfterCallback
-import org.lsposed.corepatch.XposedHelper.hookAfter
+import org.lsposed.corepatch.XposedHelper.BeforeCallback
+import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 import java.util.Arrays
 
@@ -27,8 +27,8 @@ object KeySetManagerServiceHook : BaseHook() {
             keySetManagerServiceClazz.declaredMethods.first { m ->
                 m.name == "shouldCheckUpgradeKeySetLocked" && m.returnType == Boolean::class.java
             }
-        hookAfter(shouldCheckUpgradeKeySetLockedMethod, object : AfterCallback {
-            override fun after(callback: AfterHookCallback) {
+        hookBefore(shouldCheckUpgradeKeySetLockedMethod, object : BeforeCallback {
+            override fun before(callback: BeforeHookCallback) {
                 if (Config.isBypassDigestEnabled() && Arrays.stream(
                         Thread.currentThread().stackTrace
                     )
@@ -40,7 +40,7 @@ object KeySetManagerServiceHook : BaseHook() {
                         .anyMatch { o: StackTraceElement -> ( /* API 29 */"preparePackageLI" == o.methodName || /* API 28 */ "installPackageLI" == o.methodName) }
                 ) {
                     shouldBypass.set(true)
-                    callback.result = true
+                    callback.returnAndSkip(true)
                 } else {
                     shouldBypass.set(false)
                 }
@@ -52,10 +52,10 @@ object KeySetManagerServiceHook : BaseHook() {
         val checkUpgradeKeySetLockedMethod = keySetManagerServiceClazz.declaredMethods.first { m ->
             m.name == "checkUpgradeKeySetLocked" && m.returnType == Boolean::class.java
         }
-        hookAfter(checkUpgradeKeySetLockedMethod, object : AfterCallback {
-            override fun after(callback: AfterHookCallback) {
+        hookBefore(checkUpgradeKeySetLockedMethod, object : BeforeCallback {
+            override fun before(callback: BeforeHookCallback) {
                 if (Config.isBypassDigestEnabled() && shouldBypass.get() == true) {
-                    callback.result = true
+                    callback.returnAndSkip(true)
                 }
             }
         })

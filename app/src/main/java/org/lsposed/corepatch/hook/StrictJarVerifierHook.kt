@@ -13,7 +13,7 @@ import org.lsposed.corepatch.XposedHelper.hostClassLoader
 object StrictJarVerifierHook : BaseHook() {
     override val name = "StrictJarVerifierHook"
 
-    @SuppressLint("PrivateApi")
+    @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
     override fun hook() {
         val strictJarVerifierClazz = hostClassLoader.loadClass("android.util.jar.StrictJarVerifier")
 
@@ -66,6 +66,33 @@ object StrictJarVerifierHook : BaseHook() {
                     signatureSchemeRollbackProtectionsEnforcedField.set(
                         callback.thisObject, false
                     )
+                }
+            }
+        })
+
+        val pkcs7Clazz = hostClassLoader.loadClass("sun.security.pkcs.PKCS7")
+        val pkcs7Constructor = pkcs7Clazz.declaredConstructors.first { c ->
+            c.parameterTypes.size == 1 && c.parameterTypes[0] == ByteArray::class.java
+        }
+        val getSignerInfosMethod = pkcs7Clazz.getDeclaredMethod("getSignerInfos")
+        val signerInfoClazz = hostClassLoader.loadClass("sun.security.pkcs.SignerInfo")
+        val getCertificateChainMethod =
+            signerInfoClazz.getDeclaredMethod("getCertificateChain", pkcs7Clazz)
+
+        // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/util/jar/StrictJarVerifier.java;l=324
+        // static Certificate[] verifyBytes(byte[] blockBytes, byte[] sfBytes)
+        val verifyBytesMethod = strictJarVerifierClazz.getDeclaredMethod(
+            "verifyBytes", ByteArray::class.java, ByteArray::class.java
+        )
+        hookAfter(verifyBytesMethod, object : AfterCallback {
+            override fun after(callback: AfterHookCallback) {
+                if (Config.isBypassDigestEnabled() && Config.isUsePreviousSignaturesEnabled()) {
+                    val block = pkcs7Constructor.newInstance(callback.args[0])
+                    val signerInfo = getSignerInfosMethod.invoke(block) as Array<*>
+                    if (signerInfo.isEmpty()) return
+                    val signer = signerInfo[0]
+                    val certs = getCertificateChainMethod.invoke(signer, block) as Array<*>
+                    callback.result = certs
                 }
             }
         })

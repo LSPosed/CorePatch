@@ -16,9 +16,6 @@ object ReconcilePackageUtilsHook : BaseHook() {
             hostClassLoader.loadClass("com.android.server.pm.ReconcilePackageUtils")
         val reconcilePackagesMethod =
             reconcilePackageUtilsClazz.declaredMethods.first { m -> m.name == "reconcilePackages" }
-        val success = XposedHelper.deoptimize(reconcilePackagesMethod)
-        if (success) {
-        } else {
-        }
+        XposedHelper.deoptimize(reconcilePackagesMethod)
     }
 }

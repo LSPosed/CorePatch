@@ -28,13 +28,13 @@ object ApkSignatureVerifierHook : BaseHook() {
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
             val signingDetailsClazz =
-                hostClassLoader.loadClass("android.content.pm.PackageParser.SigningDetails")
+                hostClassLoader.loadClass("android.content.pm.PackageParser\$SigningDetails")
             // SigningDetails(Signature[] signatures, int signatureSchemeVersion)
             val signingDetailsConstructor =
-                signingDetailsClazz.declaredConstructors.first { c -> c.parameterCount == 2 && c.parameterTypes[1] == Integer::class.java }
+                signingDetailsClazz.declaredConstructors.first { c -> c.parameterCount == 2 && c.parameterTypes[1] == Int::class.java }
 
             val packageParserExceptionClazz =
-                hostClassLoader.loadClass("android.content.pm.PackageParser.PackageParserException")
+                hostClassLoader.loadClass("android.content.pm.PackageParser\$PackageParserException")
             val errorField = packageParserExceptionClazz.getDeclaredField("error")
 
             val strictJarFileClazz = hostClassLoader.loadClass("android.util.jar.StrictJarFile")
@@ -56,7 +56,8 @@ object ApkSignatureVerifierHook : BaseHook() {
             hookAfter(verifyV1SignatureMethod, object : AfterCallback {
                 override fun after(callback: AfterHookCallback) {
                     if (Config.isBypassVerificationEnabled()) {
-                        val signingDetailsArgs = arrayOf(arrayOf(Signature(Constant.SIGNATURE)), 1)
+                        val signingDetailsArgs: Array<Any> =
+                            arrayOf(arrayOf(Signature(Constant.SIGNATURE)), 1)
 
                         var errorCode: Int? = null
                         // 13
@@ -70,7 +71,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                             }
                         }
 
-                        var signaturesBefore: Array<Signature>? = null
+                        var signaturesBefore: Any? = null
                         // use previous signatures, get from package manager
                         if (Config.isUsePreviousSignaturesEnabled()) {
                             try {
@@ -121,6 +122,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                             //     ParseInput input, StrictJarFile jarFile, ZipEntry entry)
                             val loadCertificatesMethod =
                                 apkSignatureVerifierClazz.declaredMethods.first { m -> m.name == "loadCertificates" }
+                            loadCertificatesMethod.isAccessible = true
                             val lastCerts =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                                     loadCertificatesMethod.isAccessible = true
@@ -135,18 +137,16 @@ object ApkSignatureVerifierHook : BaseHook() {
                                     ) as Array<*>
                                 }
                             val convertToSignaturesMethod =
-                                apkSignatureVerifierClazz.getDeclaredMethod(
-                                    "convertToSignatures", Array<Signature>::class.java
-                                )
+                                apkSignatureVerifierClazz.declaredMethods.first { m -> m.name == "convertToSignatures" }
                             signaturesBefore = convertToSignaturesMethod.invoke(
                                 null, lastCerts
-                            ) as Array<Signature>
+                            )
                         }
                         if (signaturesBefore != null) {
-                            signingDetailsArgs[0] = arrayOf(signaturesBefore)
+                            signingDetailsArgs[0] = signaturesBefore!!
                         }
                         val signingDetails =
-                            signingDetailsConstructor.newInstance(signingDetailsArgs)
+                            signingDetailsConstructor.newInstance(*signingDetailsArgs)
 
                         val newResult = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             val signingDetailsWithDigestsClazz =
@@ -183,33 +183,6 @@ object ApkSignatureVerifierHook : BaseHook() {
                                 input.javaClass.declaredMethods.first { m -> m.name == "success" }
                                     .invoke(input, newResult)
                         }
-                    }
-                }
-            })
-
-            val pkcs7Clazz = hostClassLoader.loadClass("sun.security.pkcs.PKCS7")
-            val pkcs7Constructor = pkcs7Clazz.declaredConstructors.first { c ->
-                c.parameterTypes.size == 1 && c.parameterTypes[0] == ByteArray::class.java
-            }
-            val getSignerInfosMethod = pkcs7Clazz.getDeclaredMethod("getSignerInfos")
-            val signerInfoClazz = hostClassLoader.loadClass("sun.security.pkcs.SignerInfo")
-            val getCertificateChainMethod =
-                signerInfoClazz.getDeclaredMethod("getCertificateChain", pkcs7Clazz)
-
-            // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/util/jar/StrictJarVerifier.java;l=324
-            // static Certificate[] verifyBytes(byte[] blockBytes, byte[] sfBytes)
-            val verifyBytesMethod = apkSignatureVerifierClazz.getDeclaredMethod(
-                "verifyBytes", ByteArray::class.java, ByteArray::class.java
-            )
-            hookAfter(verifyBytesMethod, object : AfterCallback {
-                override fun after(callback: AfterHookCallback) {
-                    if (Config.isBypassDigestEnabled() && Config.isUsePreviousSignaturesEnabled()) {
-                        val block = pkcs7Constructor.newInstance(callback.args[0])
-                        val signerInfo = getSignerInfosMethod.invoke(block) as Array<*>
-                        if (signerInfo.isEmpty()) return
-                        val signer = signerInfo[0]
-                        val certs = getCertificateChainMethod.invoke(signer, block) as Array<*>
-                        callback.result = certs
                     }
                 }
             })

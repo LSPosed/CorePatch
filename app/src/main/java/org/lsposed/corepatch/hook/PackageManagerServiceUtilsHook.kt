@@ -40,7 +40,7 @@ object PackageManagerServiceUtilsHook : BaseHook() {
         hookBefore(verifySignaturesMethod, object : BeforeCallback {
             override fun before(callback: BeforeHookCallback) {
                 if (Config.isBypassVerificationEnabled()) {
-                    callback.returnAndSkip(true)
+                    callback.returnAndSkip(false)
                 }
             }
         })
@@ -66,10 +66,7 @@ object PackageManagerServiceUtilsHook : BaseHook() {
             // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/PackageManagerServiceUtils.java;l=621
             val canJoinSharedUserIdMethod =
                 packageManagerServiceUtilsClazz.declaredMethods.first { m -> m.name == "canJoinSharedUserId" }
-            val success = XposedHelper.deoptimize(canJoinSharedUserIdMethod)
-            if (success) {
-            } else {
-            }
+            XposedHelper.deoptimize(canJoinSharedUserIdMethod)
         }
     }
 }
