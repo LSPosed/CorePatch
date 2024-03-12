@@ -43,13 +43,11 @@ object ApkSignatureVerifierHook : BaseHook() {
             )
 
             // https://cs.android.com/android/platform/superproject/+/android-9.0.0_r59:frameworks/base/core/java/android/util/apk/ApkSignatureVerifier.java;l=162
-            // private static PackageParser.SigningDetails verifyV1Signature(
-            //     String apkPath, boolean verifyFull)
+            // private static PackageParser.SigningDetails verifyV1Signature(String apkPath, boolean verifyFull)
             // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/core/java/android/util/apk/ApkSignatureVerifier.java;l=355
             // private static SigningDetailsWithDigests verifyV1Signature(String apkPath, boolean verifyFull)
             // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r74:frameworks/base/core/java/android/util/apk/ApkSignatureVerifier.java;l=362
-            // private static ParseResult<SigningDetailsWithDigests> verifyV1Signature(
-            //     ParseInput input, String apkPath, boolean verifyFull)
+            // private static ParseResult<SigningDetailsWithDigests> verifyV1Signature(ParseInput input, String apkPath, boolean verifyFull)
             val verifyV1SignatureMethod = apkSignatureVerifierClazz.getDeclaredMethod(
                 "verifyV1Signature", String::class.java, Boolean::class.java
             )
@@ -110,37 +108,45 @@ object ApkSignatureVerifierHook : BaseHook() {
                         }
                         // if previous signatures not found, parse it from apk
                         if (signaturesBefore == null && Config.isBypassDigestEnabled()) {
-                            val originalJarFile = strictJarFileConstructor.newInstance(
-                                callback.args[if (errorCode == null) 0 else 1], true, false
-                            )
-                            val manifestEntry =
-                                originalJarFile.javaClass.declaredMethods.first { m -> m.name == "findEntry" && m.parameterCount == 1 && m.parameterTypes[0] == String::class.java }
-                                    .invoke(originalJarFile, "AndroidManifest.xml")
+                            try {
+                                // verifyV1Signature(String apkPath, boolean verifyFull)
+                                // verifyV1Signature(ParseInput input, String apkPath, boolean verifyFull) // Android 13
+                                val originalJarFile = strictJarFileConstructor.newInstance(
+                                    callback.args[if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) 0 else 1],
+                                    true,
+                                    false
+                                )
+                                val manifestEntry =
+                                    originalJarFile.javaClass.declaredMethods.first { m -> m.name == "findEntry" && m.parameterCount == 1 && m.parameterTypes[0] == String::class.java }
+                                        .invoke(originalJarFile, "AndroidManifest.xml")
 
-                            //  9 private static Certificate[][] loadCertificates(StrictJarFile jarFile, ZipEntry entry)
-                            // 13 private static ParseResult<Certificate[][]> loadCertificates(
-                            //     ParseInput input, StrictJarFile jarFile, ZipEntry entry)
-                            val loadCertificatesMethod =
-                                apkSignatureVerifierClazz.declaredMethods.first { m -> m.name == "loadCertificates" }
-                            loadCertificatesMethod.isAccessible = true
-                            val lastCerts =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    loadCertificatesMethod.isAccessible = true
-                                    val certs = loadCertificatesMethod.invoke(
-                                        null, originalJarFile, manifestEntry, false
-                                    )
-                                    certs.javaClass.declaredMethods.first { m -> m.name == "getResult" }
-                                        .invoke(certs) as Array<*>
-                                } else {
-                                    loadCertificatesMethod.invoke(
-                                        null, originalJarFile, manifestEntry
-                                    ) as Array<*>
-                                }
-                            val convertToSignaturesMethod =
-                                apkSignatureVerifierClazz.declaredMethods.first { m -> m.name == "convertToSignatures" }
-                            signaturesBefore = convertToSignaturesMethod.invoke(
-                                null, lastCerts
-                            )
+                                //  9 private static Certificate[][] loadCertificates(StrictJarFile jarFile, ZipEntry entry)
+                                // 13 private static ParseResult<Certificate[][]> loadCertificates(
+                                //     ParseInput input, StrictJarFile jarFile, ZipEntry entry)
+                                val loadCertificatesMethod =
+                                    apkSignatureVerifierClazz.declaredMethods.first { m -> m.name == "loadCertificates" }
+                                loadCertificatesMethod.isAccessible = true
+                                val lastCerts =
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                        loadCertificatesMethod.isAccessible = true
+                                        val certs = loadCertificatesMethod.invoke(
+                                            null, originalJarFile, manifestEntry, false
+                                        )
+                                        certs.javaClass.declaredMethods.first { m -> m.name == "getResult" }
+                                            .invoke(certs) as Array<*>
+                                    } else {
+                                        loadCertificatesMethod.invoke(
+                                            null, originalJarFile, manifestEntry
+                                        ) as Array<*>
+                                    }
+                                val convertToSignaturesMethod =
+                                    apkSignatureVerifierClazz.declaredMethods.first { m -> m.name == "convertToSignatures" }
+                                signaturesBefore = convertToSignaturesMethod.invoke(
+                                    null, lastCerts
+                                )
+                            } catch (t: Throwable) {
+                                log("Unexpected error while parsing signatures", t)
+                            }
                         }
                         if (signaturesBefore != null) {
                             signingDetailsArgs[0] = signaturesBefore!!
