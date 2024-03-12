@@ -8,6 +8,7 @@ import org.lsposed.corepatch.XposedHelper
 import org.lsposed.corepatch.XposedHelper.BeforeCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
+import org.lsposed.corepatch.XposedHelper.log
 
 object PackageManagerServiceUtilsHook : BaseHook() {
     override val name = "PackageManagerServiceUtilsHook"
@@ -15,7 +16,6 @@ object PackageManagerServiceUtilsHook : BaseHook() {
     @SuppressLint("PrivateApi")
     override fun hook() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
-
         val packageManagerServiceUtilsClazz =
             hostClassLoader.loadClass("com.android.server.pm.PackageManagerServiceUtils")
 
@@ -36,7 +36,7 @@ object PackageManagerServiceUtilsHook : BaseHook() {
         //     boolean isRollback)
         val verifySignaturesMethod =
             packageManagerServiceUtilsClazz.declaredMethods.first { m -> m.name == "verifySignatures" && m.returnType == Boolean::class.java }
-        XposedHelper.deoptimize(verifySignaturesMethod)
+        if (!XposedHelper.deoptimize(verifySignaturesMethod)) log("failed to deoptimize verifySignatures")
         hookBefore(verifySignaturesMethod, object : BeforeCallback {
             override fun before(callback: BeforeHookCallback) {
                 if (Config.isBypassVerificationEnabled()) {
@@ -66,7 +66,7 @@ object PackageManagerServiceUtilsHook : BaseHook() {
             // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/PackageManagerServiceUtils.java;l=621
             val canJoinSharedUserIdMethod =
                 packageManagerServiceUtilsClazz.declaredMethods.first { m -> m.name == "canJoinSharedUserId" }
-            XposedHelper.deoptimize(canJoinSharedUserIdMethod)
+            if (!XposedHelper.deoptimize(canJoinSharedUserIdMethod)) log("failed to deoptimize canJoinSharedUserId")
         }
     }
 }

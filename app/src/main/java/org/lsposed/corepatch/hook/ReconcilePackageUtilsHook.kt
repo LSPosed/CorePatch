@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import org.lsposed.corepatch.XposedHelper
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
+import org.lsposed.corepatch.XposedHelper.log
 
 object ReconcilePackageUtilsHook : BaseHook() {
     override val name = "ReconcilePackageUtilsHook"
@@ -16,6 +17,6 @@ object ReconcilePackageUtilsHook : BaseHook() {
             hostClassLoader.loadClass("com.android.server.pm.ReconcilePackageUtils")
         val reconcilePackagesMethod =
             reconcilePackageUtilsClazz.declaredMethods.first { m -> m.name == "reconcilePackages" }
-        XposedHelper.deoptimize(reconcilePackagesMethod)
+        if (!XposedHelper.deoptimize(reconcilePackagesMethod)) log("failed to deoptimize reconcilePackages")
     }
 }

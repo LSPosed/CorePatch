@@ -3,7 +3,6 @@ package org.lsposed.corepatch.hook
 import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.os.Build
-import android.util.ArraySet
 import io.github.libxposed.api.XposedInterface.BeforeHookCallback
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper.BeforeCallback
@@ -22,7 +21,10 @@ object SharedUserSettingHook : BaseHook() {
             hostClassLoader.loadClass("com.android.server.pm.SharedUserSetting")
         val uidFlagsField = sharedUserSettingClazz.getDeclaredField("uidFlags")
         uidFlagsField.isAccessible = true
-        val packagesField = sharedUserSettingClazz.getDeclaredField("packages")
+        // 12 final ArraySet<PackageSetting> packages;
+        // 13 private final WatchedArraySet<PackageSetting> mPackages;
+        val packagesField =
+            sharedUserSettingClazz.declaredFields.first { f -> f.name == "packages" || f.name == "mPackages" }
         packagesField.isAccessible = true
 
         val packageSignaturesClazz =
@@ -53,11 +55,15 @@ object SharedUserSettingHook : BaseHook() {
                 val sharedUserSig = getSigningDetails(thisObject) ?: return
                 var newSignatures: Any? = null
 
-                val packagesSettings = packagesField.get(thisObject) as ArraySet<*>
-                val pkgSize = packagesSettings.size
+                val packagesSettings = packagesField.get(thisObject)
+                val pkgSize =
+                    packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
+                        .invoke(packagesSettings) as Int
                 if (pkgSize == 0) return
                 for (i in 0..pkgSize) {
-                    val pkg = packagesSettings.valueAt(i)
+                    val pkg =
+                        packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
+                            .invoke(packagesSettings, i)
                     // skip the removed package
                     if (pkg == toRemove) {
                         removed = true
@@ -101,11 +107,15 @@ object SharedUserSettingHook : BaseHook() {
                 var added = false
                 val sharedUserSig = getSigningDetails(thisObject) ?: return
                 var newSignatures: Any? = null
-                val packagesSettings = packagesField.get(thisObject) as ArraySet<*>
-                val pkgSize = packagesSettings.size
+                val packagesSettings = packagesField.get(thisObject)
+                val pkgSize =
+                    packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
+                        .invoke(packagesSettings) as Int
                 if (pkgSize == 0) return
                 for (i in 0..pkgSize) {
-                    var pkg = packagesSettings.valueAt(i)
+                    var pkg =
+                        packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
+                            .invoke(packagesSettings, i)
                     // skip the added package
                     if (pkg == toAdd) {
                         added = true

@@ -84,8 +84,10 @@ object XposedHelper {
 
     fun log(message: String, throwable: Throwable? = null) {
         val newMessage = "[CorePatch] $message"
-        throwable?.let { xposedModule.log(newMessage, it) }
-            ?: if (BuildConfig.DEBUG) return else Log.d("CorePatch", message)
+        throwable?.let {
+            Log.e("CorePatch", newMessage, it)
+            xposedModule.log(newMessage, it)
+        } ?: if (!BuildConfig.DEBUG) return else Log.d("CorePatch", message)
     }
 
     fun deoptimize(method: Method): Boolean {
