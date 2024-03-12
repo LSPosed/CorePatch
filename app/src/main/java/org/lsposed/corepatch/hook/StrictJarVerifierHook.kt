@@ -86,12 +86,12 @@ object StrictJarVerifierHook : BaseHook() {
         )
         hookAfter(verifyBytesMethod, object : AfterCallback {
             override fun after(callback: AfterHookCallback) {
-                if (Config.isBypassDigestEnabled() && Config.isUsePreviousSignaturesEnabled()) {
+                if (Config.isBypassDigestEnabled() && !Config.isUsePreviousSignaturesEnabled()) {
                     val block = pkcs7Constructor.newInstance(callback.args[0])
                     val signerInfo = getSignerInfosMethod.invoke(block) as Array<*>
                     if (signerInfo.isEmpty()) return
                     val signer = signerInfo[0]
-                    val certs = getCertificateChainMethod.invoke(signer, block) as Array<*>
+                    val certs = getCertificateChainMethod.invoke(signer, block)
                     callback.result = certs
                 }
             }
