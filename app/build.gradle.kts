@@ -56,8 +56,17 @@ dependencies {
     implementation(libs.libxposed.service)
 }
 
+val deleteAppMetadata = task("deleteAppMetadata") {
+    doLast {
+        file("build/intermediates/app_metadata/release/writeReleaseAppMetadata/app-metadata.properties").writeText(
+            ""
+        )
+    }
+}
+
 afterEvaluate {
     tasks.getByPath("mergeReleaseArtProfile").enabled = false
     tasks.getByPath("compileReleaseArtProfile").enabled = false
     tasks.getByPath("extractReleaseVersionControlInfo").enabled = false
+    tasks.getByPath("writeReleaseAppMetadata").finalizedBy(deleteAppMetadata)
 }
