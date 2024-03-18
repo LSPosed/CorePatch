@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Android 9–14 Core Patchs</string>
+    <string name="corepatch">Bu sürüm sadece Android 9–14 için geçerlidir.\n Lütfen LSPosed\'in en son sürümünü kullanın.</string>
+    <string name="downgr">Sürüm düşürmeyi izin ver</string>
+    <string name="downgr_summary">Uygulama sürümlerini düşürmeye izin verir.</string>
+    <string name="authcreak">digest doğrulamayı devre dışı bırak</string>
+    <string name="authcreak_summary">Apk dosyasındaki dosyayı değiştirdikten sonra uygulamaların yüklenmesine izin verir (geçersiz digest hatasını görmezden gelir).</string>
+    <string name="digestCreak">İmzaları karşılaştırmayı devre dışı bırak</string>
+    <string name="digestCreak_summary">Farklı imzalarla uygulamaların yeniden yüklenmesine izin verir.</string>
+    <string name="UsePreSig">Yüklü imzaları kullan</string>
+    <string name="UsePreSig_summary">Yüklerken zaten yüklenmiş uygulamalardan imzaları her zaman kullan.\n Bu son derece <b>tehlikelidir</b>.\n Gerçekten gerektiğinde yalnızca etkinleştirin!</string>
+    <string name="settings">Ayarlar</string>
+    <string name="ignore">Yoksay</string>
+    <string name="config_error">Yapılandırma başlatma hatası</string>
+    <string name="not_supported">LSPosed\'ın eski bir sürümünü kullandığınız veya LSPosed\'ın etkinleştirilmediği görünüyor, lütfen LSPosed\'ı güncelleyin veya etkinleştirdikten sonra tekrar deneyin.</string>
+    <string name="enhancedMode">Gelişmiş Mod</string>
+    <string name="enhancedMode_summary">Uygulamadaki bazı doğrulamaları geçer.</string>
+    <string name="bypassBlock">Engelleme atla</string>
+    <string name="bypassBlock_summary">Nothing Phone gibi bazı cihazlardaki engelleme listesini atlar.</string>
+    <string name="miui_usepresig_warn">MIUI\'da UsePreSig çalışmayacak çünkü çerçeve çok fazla değişiyor.\n Bu durumu izlemek için zamanımız yok.</string>
+    <string name="usepresig_warn">!! Herhangi bir apk yüklenmiş olanı geçersiz kılabilir !!\n Bilinmeyen bir apk yüklerken dikkatli olun.</string>
+    <string name="shared_user_title">Paylaşılan kullanıcı doğrulamasını atla</string>
+    <string name="shared_user_summary">İmzaları paylaşılan kullanıcıdan farklı olan uygulamaların yüklenmesine izin verir (<b>\'İmzaları karşılaştırmayı devre dışı bırak\' etkin olmalıdır</b>).</string>
+</resources>
