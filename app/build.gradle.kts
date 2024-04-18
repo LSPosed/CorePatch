@@ -65,8 +65,8 @@ val deleteAppMetadata = task("deleteAppMetadata") {
 }
 
 afterEvaluate {
-    tasks.getByPath("mergeReleaseArtProfile").enabled = false
-    tasks.getByPath("compileReleaseArtProfile").enabled = false
-    tasks.getByPath("extractReleaseVersionControlInfo").enabled = false
-    tasks.getByPath("writeReleaseAppMetadata").finalizedBy(deleteAppMetadata)
+    tasks.named("mergeReleaseArtProfile").get().enabled = false
+    tasks.named("compileReleaseArtProfile").get().enabled = false
+    tasks.named("extractReleaseVersionControlInfo").get().enabled = false
+    tasks.named("writeReleaseAppMetadata").get().finalizedBy(deleteAppMetadata)
 }
