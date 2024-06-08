@@ -1,6 +1,6 @@
 [versions]
-agp = "8.4.0-alpha13"
-kotlin = "1.9.22"
+agp = "8.4.1"
+kotlin = "2.0.0"
 
 [libraries]
 libxposed-api = { group = "io.github.libxposed", name = "api", version = "100" }
