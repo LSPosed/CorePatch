@@ -10,6 +10,7 @@ object Config {
     const val ENHANCED_MODE = "enhanced_mode"
     const val USE_PREVIOUS_SIGNATURES = "use_previous_signatures"
     const val BYPASS_SHARED_USER = "bypass_shared_user"
+    const val DISABLE_VERIFICATION_AGENT = "disable_verification_agent"
 
     private val allConfig = arrayOf(
         BYPASS_DOWNGRADE,
@@ -48,6 +49,10 @@ object Config {
 
     fun isBypassSharedUserEnabled(): Boolean {
         return prefs.getBoolean(BYPASS_SHARED_USER, false)
+    }
+
+    fun isDisableVerificationAgentEnabled(): Boolean {
+        return prefs.getBoolean(DISABLE_VERIFICATION_AGENT, false)
     }
 
     fun getConfig(key: String): Boolean {

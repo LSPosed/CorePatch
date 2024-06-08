@@ -47,6 +47,16 @@ object PackageManagerServiceHook : BaseHook() {
             }
         })
 
+        val isVerificationEnabledMethod =
+            packageManagerServiceClazz.declaredMethods.first { m -> m.name == "isVerificationEnabled" }
+        hookBefore(isVerificationEnabledMethod, object : BeforeCallback {
+            override fun before(callback: BeforeHookCallback) {
+                if (Config.isDisableVerificationAgentEnabled()) {
+                    callback.returnAndSkip(false)
+                }
+            }
+        })
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val doesSignatureMatchForPermissionsMethod =
                 packageManagerServiceClazz.declaredMethods.first { m -> m.name == "doesSignatureMatchForPermissions" }

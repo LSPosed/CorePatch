@@ -40,6 +40,9 @@ class MainActivity : Activity() {
         val bypassSharedUser = SwitchData(
             getString(R.string.bypass_shared_user), "", Config.BYPASS_SHARED_USER
         )
+        val disableVerificationAgent = SwitchData(
+            getString(R.string.disable_verification_agent), "", Config.DISABLE_VERIFICATION_AGENT
+        )
 
         val dataSet = arrayListOf(
             bypassDowngrade,
@@ -47,7 +50,8 @@ class MainActivity : Activity() {
             bypassDigest,
             enhancedMode,
             usePreviousSignatures,
-            bypassSharedUser
+            bypassSharedUser,
+            disableVerificationAgent
         )
 
         val adapter = MultiTypeListAdapter(dataSet)

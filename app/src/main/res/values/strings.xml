@@ -7,4 +7,5 @@
     <string name="enhanced_mode">Enhanced mode</string>
     <string name="use_previous_signatures">Use previous signatures</string>
     <string name="bypass_shared_user">Bypass shared user verification</string>
+    <string name="disable_verification_agent">Disable Package Verification Agent</string>
 </resources>

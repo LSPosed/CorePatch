@@ -20,6 +20,8 @@ import org.lsposed.corepatch.hook.ScanPackageUtilsHook
 import org.lsposed.corepatch.hook.SharedUserSettingHook
 import org.lsposed.corepatch.hook.SigningDetailsHook
 import org.lsposed.corepatch.hook.StrictJarVerifierHook
+import org.lsposed.corepatch.hook.VerificationParamsHook
+import org.lsposed.corepatch.hook.VerifyingSessionHook
 
 class XposedMain(
     base: XposedInterface, param: XposedModuleInterface.ModuleLoadedParam
@@ -50,6 +52,8 @@ class XposedMain(
             SharedUserSettingHook,
             SigningDetailsHook,
             StrictJarVerifierHook,
+            VerificationParamsHook,
+            VerifyingSessionHook,
         )
         hooks.forEach { it.init() }
     }
