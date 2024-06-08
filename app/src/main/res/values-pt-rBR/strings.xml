@@ -22,4 +22,6 @@
     <string name="usepresig_warn">!! Qualquer apk pode substituir o instalado !!\nTenha cuidado ao instalar apk desconhecido.</string>
     <string name="shared_user_title">Ignorar verificação de usuário compartilhado</string>
     <string name="shared_user_summary">Permite instalar apps com assinaturas diferentes do usuário compartilhado (<b>\'Desativar comparação de assinaturas\' também deve estar ativado</b>)</string>
+    <string name="disable_verification_agent_title">Desativar agente de verificação de pacotes</string>
+    <string name="disable_verification_agent_summary">Ex.: Google Play Protect</string>
 </resources>
