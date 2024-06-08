@@ -49,4 +49,9 @@ public class CorePatchForU extends CorePatchForT {
                     new ReturnConstant(prefs, "bypassBlock", false));
         }
     }
+
+    @Override
+    Class<?> getIsVerificationEnabledClass(ClassLoader classLoader) {
+        return XposedHelpers.findClass("com.android.server.pm.VerifyingSession", classLoader);
+    }
 }

@@ -22,4 +22,6 @@
     <string name="config_error">配置初始化失败</string>
     <string name="shared_user_title">绕过共享用户签名验证</string>
     <string name="shared_user_summary">允许安装与其共享用户签名不同的 app（<b>需要同时打开“禁用APK签名验证”</b>）</string>
+    <string name="disable_verification_agent_title">禁用安装包验证代理</string>
+    <string name="disable_verification_agent_summary">如 Play 商店的保护机制</string>
 </resources>

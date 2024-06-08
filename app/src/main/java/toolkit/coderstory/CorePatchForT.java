@@ -112,4 +112,9 @@ public class CorePatchForT extends CorePatchForS {
     protected Object SigningDetails_mergeLineageWith(Object self, Object other) {
         return XposedHelpers.callMethod(self, "mergeLineageWith", other, 2 /*MERGE_RESTRICTED_CAPABILITY*/);
     }
+
+    @Override
+    Class<?> getIsVerificationEnabledClass(ClassLoader classLoader) {
+        return XposedHelpers.findClass("com.android.server.pm.VerificationParams", classLoader);
+    }
 }
