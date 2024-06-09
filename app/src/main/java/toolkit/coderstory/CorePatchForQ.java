@@ -146,6 +146,11 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 }
             });
         }
+        hookAllMethods(
+                XposedHelpers.findClass("com.android.server.pm.PackageManagerService", loadPackageParam.classLoader),
+                "isVerificationEnabled",
+                new ReturnConstant(prefs, "disableVerificationAgent", false)
+        );
     }
 
     @Override

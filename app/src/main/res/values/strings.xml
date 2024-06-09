@@ -22,4 +22,6 @@
     <string name="usepresig_warn">!! Any apk can override the installed one !!\nBe carefully when installing unknown apk</string>
     <string name="shared_user_title">Bypass shared user verify</string>
     <string name="shared_user_summary">Allow install app with signature differ from its shared user (<b>\'Disable compare signatures\' must be enabled too</b>)</string>
+    <string name="disable_verification_agent_title">Disable Package Verification Agent</string>
+    <string name="disable_verification_agent_summary">e.g. Google Play Protection</string>
 </resources>
