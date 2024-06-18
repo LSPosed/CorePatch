@@ -1,4 +1,4 @@
-package toolkit.coderstory;
+package toolkit.coderstory.patch;
 
 
 import android.content.pm.ApplicationInfo;
@@ -11,15 +11,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import toolkit.coderstory.CorePatch;
+import toolkit.coderstory.ReturnConstant;
 
-public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class CorePatchImplApiP extends CorePatch {
     final XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
     @Override
