@@ -1,4 +1,7 @@
-package toolkit.coderstory;
+package toolkit.coderstory.patch;
+
+import android.annotation.TargetApi;
+import android.os.Build;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -7,7 +10,8 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class CorePatchForS extends CorePatchForR {
+@TargetApi(Build.VERSION_CODES.S)
+public class CorePatchImplApiS extends CorePatchImplApiR {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws IllegalAccessException, InvocationTargetException, InstantiationException {
         super.handleLoadPackage(loadPackageParam);

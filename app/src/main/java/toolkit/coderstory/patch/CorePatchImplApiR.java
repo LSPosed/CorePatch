@@ -1,4 +1,4 @@
-package toolkit.coderstory;
+package toolkit.coderstory.patch;
 
 
 import android.annotation.TargetApi;
@@ -26,17 +26,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import toolkit.coderstory.CorePatch;
+import toolkit.coderstory.MainHook;
+import toolkit.coderstory.ReturnConstant;
 
 @TargetApi(Build.VERSION_CODES.R)
-public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class CorePatchImplApiR extends CorePatch {
     private final static Method deoptimizeMethod;
 
     static {
@@ -423,7 +424,6 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
 
     @Override
     public void initZygote(StartupParam startupParam) {
-
         hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
         hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
             @Override
