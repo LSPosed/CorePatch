@@ -22,4 +22,6 @@
     <string name="usepresig_warn">!! Segala apk dapat menggantikan aplikasi yang terpasang !!\nBerhati-hati ketika memasang apk antah-berantah</string>
     <string name="shared_user_title">Terobos verifikasi pengguna bersama</string>
     <string name="shared_user_summary">Izinkan pemasangan aplikasi dengan signatures berbeda dari pengguna bersama-nya (<b>\'Matikan pembanding signature\' harus diaktifkan juga</b>)</string>
+    <string name="disable_verification_agent_title">Matikan Agen Verifikasi Paket</string>
+    <string name="disable_verification_agent_summary">Contoh: Proteksi Google Play</string>
 </resources>
