@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">核心修補</string>
-    <string name="module_description">Android 9–14 核心修補</string>
-    <string name="corepatch">此版本只支援 Android 9–14\n請安裝最新版本的 LSPosed 框架，否則功能可能無法正確啟用。</string>
+    <string name="module_description">Android 9-15 核心修補</string>
+    <string name="corepatch">此版本只支援 Android 9-15\n請安裝最新版本的 LSPosed 框架，否則功能可能無法正確啟用。</string>
     <string name="downgr">允許降版安裝應用程式</string>
     <string name="downgr_summary">允許應用程式在安裝新版本的情況下直接覆蓋安裝舊版本</string>
     <string name="authcreak">停用套裝安裝程式簽名驗證</string>

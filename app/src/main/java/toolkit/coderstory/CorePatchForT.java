@@ -39,9 +39,10 @@ public class CorePatchForT extends CorePatchForS {
             }
         });
 
+        Class<?> ParsedPackage = getParsedPackage(loadPackageParam.classLoader);
         findAndHookMethod("com.android.server.pm.InstallPackageHelper", loadPackageParam.classLoader,
                 "doesSignatureMatchForPermissions", String.class,
-                "com.android.server.pm.parsing.pkg.ParsedPackage", int.class, new XC_MethodHook() {
+                ParsedPackage, int.class, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) {
                         if (prefs.getBoolean("digestCreak", true) && prefs.getBoolean("UsePreSig", false)) {
@@ -88,6 +89,10 @@ public class CorePatchForT extends CorePatchForS {
         if (utils != null) {
             deoptimizeMethod(utils, "canJoinSharedUserId");
         }
+    }
+
+    Class<?> getParsedPackage(ClassLoader classLoader) {
+        return XposedHelpers.findClassIfExists("com.android.server.pm.parsing.pkg.ParsedPackage", classLoader);
     }
 
     Class<?> getSigningDetails(ClassLoader classLoader) {
