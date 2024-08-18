@@ -7,7 +7,7 @@
   <string name="app_name">Core Patch</string>
   <string name="authcreak">Отключить проверку дайджеста</string>
   <string name="authcreak_summary">Позволяет устанавливать приложения после изменения файла в apk (игнорировать недопустимую ошибку дайджеста).</string>
-  <string name="corepatch">«Эта версия предназначена только для Android 9–14.
+  <string name="corepatch">«Эта версия предназначена только для Android 9-15.
 Пожалуйста, используйте последнюю версию LSPposed. "</string>
   <string name="digestCreak">Отключить сравнение подписей</string>
   <string name="digestCreak_summary">Разрешить переустановку приложения с другими подписями.</string>
@@ -16,7 +16,7 @@
   <string name="enhancedMode">Расширенный режим</string>
   <string name="enhancedMode_summary">Пройдите некоторую проверку в приложении</string>
   <string name="ignore">Игнорировать</string>
-  <string name="module_description">Android 9–14 core patch</string>
+  <string name="module_description">Android 9-15 core patch</string>
   <string name="not_supported">Похоже, вы используете устаревшую версию LSPposed или LSPposed не активирован, пожалуйста, обновите LSPposed или повторите попытку после активации.</string>
   <string name="settings">Настройки</string>
 </resources>
