@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.2.0")
+        classpath("com.android.tools.build:gradle:8.5.2")
     }
 }
 
@@ -14,7 +14,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://jcenter.bintray.com")
+        maven(url = "https://api.xposed.info/")
     }
 }
 
