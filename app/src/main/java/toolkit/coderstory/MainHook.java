@@ -22,7 +22,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                     new CorePatchForV().handleLoadPackage(lpparam);
                     break;
                 case Build.VERSION_CODES.UPSIDE_DOWN_CAKE: // 34
-                    new CorePatchForU().handleLoadPackage(lpparam);
+                    new CorePatchForV().handleLoadPackage(lpparam);
                     break;
                 case Build.VERSION_CODES.TIRAMISU: // 33
                     new CorePatchForT().handleLoadPackage(lpparam);
