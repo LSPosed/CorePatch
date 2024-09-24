@@ -29,7 +29,7 @@ object SigningDetailsHook : BaseHook() {
         hookBefore(checkCapabilityMethod, object : BeforeCallback {
             override fun before(callback: BeforeHookCallback) {
                 if (Config.isBypassDigestEnabled() && Config.isBypassVerificationEnabled()) {
-                    if (callback.args[1] != 4) {
+                    if (callback.args[1] != 4 && callback.args[1] != 16) {
                         callback.returnAndSkip(true)
                     }
                 }
