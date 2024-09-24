@@ -28,11 +28,12 @@ public class CorePatchForT extends CorePatchForS {
         hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
+                // Don't handle PERMISSION & AUTH
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
+                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/accounts/AccountManagerService.java;l=5867
                 if (prefs.getBoolean("digestCreak", true)) {
-                    if ((Integer) param.args[1] != 4) {
+                    if ((Integer) param.args[1] != 4 && (Integer) param.args[1] != 16) {
                         param.setResult(true);
                     }
                 }
