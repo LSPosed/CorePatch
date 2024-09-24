@@ -235,10 +235,11 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         hookAllMethods(signingDetails, "checkCapability", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
+                // Don't handle PERMISSION & AUTH
                 // Or applications will have all privileged permissions
                 // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947?q=CertCapabilities
-                if (((Integer) param.args[1] != 4) && prefs.getBoolean("digestCreak", true)) {
+                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/accounts/AccountManagerService.java;l=5867
+                if ((Integer) param.args[1] != 4 && (Integer) param.args[1] != 16 && prefs.getBoolean("digestCreak", true)) {
                     param.setResult(true);
                 }
             }
