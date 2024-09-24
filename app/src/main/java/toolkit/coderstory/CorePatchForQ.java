@@ -89,7 +89,7 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 if (prefs.getBoolean("digestCreak", true)) {
-                    if ((Integer) param.args[1] != 4 && prefs.getBoolean("authcreak", false)) {
+                    if ((Integer) param.args[1] != 4 && (Integer) param.args[1] != 16 && prefs.getBoolean("authcreak", false)) {
                         param.setResult(Boolean.TRUE);
                     }
                 }
