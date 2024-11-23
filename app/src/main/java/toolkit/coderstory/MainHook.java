@@ -51,6 +51,9 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
             if (BuildConfig.DEBUG)
                 XposedBridge.log("D/" + TAG + " initZygote: Current sdk version " + Build.VERSION.SDK_INT);
             switch (Build.VERSION.SDK_INT) {
+                case Build.VERSION_CODES.VANILLA_ICE_CREAM: // 35
+                    new CorePatchForV().initZygote(startupParam);
+                    break;
                 case Build.VERSION_CODES.UPSIDE_DOWN_CAKE: // 34
                     new CorePatchForU().initZygote(startupParam);
                     break;
