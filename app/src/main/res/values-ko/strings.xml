@@ -13,6 +13,4 @@
     <string name="settings">설정</string>
     <string name="ignore">무시</string>
     <string name="not_supported">LSPosed의 오래된 버전을 사용 중이거나 LSPosed가 활성화되지 않은 것 같습니다. LSPosed를 업데이트하거나 활성화한 후 다시 시도하십시오.</string>
-    <string name="enhancedMode">강화 모드</string>
-    <string name="enhancedMode_summary">애플리케이션에서 일부 유효성 검사를 통과합니다.</string>
 </resources>

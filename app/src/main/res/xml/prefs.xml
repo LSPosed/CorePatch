@@ -25,11 +25,6 @@
             android:defaultValue="false" />
 
         <SwitchPreference
-            android:key="enhancedMode"
-            android:title="@string/enhancedMode"
-            android:summary="@string/enhancedMode_summary"
-            android:defaultValue="false" />
-        <SwitchPreference
             android:key="bypassBlock"
             android:title="@string/bypassBlock"
             android:summary="@string/bypassBlock_summary"

@@ -13,8 +13,6 @@
     <string name="settings">Réglages</string>
     <string name="ignore">Ignorer</string>
     <string name="not_supported">Vous utilisez apparemment une ancienne version de LSPosed ou LSPosed n\’est pas activé, Merci de mettre LSPosed à jour ou de retenter après activation.</string>
-    <string name="enhancedMode">Mode Amélioré</string>
-    <string name="enhancedMode_summary">Outrepasser certaines validations dans l\’application</string>
     <string name="miui_usepresig_warn">UsePreSig ne fonctionne pas sur MiUI car son sous-système est beaucoup trop différent.\nNous n\’avons pas le temps de nous pencher sur ce cas.</string>
     <string name="usepresig_warn">!! N\’importe quel apk peut remplacer celui déjà installé !!\nPrenez garde lors ce que vous installez des apk inconnus</string>
 </resources>

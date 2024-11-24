@@ -15,8 +15,6 @@
   <string name="ignore">無視</string>
   <string name="config_error">構成の初期化に失敗しました</string>
   <string name="not_supported">古いバージョンの LSPosed を使用しているか、LSPosed が有効化されていないようです。LSPosed を更新、有効化をした後に再試行をしてください。</string>
-  <string name="enhancedMode">拡張モード</string>
-  <string name="enhancedMode_summary">一部のアプリの検証をパスします。</string>
   <string name="bypassBlock">ブロックをバイパスする</string>
   <string name="bypassBlock_summary">Nothing Phone などの一部のデバイスのブロックリストをバイパスします。</string>
   <string name="miui_usepresig_warn">インストールされている署名の使用は、フレームワークが大幅に変更されるため MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>

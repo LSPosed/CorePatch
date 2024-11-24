@@ -76,7 +76,7 @@ val optimizeReleaseRes = task("optimizeReleaseRes").doLast {
     )
     val zip = Paths.get(
         project.layout.buildDirectory.get().asFile.path, "intermediates",
-        "optimized_processed_res", "release", "resources-release-optimize.ap_"
+        "optimized_processed_res", "release", "optimizeReleaseResources", "resources-release-optimize.ap_"
     )
     val optimized = File("${zip}.opt")
     val cmd = exec {

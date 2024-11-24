@@ -14,8 +14,6 @@
     <string name="ignore">Ignora</string>
     <string name="config_error">Inizializzazione della configurazione non riuscita</string>
     <string name="not_supported">Sembra che tu stia utilizzando una versione obsoleta di LSPosed oppure LSPosed non è attivato. Aggiorna LSPosed o riprova dopo l\'attivazione.</string>
-    <string name="enhancedMode">Modalità Potenziata</string>
-    <string name="enhancedMode_summary">Supera alcune convalide nell\'applicazione</string>
     <string name="bypassBlock">Bypassa blocchi</string>
     <string name="bypassBlock_summary">Bypassa la lista di blocco di alcuni dispositivi come Nothing Phone</string>
     <string name="miui_usepresig_warn">UsePreSig non funzionerà su MiUI perché il suo framework è troppo diverso. Non abbiamo tempo per seguire il caso.</string>

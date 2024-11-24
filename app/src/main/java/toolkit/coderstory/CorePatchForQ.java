@@ -12,14 +12,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackage {
     final XSharedPreferences prefs = new XSharedPreferences(BuildConfig.APPLICATION_ID, "conf");
 
     @Override
@@ -151,18 +149,5 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 "isVerificationEnabled",
                 new ReturnConstant(prefs, "disableVerificationAgent", false)
         );
-    }
-
-    @Override
-    public void initZygote(StartupParam startupParam) {
-        hookAllMethods("android.content.pm.PackageParser", null, "getApkSigningVersion", XC_MethodReplacement.returnConstant(1));
-        hookAllConstructors("android.util.jar.StrictJarVerifier", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                if (prefs.getBoolean("enhancedMode", false)) {
-                    param.args[3] = Boolean.FALSE;
-                }
-            }
-        });
     }
 }

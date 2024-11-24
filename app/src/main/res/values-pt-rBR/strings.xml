@@ -14,8 +14,6 @@
     <string name="ignore">Ignorar</string>
     <string name="config_error">Falha na inicialização da configuração</string>
     <string name="not_supported">Parece que você está usando uma versão desatualizada do LSPosed ou o LSPosed não está ativado. Atualize o LSPosed ou tente novamente após a ativação.</string>
-    <string name="enhancedMode">Modo aprimorado</string>
-    <string name="enhancedMode_summary">Realize alguma validação no app</string>
     <string name="bypassBlock">Ignorar bloqueio</string>
     <string name="bypassBlock_summary">Ignore a lista de bloqueio em alguns dispositivos como Nothing Phone</string>
     <string name="miui_usepresig_warn">Usar assinaturas instaladas não funcionará na MIUI porque sua estrutura muda muito.\nNão temos tempo para acompanhar o caso.</string>

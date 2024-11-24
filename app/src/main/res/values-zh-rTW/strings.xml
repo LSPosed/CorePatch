@@ -14,8 +14,6 @@
     <string name="settings">設定</string>
     <string name="ignore">忽略</string>
     <string name="not_supported">未啟用模組或正在使用舊版的 LSPosed，請啟用模組或是更新 LSPosed 模組後再試一次。</string>
-    <string name="enhancedMode">增強模式</string>
-    <string name="enhancedMode_summary">可以解決一些應用程式內部的完整性校驗，一般不需要開啟</string>
     <string name="miui_usepresig_warn">由於 MIUI 大幅度修改了 Android 框架，UsePreSig 無法正常運作\n我們沒有時間分析</string>
     <string name="usepresig_warn">！！所有安裝檔可以覆蓋已安裝的應用程式！！\n安裝未知的安裝檔時請務必小心</string>
     <string name="bypassBlock">繞過黑名單</string>
