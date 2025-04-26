@@ -34,10 +34,10 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleRelease assembleDebug
 
-    - name: Upload APK artifacts
-      uses: actions/upload-artifact@v3
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
       with:
-        name: app-build-outputs
+        name: apk-files
         path: |
-          app/build/outputs/apk/release/*.apk
-          app/build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/**/*.apk
+          app/build/outputs/bundle/**/*.aab
