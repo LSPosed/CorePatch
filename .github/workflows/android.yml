@@ -39,5 +39,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: Signed app bundle
+        name: App
         path: app/build/outputs/apk
