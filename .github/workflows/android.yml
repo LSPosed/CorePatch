@@ -8,12 +8,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
     - name: Set up JDK 21
       uses: actions/setup-java@v3
@@ -26,18 +24,20 @@ jobs:
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       run: |
         if [ ! -z "${{ secrets.SIGNING_KEY }}" ]; then
-        echo releaseStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
-        echo releaseKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
-        echo releaseKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
-        echo releaseStoreFile='key.jks' >> gradle.properties
-        echo ${{ secrets.SIGNING_KEY }} | base64 --decode > key.jks
+          echo releaseStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
+          echo releaseKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
+          echo releaseKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
+          echo releaseStoreFile='key.jks' >> gradle.properties
+          echo ${{ secrets.SIGNING_KEY }} | base64 --decode > key.jks
         fi
 
     - name: Build with Gradle
       run: ./gradlew assembleRelease assembleDebug
 
-    - name: Upload artifact
+    - name: Upload APK artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: App
-        path: app/build/outputs/apk
+        name: app-build-outputs
+        path: |
+          app/build/outputs/apk/release/*.apk
+          app/build/outputs/apk/debug/*.apk
