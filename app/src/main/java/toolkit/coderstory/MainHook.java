@@ -17,6 +17,7 @@ public class MainHook implements IXposedHookLoadPackage {
             if (BuildConfig.DEBUG)
                 XposedBridge.log("D/" + TAG + " handleLoadPackage");
             switch (Build.VERSION.SDK_INT) {
+                case Build.VERSION_CODES.BAKLAVA: // 36
                 case Build.VERSION_CODES.VANILLA_ICE_CREAM: // 35
                     new CorePatchForV().handleLoadPackage(lpparam);
                     break;
@@ -39,6 +40,8 @@ public class MainHook implements IXposedHookLoadPackage {
                     break;
                 default:
                     XposedBridge.log("W/" + TAG + " Unsupported Version of Android " + Build.VERSION.SDK_INT);
+                    XposedBridge.log("I/" + TAG + " Falling back to latest SDK");
+                    new CorePatchForV().handleLoadPackage(lpparam);
                     break;
             }
         }

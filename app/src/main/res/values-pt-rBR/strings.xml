@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Core Patch</string>
-    <string name="module_description">Android 9-15 core patch</string>
-    <string name="corepatch">Esta versão é apenas para Android 9-15.\nPor favor, use a versão mais recente do LSPosed.</string>
+    <string name="module_description">Android 9-16 core patch</string>
+    <string name="corepatch">Esta versão é apenas para Android 9-16.\nPor favor, use a versão mais recente do LSPosed.</string>
     <string name="downgr">Permitir downgrade</string>
     <string name="downgr_summary">Permite downgrade de apps</string>
     <string name="authcreak">Desativar verificação de integridade</string>

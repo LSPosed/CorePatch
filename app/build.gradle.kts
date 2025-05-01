@@ -10,12 +10,12 @@ val releaseKeyAlias: String? by rootProject
 val releaseKeyPassword: String? by rootProject
 
 android {
-    compileSdk = 35
-    buildToolsVersion = "35.0.0"
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
     defaultConfig {
         applicationId = "com.coderstory.toolkit"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 2029
         versionName = "4.6"
     }
