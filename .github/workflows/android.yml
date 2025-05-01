@@ -37,7 +37,7 @@ jobs:
       run: ./gradlew assembleRelease assembleDebug
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Signed app bundle
         path: app/build/outputs/apk
