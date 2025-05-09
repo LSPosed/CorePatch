@@ -21,6 +21,12 @@ public class CorePatchForU extends CorePatchForT {
                 XposedBridge.log("E/" + MainHook.TAG + " deoptimizing failed" + Log.getStackTraceString(e));
             }
         }
+
+        // https://cs.android.com/android/platform/superproject/+/android-14.0.0_r60:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=61;bpv=1;bpt=0
+        if (prefs.getBoolean("digestCreak", true) && prefs.getBoolean("sharedUser", false)) {
+            setStaticBooleanField(utilClass, "ALLOW_NON_PRELOADS_SYSTEM_SHAREDUIDS", true);
+        }
+
         // ee11a9c (Rename AndroidPackageApi to AndroidPackage)
         findAndHookMethod("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader,
                 "checkDowngrade",
