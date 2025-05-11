@@ -57,6 +57,12 @@ public class CorePatchForU extends CorePatchForT {
     }
 
     @Override
+    Class<?> getParsedPackage(ClassLoader classLoader) {
+        var clazz = XposedHelpers.findClassIfExists("com.android.internal.pm.parsing.pkg.ParsedPackage", classLoader);
+        return clazz != null ? clazz : XposedHelpers.findClassIfExists("com.android.server.pm.parsing.pkg.ParsedPackage", classLoader);
+    }
+
+    @Override
     Class<?> getIsVerificationEnabledClass(ClassLoader classLoader) {
         return XposedHelpers.findClass("com.android.server.pm.VerifyingSession", classLoader);
     }
