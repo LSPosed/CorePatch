@@ -16,8 +16,8 @@ android {
         applicationId = "com.coderstory.toolkit"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2029
-        versionName = "4.6"
+        versionCode = 2038
+        versionName = "4.7"
     }
 
     signingConfigs {
