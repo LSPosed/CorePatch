@@ -149,5 +149,14 @@ public class CorePatchForQ extends XposedHelper implements IXposedHookLoadPackag
                 "isVerificationEnabled",
                 new ReturnConstant(prefs, "disableVerificationAgent", false)
         );
+
+        // Allow apk splits with different signatures to be installed together
+        hookAllMethods(signingDetails, "signaturesMatchExactly", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (prefs.getBoolean("exactSigCheck", false))
+                    param.setResult(true);
+            }
+        });
     }
 }

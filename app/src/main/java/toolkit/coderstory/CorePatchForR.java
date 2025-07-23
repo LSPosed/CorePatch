@@ -65,6 +65,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             XposedBridge.log("D/" + MainHook.TAG + " downgrade=" + prefs.getBoolean("downgrade", true));
             XposedBridge.log("D/" + MainHook.TAG + " authcreak=" + prefs.getBoolean("authcreak", false));
             XposedBridge.log("D/" + MainHook.TAG + " digestCreak=" + prefs.getBoolean("digestCreak", true));
+            XposedBridge.log("D/" + MainHook.TAG + " exactSigCheck=" + prefs.getBoolean("exactSigCheck", false));
             XposedBridge.log("D/" + MainHook.TAG + " UsePreSig=" + prefs.getBoolean("UsePreSig", false));
             XposedBridge.log("D/" + MainHook.TAG + " bypassBlock=" + prefs.getBoolean("bypassBlock", true));
             XposedBridge.log("D/" + MainHook.TAG + " sharedUser=" + prefs.getBoolean("sharedUser", false));
@@ -405,6 +406,15 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         );
 
         hookAllMethods(getIsVerificationEnabledClass(loadPackageParam.classLoader), "isVerificationEnabled", new ReturnConstant(prefs, "disableVerificationAgent", false));
+
+        // Allow apk splits with different signatures to be installed together
+        hookAllMethods(signingDetails, "signaturesMatchExactly", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) {
+                if (prefs.getBoolean("exactSigCheck", false))
+                    param.setResult(true);
+            }
+        });
 
         if (BuildConfig.DEBUG) initializeDebugHook(loadPackageParam);
     }
