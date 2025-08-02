@@ -20,4 +20,6 @@
     <string name="usepresig_warn">!! Qualsiasi apk può sovrascrivere quello installato !!\nFai attenzione quando installi un apk sconosciuto</string>
     <string name="shared_user_title">Bypassa verifica utente condiviso</string>
     <string name="shared_user_summary">Consenti l\'installazione dell\'app con firma diversa da quella dell\'utente condiviso (deve essere abilitato anche <b>\'Disabilita il confronto delle firme\'</b>)</string>
+    <string name="disable_verification_agent_title">Disabilita agente di verifica pacchetti</string>
+    <string name="disable_verification_agent_summary">ad es. Google Play Protection</string>
 </resources>

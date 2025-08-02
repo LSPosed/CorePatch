@@ -12,7 +12,14 @@
     <string name="UsePreSig_summary">Toujours utiliser les signatures depuis les applications déjà installées lors d\’installations.\n C\’est extrêmement <b>dangereux</b>.\n A activer uniquement lors ce que c\’est vraiment nécessaire!</string>
     <string name="settings">Réglages</string>
     <string name="ignore">Ignorer</string>
+    <string name="config_error">Échec de l\'initialisation de la configuration</string>
     <string name="not_supported">Vous utilisez apparemment une ancienne version de LSPosed ou LSPosed n\’est pas activé, Merci de mettre LSPosed à jour ou de retenter après activation.</string>
+    <string name="bypassBlock">Contourner le blocage</string>
+    <string name="bypassBlock_summary">Contourner la liste de blocage sur certains appareils comme le Nothing Phone</string>
     <string name="miui_usepresig_warn">UsePreSig ne fonctionne pas sur MiUI car son sous-système est beaucoup trop différent.\nNous n\’avons pas le temps de nous pencher sur ce cas.</string>
     <string name="usepresig_warn">!! N\’importe quel apk peut remplacer celui déjà installé !!\nPrenez garde lors ce que vous installez des apk inconnus</string>
+    <string name="shared_user_title">Contourner la vérification d\'utilisateur partagé</string>
+    <string name="shared_user_summary">Autoriser l\'installation d\'une application avec une signature différente de celle de son utilisateur partagé (<b>'Désactiver la comparaison des signatures' doit également être activé</b>)</string>
+    <string name="disable_verification_agent_title">Désactiver l’agent de vérification des paquets</string>
+    <string name="disable_verification_agent_summary">par ex. Google Play Protection</string>
 </resources>
