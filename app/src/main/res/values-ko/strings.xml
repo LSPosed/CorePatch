@@ -19,7 +19,7 @@
     <string name="miui_usepresig_warn">MiUI에서는 프레임워크 변경이 너무 많아 UsePreSig가 작동하지 않습니다.\n이 문제를 추적할 시간이 없습니다.</string>
     <string name="usepresig_warn">!! 모든 APK가 설치된 앱을 덮어쓸 수 있습니다 !!\n알 수 없는 APK를 설치할 때 주의하세요.</string>
     <string name="shared_user_title">공유 사용자 검증 우회</string>
-    <string name="shared_user_summary">공유 사용자와 다른 서명으로 앱 설치를 허용합니다 (<b>'서명 비교 비활성화'도 활성화해야 합니다</b>)</string>
+    <string name="shared_user_summary">공유 사용자와 다른 서명으로 앱 설치를 허용합니다 (<b>\'서명 비교 비활성화\'도 활성화해야 합니다</b>)</string>
     <string name="disable_verification_agent_title">패키지 검증 에이전트 비활성화</string>
     <string name="disable_verification_agent_summary">예: Google Play 보호</string>
 </resources>
