@@ -19,7 +19,7 @@
     <string name="miui_usepresig_warn">UsePreSig ne fonctionne pas sur MiUI car son sous-système est beaucoup trop différent.\nNous n\’avons pas le temps de nous pencher sur ce cas.</string>
     <string name="usepresig_warn">!! N\’importe quel apk peut remplacer celui déjà installé !!\nPrenez garde lors ce que vous installez des apk inconnus</string>
     <string name="shared_user_title">Contourner la vérification d\'utilisateur partagé</string>
-    <string name="shared_user_summary">Autoriser l\'installation d\'une application avec une signature différente de celle de son utilisateur partagé (<b>'Désactiver la comparaison des signatures' doit également être activé</b>)</string>
+    <string name="shared_user_summary">Autoriser l\'installation d\'une application avec une signature différente de celle de son utilisateur partagé (<b>\'Désactiver la comparaison des signatures\' doit également être activé</b>)</string>
     <string name="disable_verification_agent_title">Désactiver l’agent de vérification des paquets</string>
     <string name="disable_verification_agent_summary">par ex. Google Play Protection</string>
 </resources>
