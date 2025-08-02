@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Android 9–16 için çekirdek yaması</string>
+    <string name="corepatch">Bu sürüm yalnızca Android 9–16 içindir.\nLütfen en son LSPosed sürümünü kullanın.</string>
+    <string name="downgr">Sürüm düşürmeye izin ver</string>
+    <string name="downgr_summary">Uygulamaların sürüm düşürmesine izin ver.</string>
+    <string name="authcreak">Özet doğrulamayı devre dışı bırak</string>
+    <string name="authcreak_summary">APK içindeki dosya değiştirildikten sonra uygulama yüklenmesine izin verir (geçersiz özet hatasını yoksayar).</string>
+    <string name="digestCreak">İmzaları karşılaştırmayı devre dışı bırak</string>
+    <string name="digestCreak_summary">Farklı imzalara sahip uygulamaların yeniden yüklenmesine izin ver.</string>
+    <string name="UsePreSig">Yüklü imzaları kullan</string>
+    <string name="UsePreSig_summary">Kurulum sırasında her zaman zaten yüklü uygulamaların imzalarını kullanır.\nBu son derece <b>tehlikelidir</b>.\nSadece gerçekten gerektiğinde etkinleştirin!</string>
+    <string name="settings">Ayarlar</string>
+    <string name="ignore">Yoksay</string>
+    <string name="config_error">Yapılandırma başlatılamadı</string>
+    <string name="not_supported">Görünüşe göre eski bir LSPosed sürümü kullanıyorsunuz ya da LSPosed etkin değil. Lütfen LSPosed’i güncelleyin veya etkinleştirip tekrar deneyin.</string>
+    <string name="bypassBlock">Engeli atla</string>
+    <string name="bypassBlock_summary">Nothing Phone gibi bazı cihazlardaki engelleme listesini atlar.</string>
+    <string name="miui_usepresig_warn">UsePreSig MiUI\'de çalışmaz çünkü framework çok fazla değişiklik yapıyor.\nBu durumu inceleyecek zamana sahip değiliz.</string>
+    <string name="usepresig_warn">!! Her APK yüklü olanı geçersiz kılabilir !!\nBilinmeyen APK yüklerken dikkatli olun.</string>
+    <string name="shared_user_title">Paylaşılan kullanıcı doğrulamasını atla</string>
+    <string name="shared_user_summary">Paylaşılan kullanıcıdan farklı imzaya sahip uygulamaların yüklenmesine izin ver (<b>‘İmzaları karşılaştırmayı devre dışı bırak’</b> da etkinleştirilmiş olmalıdır).</string>
+    <string name="disable_verification_agent_title">Paket Doğrulama Ajanını Devre Dışı Bırak</string>
+    <string name="disable_verification_agent_summary">örn. Google Play Koruması</string>
+</resources>
