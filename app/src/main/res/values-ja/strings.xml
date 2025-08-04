@@ -19,4 +19,8 @@
   <string name="bypassBlock_summary">Nothing Phone などの一部のデバイスのブロックリストをバイパスします。</string>
   <string name="miui_usepresig_warn">インストールされている署名の使用は、フレームワークが大幅に変更されるため MIUI では動作しません。\nこの問題を解析をする時間がありません。</string>
   <string name="usepresig_warn">!! どんな APK でもインストールされている APK を上書きできるようにします !!\n未知の APK をインストールする際は注意してください</string>
+  <string name="shared_user_title">共有ユーザー認証をバイパス</string>
+  <string name="shared_user_summary">共有ユーザーと異なる署名のアプリをインストールできるようにします（<b>「署名の比較を無効化」も有効にする必要があります</b>）</string>
+  <string name="disable_verification_agent_title">パッケージ検証エージェントを無効化</string>
+  <string name="disable_verification_agent_summary">例: Google Play プロテクション</string>
 </resources>
