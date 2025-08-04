@@ -8,6 +8,8 @@
     <string name="authcreak_summary">Allows install apps after modify file in apk (ignore invalid digest error).</string>
     <string name="digestCreak">Disable compare signatures</string>
     <string name="digestCreak_summary">Allow re-install app with different signatures.</string>
+    <string name="exactSigCheck">Disable exact signature match</string>
+    <string name="exactSigCheck_summary">Disables exact signature match between apks, allowing installs with each apk split having a different signature. Only enable when really needed!</string>
     <string name="UsePreSig">Use installed signatures</string>
     <string name="UsePreSig_summary">Always use signatures from already installed apps when installing.\n This is extremely <b>dangerous</b>.\n Only enable when really needed!</string>
     <string name="settings">Settings</string>
