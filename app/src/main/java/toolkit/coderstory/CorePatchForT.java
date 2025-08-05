@@ -3,9 +3,12 @@ package toolkit.coderstory;
 import android.content.pm.Signature;
 
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -89,6 +92,43 @@ public class CorePatchForT extends CorePatchForS {
         var utils = XposedHelpers.findClassIfExists("com.android.server.pm.PackageManagerServiceUtils", loadPackageParam.classLoader);
         if (utils != null) {
             deoptimizeMethod(utils, "canJoinSharedUserId");
+        }
+
+        if (prefs.getBoolean("digestCreak", true)) {
+            XposedBridge.log("I/" + MainHook.TAG + " Digest Creak enabled");
+            var apkSigningBlockClass = findClass("android.util.apk.ApkSigningBlockUtils", loadPackageParam.classLoader);
+            var signatureInfoClass = findClass("android.util.apk.SignatureInfo", loadPackageParam.classLoader);
+            findAndHookMethod(
+                    apkSigningBlockClass,
+                    "parseVerityDigestAndVerifySourceLength",
+                    byte[].class,
+                    long.class,
+                    signatureInfoClass,
+                    new XC_MethodReplacement() {
+                        @Override
+                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            XposedBridge.log("I/" + MainHook.TAG + " Digest Creak: parseVerityDigestAndVerifySourceLength called");
+                            byte[] data = (byte[]) param.args[0];
+                            int kRootHashSize = 32;
+                            return Arrays.copyOfRange(data, 0, kRootHashSize);
+                        }
+                    }
+            );
+
+            findAndHookMethod(
+                    apkSigningBlockClass,
+                    "verifyIntegrityForVerityBasedAlgorithm",
+                    byte[].class,
+                    RandomAccessFile.class,
+                    signatureInfoClass,
+                    new XC_MethodReplacement() {
+                        @Override
+                        protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                            XposedBridge.log("I/" + MainHook.TAG + " Digest Creak: verifyIntegrityForVerityBasedAlgorithm called");
+                            return null;
+                        }
+                    }
+            );
         }
     }
 
