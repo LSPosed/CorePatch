@@ -4,7 +4,9 @@
 A Module For Xposed Framework
 Disable signature verification For Android
  ```
-![Android CI](https://github.com/coderstory/CorePatch/workflows/Android%20CI/badge.svg)  ![GitHub release (latest by date)](https://img.shields.io/github/v/release/coderstory/CorePatch)  ![CRAN/METACRAN](https://img.shields.io/cran/l/devtools)
+![Android CI](https://github.com/coderstory/CorePatch/workflows/Android%20CI/badge.svg)  ![GitHub release (latest by date)](https://img.shields.io/github/v/release/coderstory/CorePatch)  ![CRAN/METACRAN](https://img.shields.io/cran/l/devtools)  [<img src="https://shields.rbtlog.dev/simple/com.coderstory.toolkit" alt="RB shield">](https://shields.rbtlog.dev/com.coderstory.toolkit)
+
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" height="80" alt="Get it at IzzyOnDroid">](https://apt.izzysoft.de/packages/com.coderstory.toolkit)
 
 ### Description
 ```
