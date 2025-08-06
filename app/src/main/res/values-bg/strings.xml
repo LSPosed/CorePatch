@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Core Patch</string>
+    <string name="module_description">Core Patch за Android 9–16</string>
+    <string name="corepatch">Тази версия е само за Android 9–16.\nМоля, използвайте най-новата версия на LSPosed.</string>
+    <string name="downgr">Разреши понижаване на версия</string>
+    <string name="downgr_summary">Позволява инсталиране на приложения с по-ниска версия.</string>
+    <string name="authcreak">Изключи проверка на хеш</string>
+    <string name="authcreak_summary">Позволява инсталиране на приложения след промяна на файл в APK (игнорира грешка за невалиден хеш).</string>
+    <string name="digestCreak">Изключи сравнение на подписи</string>
+    <string name="digestCreak_summary">Позволява повторно инсталиране на приложения с различни подписи.</string>
+    <string name="UsePreSig">Използвай инсталираните подписи</string>
+    <string name="UsePreSig_summary">Винаги използвай подписите от вече инсталираните приложения при инсталиране.\n Това е изключително <b>опасно</b>.\n Активирай само ако наистина е необходимо!</string>
+    <string name="settings">Настройки</string>
+    <string name="ignore">Игнорирай</string>
+    <string name="config_error">Неуспешна инициализация на конфигурацията</string>
+    <string name="not_supported">Изглежда използвате остаряла версия на LSPosed или LSPosed не е активиран. Моля, обновете LSPosed или опитайте отново след активиране.</string>
+    <string name="bypassBlock">Задминаване на блокировки</string>
+    <string name="bypassBlock_summary">Пропуска блоклист на някои устройства, като Nothing Phone</string>
+    <string name="miui_usepresig_warn">UsePreSig няма да работи на MiUI поради твърде много промени във фреймуърка.\nНямаме време да следим случая.</string>
+    <string name="usepresig_warn">!! Всяко APK може да замести инсталираното !!\nБъдете внимателни при инсталиране на непознати APK файлове</string>
+    <string name="shared_user_title">Прескочи проверка на споделен потребител</string>
+    <string name="shared_user_summary">Позволява инсталиране на приложение с подпис, различен от този на споделения потребител (<b>„Изключи сравнение на подписи“ също трябва да е активирано</b>)</string>
+    <string name="disable_verification_agent_title">Изключи агента за проверка на пакети</string>
+    <string name="disable_verification_agent_summary">напр. Google Play Защита</string>
+</resources>
