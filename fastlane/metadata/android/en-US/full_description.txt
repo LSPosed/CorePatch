@@ -1,0 +1,1 @@
+<p><i>CorePatch</i> is a powerful Xposed module that helps you to disable signature verification so that you can easily install apps with inconsistent signatures or downgrade them.</p>
