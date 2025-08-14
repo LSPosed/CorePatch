@@ -17,6 +17,11 @@
             android:title="@string/digestCreak"
             android:summary="@string/digestCreak_summary"
             android:defaultValue="true" />
+        <SwitchPreference
+            android:key="exactSigCheck"
+            android:title="@string/exactSigCheck"
+            android:summary="@string/exactSigCheck_summary"
+            android:defaultValue="false"/>
 
         <SwitchPreference
             android:key="UsePreSig"
