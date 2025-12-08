@@ -18,6 +18,8 @@ public class MainHook implements IXposedHookLoadPackage {
                 XposedBridge.log("D/" + TAG + " handleLoadPackage");
             switch (Build.VERSION.SDK_INT) {
                 case Build.VERSION_CODES.BAKLAVA: // 36
+                    new CorePatchForB().handleLoadPackage(lpparam);
+                    break;
                 case Build.VERSION_CODES.VANILLA_ICE_CREAM: // 35
                     new CorePatchForV().handleLoadPackage(lpparam);
                     break;
