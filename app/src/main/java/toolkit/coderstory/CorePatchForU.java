@@ -1,5 +1,6 @@
 package toolkit.coderstory;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +24,11 @@ public class CorePatchForU extends CorePatchForT {
         }
 
         // https://cs.android.com/android/platform/superproject/+/android-14.0.0_r60:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=61;bpv=1;bpt=0
-        if (prefs.getBoolean("digestCreak", true) && prefs.getBoolean("sharedUser", false)) {
+        // Android 17 blocks using reflection to modify static final field
+        // Since DP2, instead of throwing java exception, they just let art itself crash
+        // Disable it temporarily till we change hook points
+        if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA || (Build.VERSION.SDK_INT == Build.VERSION_CODES.BAKLAVA && Build.VERSION.PREVIEW_SDK_INT == 0))
+                && prefs.getBoolean("digestCreak", true) && prefs.getBoolean("sharedUser", false)) {
             setStaticBooleanField(utilClass, "ALLOW_NON_PRELOADS_SYSTEM_SHAREDUIDS", true);
         }
 
