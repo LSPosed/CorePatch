@@ -105,6 +105,13 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         hookAllMethods("android.content.res.AssetManager", loadPackageParam.classLoader, "containsAllocatedTable",
                 new ReturnConstant(prefs, "authcreak", false));
 
+        // Signature scheme version constants (self-documenting)
+        // int SIGNATURE_SCHEME_VERSION__UNKNOWN = 0;
+        int SIGNATURE_SCHEME_VERSION__JAR = 1;
+        // int SIGNATURE_SCHEME_VERSION__SIGNING_BLOCK_V2 = 2;
+        int SIGNATURE_SCHEME_VERSION__SIGNING_BLOCK_V3 = 3;
+        // int SIGNATURE_SCHEME_VERSION__SIGNING_BLOCK_V4 = 4;
+
         // No signature found in package of version " + minSignatureSchemeVersion
         // + " or newer for package " + apkPath
         findAndHookMethod("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "getMinimumSignatureSchemeVersionForTargetSdk", int.class,
@@ -115,6 +122,23 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             findAndHookMethod(apkVerifierClass, "getMinimumSignatureSchemeVersionForTargetSdk", int.class,
                     new ReturnConstant(prefs, "authcreak", 0));
         }
+
+        // ApkSignatureVerifier.verifySignatures(apkPath, minVersion, verifyFull)
+        // https://android.googlesource.com/platform/frameworks/base/+/refs/tags/android-12.1.0_r27/core/java/android/util/apk/ApkSignatureVerifier.java#107
+        // All scheme versions pass through this, and they all respect `verifyFull`
+        hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifySignatures",
+                new XC_MethodHook() {
+                    @Override
+                    protected void beforeHookedMethod(MethodHookParam param) {
+                        if (prefs.getBoolean("authcreak", false)) {
+                            // Force verifyFull parameter to false
+                            if (param.args.length > 2 && param.args[2] instanceof Boolean) {
+                                param.args[2] = false;
+                                XposedBridge.log("I/" + MainHook.TAG + " Forcing verifyFull=false for " + param.args[0]);
+                            }
+                        }
+                    }
+                });
 
         // 当verifyV1Signature抛出转换异常时，替换一个签名作为返回值
         // 如果用户已安装apk，并且其定义了私有权限，则安装时会因签名与模块内硬编码的不一致而被拒绝。尝试从待安装apk中获取签名。如果其中apk的签名和已安装的一致（只动了内容）就没有问题。此策略可能有潜在的安全隐患。
@@ -132,7 +156,7 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
         Field error = XposedHelpers.findField(packageParserException, "error");
         error.setAccessible(true);
         Object[] signingDetailsArgs = new Object[2];
-        signingDetailsArgs[1] = 1;
+        signingDetailsArgs[1] = SIGNATURE_SCHEME_VERSION__JAR;
         Class<?> parseResult = XposedHelpers.findClassIfExists("android.content.pm.parsing.result.ParseResult", loadPackageParam.classLoader);
         hookAllMethods("android.util.jar.StrictJarVerifier", loadPackageParam.classLoader, "verifyBytes", new XC_MethodHook() {
             public void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -228,6 +252,167 @@ public class CorePatchForR extends XposedHelper implements IXposedHookLoadPackag
             }
         });
 
+        // ============================================================================
+        // V3 SIGNATURE HOOK (for V2/V3-only APKs)
+        // ============================================================================
+        // DIFF vs V1: Hooks verifyV3Signature instead of verifyV1Signature
+        hookAllMethods("android.util.apk.ApkSignatureVerifier", loadPackageParam.classLoader, "verifyV3Signature",
+                new XC_MethodHook() {
+                    @Override
+                    public void afterHookedMethod(MethodHookParam methodHookParam) throws Throwable {
+                        if (!prefs.getBoolean("authcreak", false))
+                            return;
+
+                        // Step 1: Check if verification failed (either by exception or error code)
+                        // SAME AS V1
+                        Throwable throwable = methodHookParam.getThrowable();
+                        Integer parseErr = null;
+
+                        if (parseResult != null &&
+                                ((Method) methodHookParam.method).getReturnType() == parseResult) {
+                            Object result = methodHookParam.getResult();
+                            if ((boolean) XposedHelpers.callMethod(result, "isError")) {
+                                parseErr = (int) XposedHelpers.callMethod(result, "getErrorCode");
+                            }
+                        }
+
+                        if (throwable == null && parseErr == null)
+                            return; // No error, don't intervene
+
+                        XposedBridge.log("I/" + MainHook.TAG + " V3 signature verification failed, attempting bypass");
+
+                        // Step 2: Extract certificates
+                        // DIFF vs V1: Uses ApkSignatureSchemeV3Verifier.unsafeGetCertsWithoutVerification()
+                        //             instead of JAR-based loadCertificates() from META-INF/*.RSA
+                        Signature[] signerSigs = null;
+                        Signature[] pastSignerSigs = null; // DIFF vs V1: proof-of-rotation (V3-specific, not in V1)
+                        Map<Integer, byte[]> contentDigests = null; // DIFF vs V1: content digests (V3-specific)
+
+                        try {
+                            String apkPath = (String) methodHookParam.args[parseErr == null ? 0 : 1];
+
+                            // DIFF vs V1: V3 uses APK Signing Block, not JAR manifest
+                            Class<?> v3Verifier = XposedHelpers.findClassIfExists(
+                                    "android.util.apk.ApkSignatureSchemeV3Verifier",
+                                    loadPackageParam.classLoader);
+
+                            if (v3Verifier != null) {
+                                // DIFF vs V1: unsafeGetCertsWithoutVerification extracts certs without verification
+                                //             V1 uses StrictJarFile + loadCertificates from JAR entries
+                                Object vSigner = XposedHelpers.callStaticMethod(v3Verifier,
+                                        "unsafeGetCertsWithoutVerification", apkPath);
+
+                                // Extract certificates from VerifiedSigner
+                                Certificate[] certs = (Certificate[]) XposedHelpers.getObjectField(vSigner, "certs");
+                                Certificate[][] signerCerts = new Certificate[][] { certs };
+                                signerSigs = (Signature[]) XposedHelpers.callStaticMethod(ASV,
+                                        "convertToSignatures", (Object) signerCerts);
+
+                                // DIFF vs V1: Extract proof-of-rotation (V3-specific, doesn't exist in V1)
+                                // POR allows key rotation while maintaining trust chain
+                                Object por = XposedHelpers.getObjectField(vSigner, "por");
+                                if (por != null) {
+                                    @SuppressWarnings("unchecked")
+                                    List<X509Certificate> porCerts = (List<X509Certificate>) XposedHelpers
+                                            .getObjectField(por, "certs");
+
+                                    if (porCerts != null && !porCerts.isEmpty()) {
+                                        pastSignerSigs = new Signature[porCerts.size()];
+                                        for (int i = 0; i < pastSignerSigs.length; i++) {
+                                            X509Certificate cert = porCerts.get(i);
+                                            pastSignerSigs[i] = new Signature(cert.getEncoded());
+                                        }
+                                    }
+                                }
+
+                                // DIFF vs V1: Extract content digests (V3-specific, not used in V1)
+                                // Maps digest algorithm ID to digest bytes
+                                @SuppressWarnings("unchecked")
+                                Map<Integer, byte[]> digests = (Map<Integer, byte[]>) XposedHelpers
+                                        .getObjectField(vSigner, "contentDigests");
+                                contentDigests = digests;
+                            }
+                        } catch (Throwable e) {
+                            XposedBridge
+                                    .log("W/" + MainHook.TAG + " Failed to extract V3 certificates: " + e.getMessage());
+                        }
+
+                        // Fallback to hardcoded signature if extraction failed (SAME AS V1)
+                        if (signerSigs == null) {
+                            signerSigs = new Signature[] { new Signature(SIGNATURE) };
+                        }
+
+                        // Step 3: Build SigningDetails
+                        // DIFF vs V1: scheme version is 3 (SIGNING_BLOCK_V3) instead of 1 (JAR)
+                        // DIFF vs V1: May include pastSignerSigs for proof-of-rotation
+                        Object newSigningDetails;
+                        try {
+                            if (pastSignerSigs != null) {
+                                // DIFF vs V1: Use 3-arg constructor with past signatures for POR
+                                // V1 only uses 2-arg constructor (no proof-of-rotation)
+                                Constructor<?> detailsConstructor = XposedHelpers.findConstructorExact(
+                                        signingDetails,
+                                        Signature[].class,
+                                        Integer.TYPE,
+                                        Signature[].class);
+                                detailsConstructor.setAccessible(true);
+                                newSigningDetails = detailsConstructor.newInstance(signerSigs, SIGNATURE_SCHEME_VERSION__SIGNING_BLOCK_V3, pastSignerSigs);
+                            } else {
+                                // Use simpler constructor: SigningDetails(Signature[], int)
+                                // DIFF vs V1: scheme=3 instead of scheme=1
+                                newSigningDetails = findConstructorExact.newInstance(new Object[] { signerSigs, SIGNATURE_SCHEME_VERSION__SIGNING_BLOCK_V3 });
+                            }
+                        } catch (Throwable e) {
+                            // Fallback to basic constructor
+                            newSigningDetails = findConstructorExact.newInstance(new Object[] { signerSigs, SIGNATURE_SCHEME_VERSION__SIGNING_BLOCK_V3 });
+                        }
+
+                        // Step 4: Wrap in SigningDetailsWithDigests if needed
+                        // DIFF vs V1: Passes contentDigests (V1 passes null)
+                        Class<?> signingDetailsWithDigests = XposedHelpers.findClassIfExists(
+                                "android.util.apk.ApkSignatureVerifier.SigningDetailsWithDigests",
+                                loadPackageParam.classLoader);
+
+                        Object finalResult;
+                        if (signingDetailsWithDigests != null) {
+                            Constructor<?> wrapperConstructor = XposedHelpers.findConstructorExact(
+                                    signingDetailsWithDigests,
+                                    signingDetails,
+                                    Map.class);
+                            wrapperConstructor.setAccessible(true);
+                            // DIFF vs V1: Passes extracted contentDigests; V1 passes null
+                            finalResult = wrapperConstructor.newInstance(newSigningDetails, contentDigests);
+                        } else {
+                            finalResult = newSigningDetails;
+                        }
+
+                        // Step 5: Replace the failed result (only for "no certificates" error)
+                        // SAME AS V1
+                        int ERROR_INSTALL_PARSE_FAILED_NO_CERTIFICATES = -103;
+
+                        if (throwable != null) {
+                            Throwable cause = throwable.getCause();
+                            if (throwable.getClass() == packageParserException) {
+                                if (error.getInt(throwable) == ERROR_INSTALL_PARSE_FAILED_NO_CERTIFICATES) {
+                                    methodHookParam.setResult(finalResult);
+                                    XposedBridge.log("I/" + MainHook.TAG + " V3 signature bypass successful (exception)");
+                                }
+                            }
+                            if (cause != null && cause.getClass() == packageParserException) {
+                                if (error.getInt(cause) == ERROR_INSTALL_PARSE_FAILED_NO_CERTIFICATES) {
+                                    methodHookParam.setResult(finalResult);
+                                    XposedBridge.log("I/" + MainHook.TAG + " V3 signature bypass successful (cause)");
+                                }
+                            }
+                        }
+                        if (parseErr != null && parseErr == ERROR_INSTALL_PARSE_FAILED_NO_CERTIFICATES) {
+                            Object input = methodHookParam.args[0];
+                            XposedHelpers.callMethod(input, "reset");
+                            methodHookParam.setResult(XposedHelpers.callMethod(input, "success", finalResult));
+                            XposedBridge.log("I/" + MainHook.TAG + " V3 signature bypass successful (parseErr)");
+                        }
+                    }
+                });
 
         //New package has a different signature
         //处理覆盖安装但签名不一致
