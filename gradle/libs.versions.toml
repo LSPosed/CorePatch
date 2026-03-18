@@ -1,10 +1,11 @@
 [versions]
-agp = "8.4.1"
-kotlin = "2.0.0"
+agp = "9.1.0"
+kotlin = "2.3.20"
 
 [libraries]
-libxposed-api = { group = "io.github.libxposed", name = "api", version = "100" }
-libxposed-service = { group = "io.github.libxposed", name = "service", version = "100-1.0.0" }
+libxposed-api = { group = "io.github.libxposed", name = "api", version = "101.0.0" }
+libxposed-service = { group = "io.github.libxposed", name = "service", version = "101.0.0" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.9.1" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

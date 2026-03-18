@@ -2,10 +2,10 @@ package org.lsposed.corepatch.hook
 
 import android.annotation.SuppressLint
 import android.os.Build
-import io.github.libxposed.api.XposedInterface.BeforeHookCallback
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper
 import org.lsposed.corepatch.XposedHelper.BeforeCallback
+import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 import org.lsposed.corepatch.XposedHelper.log

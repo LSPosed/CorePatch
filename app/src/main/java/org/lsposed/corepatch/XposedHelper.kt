@@ -3,10 +3,6 @@ package org.lsposed.corepatch
 import android.util.Log
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
-import io.github.libxposed.api.annotations.AfterInvocation
-import io.github.libxposed.api.annotations.BeforeInvocation
-import io.github.libxposed.api.annotations.XposedHooker
-import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Member
 import java.lang.reflect.Method
@@ -28,66 +24,106 @@ object XposedHelper {
         hostClassLoader = classLoader
     }
 
+    class BeforeHookCallback(private val chain: XposedInterface.Chain) {
+        val member: Member get() = chain.executable as Member
+        val thisObject: Any? get() = chain.thisObject
+        val args: Array<Any?> get() = chain.args.toTypedArray()
+        private var skipped = false
+        private var skipResult: Any? = null
+
+        fun returnAndSkip(result: Any?) {
+            skipped = true
+            skipResult = result
+        }
+
+        fun isSkipped() = skipped
+        fun getSkipResult() = skipResult
+    }
+
+    class AfterHookCallback(
+        private val chain: XposedInterface.Chain,
+        var result: Any?,
+        var throwable: Throwable?
+    ) {
+        val member: Member get() = chain.executable as Member
+        val thisObject: Any? get() = chain.thisObject
+        val args: Array<Any?> get() = chain.args.toTypedArray()
+    }
+
     interface BeforeCallback {
-        fun before(callback: XposedInterface.BeforeHookCallback)
+        fun before(callback: BeforeHookCallback)
     }
 
     interface AfterCallback {
-        fun after(callback: XposedInterface.AfterHookCallback)
+        fun after(callback: AfterHookCallback)
     }
 
-    @XposedHooker
     internal object CustomHooker : XposedInterface.Hooker {
         var beforeCallbacks: ConcurrentHashMap<Member, BeforeCallback> = ConcurrentHashMap()
         var afterCallbacks: ConcurrentHashMap<Member, AfterCallback> = ConcurrentHashMap()
 
-        @BeforeInvocation
-        @JvmStatic
-        fun before(callback: XposedInterface.BeforeHookCallback) {
-            beforeCallbacks[callback.member]?.before(callback)
-        }
+        override fun intercept(chain: XposedInterface.Chain): Any? {
+            val beforeCallback = beforeCallbacks[chain.executable]
+            var result: Any? = null
+            var throwable: Throwable? = null
+            var skipped = false
 
-        @AfterInvocation
-        @JvmStatic
-        fun after(callback: XposedInterface.AfterHookCallback) {
-            afterCallbacks[callback.member]?.after(callback)
+            if (beforeCallback != null) {
+                val callback = BeforeHookCallback(chain)
+                beforeCallback.before(callback)
+                if (callback.isSkipped()) {
+                    result = callback.getSkipResult()
+                    skipped = true
+                }
+            }
+
+            if (!skipped) {
+                try {
+                    result = chain.proceed()
+                } catch (t: Throwable) {
+                    throwable = t
+                }
+            }
+
+            val afterCallback = afterCallbacks[chain.executable]
+            if (afterCallback != null) {
+                val callback = AfterHookCallback(chain, result, throwable)
+                afterCallback.after(callback)
+                result = callback.result
+                throwable = callback.throwable
+            }
+
+            if (throwable != null) {
+                throw throwable
+            }
+            return result
         }
     }
 
     fun hookBefore(
         member: Member, callback: BeforeCallback
-    ): XposedInterface.MethodUnhooker<out Executable> {
+    ): XposedInterface.HookHandle {
         CustomHooker.beforeCallbacks[member] = callback
-        return when (member.javaClass) {
-            Method::class.java -> xposedModule.hook(member as Method, CustomHooker::class.java)
-            Constructor::class.java -> xposedModule.hook(
-                member as Constructor<*>, CustomHooker::class.java
-            )
-
-            else -> throw IllegalArgumentException()
-        }
+        return xposedModule.hook(member as Executable).intercept(CustomHooker)
     }
 
     fun hookAfter(
         member: Member, callback: AfterCallback
-    ): XposedInterface.MethodUnhooker<out Executable> {
+    ): XposedInterface.HookHandle {
         CustomHooker.afterCallbacks[member] = callback
-        return when (member.javaClass) {
-            Method::class.java -> xposedModule.hook(member as Method, CustomHooker::class.java)
-            Constructor::class.java -> xposedModule.hook(
-                member as Constructor<*>, CustomHooker::class.java
-            )
-
-            else -> throw IllegalArgumentException()
-        }
+        return xposedModule.hook(member as Executable).intercept(CustomHooker)
     }
 
     fun log(message: String, throwable: Throwable? = null) {
-        val newMessage = "[CorePatch] $message"
-        throwable?.let {
-            Log.e("CorePatch", newMessage, it)
-            xposedModule.log(newMessage, it)
-        } ?: if (!BuildConfig.DEBUG) return else Log.d("CorePatch", message)
+        if (throwable != null) {
+            Log.e("CorePatch", message, throwable)
+            xposedModule.log(Log.ERROR, "CorePatch", message, throwable)
+        } else {
+            if (BuildConfig.DEBUG) {
+                Log.d("CorePatch", message)
+            }
+            xposedModule.log(Log.DEBUG, "CorePatch", message)
+        }
     }
 
     fun deoptimize(method: Method): Boolean {

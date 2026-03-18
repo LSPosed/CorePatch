@@ -2,11 +2,11 @@ package org.lsposed.corepatch.hook
 
 import android.annotation.SuppressLint
 import android.os.Build
-import io.github.libxposed.api.XposedInterface.AfterHookCallback
-import io.github.libxposed.api.XposedInterface.BeforeHookCallback
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper.AfterCallback
+import org.lsposed.corepatch.XposedHelper.AfterHookCallback
 import org.lsposed.corepatch.XposedHelper.BeforeCallback
+import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookAfter
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
@@ -33,7 +33,7 @@ object PackageManagerServiceHook : BaseHook() {
             override fun before(callback: BeforeHookCallback) {
                 if (Config.isBypassDowngradeEnabled()) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                        val before = callback.args[0]
+                        val before = callback.args[0]!!
                         val packageParserPackageClazz = before.javaClass
                         val mVersionCodeField =
                             packageParserPackageClazz.declaredFields.first { f -> f.name == "mVersionCode" }
@@ -65,7 +65,7 @@ object PackageManagerServiceHook : BaseHook() {
                     if (Config.isBypassDigestEnabled() && Config.isUsePreviousSignaturesEnabled()) {
                         if (callback.result == false) {
                             val getPackageNameMethod =
-                                callback.args[1].javaClass.declaredMethods.first { m -> m.name == "getPackageName" }
+                                callback.args[1]!!.javaClass.declaredMethods.first { m -> m.name == "getPackageName" }
                             val packageName =
                                 getPackageNameMethod.invoke(callback.args[1]) as String
                             if (packageName == callback.args[0] as String) {

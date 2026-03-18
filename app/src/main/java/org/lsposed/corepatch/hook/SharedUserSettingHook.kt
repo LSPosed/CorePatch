@@ -3,9 +3,9 @@ package org.lsposed.corepatch.hook
 import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.os.Build
-import io.github.libxposed.api.XposedInterface.BeforeHookCallback
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper.BeforeCallback
+import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 import org.lsposed.corepatch.XposedHelper.xposedModule
@@ -70,11 +70,11 @@ object SharedUserSettingHook : BaseHook() {
                         continue
                     }
                     val packagesSignatures = getSigningDetails(pkg) ?: continue
-                    val b1 = xposedModule.invokeOrigin(
-                        checkCapabilityMethod, packagesSignatures, sharedUserSig, 0
+                    val b1 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                        packagesSignatures, sharedUserSig, 0
                     ) as Boolean
-                    val b2 = xposedModule.invokeOrigin(
-                        checkCapabilityMethod, sharedUserSig, packagesSignatures, 0
+                    val b2 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                        sharedUserSig, packagesSignatures, 0
                     ) as Boolean
                     // if old signing exists, return
                     if (b1 || b2) {
@@ -122,11 +122,11 @@ object SharedUserSettingHook : BaseHook() {
                         pkg = toAdd
                     }
                     val packagesSignatures = getSigningDetails(pkg) ?: continue
-                    val b1 = xposedModule.invokeOrigin(
-                        checkCapabilityMethod, packagesSignatures, sharedUserSig, 0
+                    val b1 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                        packagesSignatures, sharedUserSig, 0
                     ) as Boolean
-                    val b2 = xposedModule.invokeOrigin(
-                        checkCapabilityMethod, sharedUserSig, packagesSignatures, 0
+                    val b2 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                        sharedUserSig, packagesSignatures, 0
                     ) as Boolean
                     // if old signing exists, return
                     if (b1 || b2) return

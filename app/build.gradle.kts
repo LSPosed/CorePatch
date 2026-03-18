@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "org.lsposed.corepatch"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "org.lsposed.corepatch"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
@@ -32,8 +32,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
 
     packaging {
@@ -54,6 +56,7 @@ android {
 dependencies {
     compileOnly(libs.libxposed.api)
     implementation(libs.libxposed.service)
+    implementation(libs.androidx.annotation)
 }
 
 val deleteAppMetadata = task("deleteAppMetadata") {

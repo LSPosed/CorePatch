@@ -58,8 +58,7 @@ class MainActivity : Activity() {
 
         val listView = ListView(this)
         listView.adapter = adapter
-        setContentView(listView)
-
+        listView.fitsSystemWindows = true
         setContentView(listView)
     }
 

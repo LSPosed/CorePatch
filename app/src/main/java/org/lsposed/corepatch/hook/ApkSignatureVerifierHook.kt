@@ -5,12 +5,12 @@ import android.app.Application
 import android.content.pm.PackageManager
 import android.content.pm.Signature
 import android.os.Build
-import io.github.libxposed.api.XposedInterface
-import io.github.libxposed.api.XposedInterface.AfterHookCallback
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.Constant
 import org.lsposed.corepatch.XposedHelper.AfterCallback
+import org.lsposed.corepatch.XposedHelper.AfterHookCallback
 import org.lsposed.corepatch.XposedHelper.BeforeCallback
+import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookAfter
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
@@ -60,7 +60,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                         var errorCode: Int? = null
                         // 13
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            val parseResult = callback.result as Any
+                            val parseResult = callback.result!!
                             val isError = parseResult.javaClass.getDeclaredMethod("isError")
                                 .invoke(parseResult) as Boolean
                             if (isError) {
@@ -99,7 +99,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                                             pi.packageName, PackageManager.GET_SIGNING_CERTIFICATES
                                         )
                                         signaturesBefore =
-                                            installedPackageInfo.signingInfo.signingCertificateHistory
+                                            installedPackageInfo.signingInfo?.signingCertificateHistory
                                     }
                                 }
                             } catch (t: Throwable) {
@@ -182,7 +182,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                             callback.result = newResult
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && errorCode == -103) {
-                            val input = callback.args[0]
+                            val input = callback.args[0]!!
                             input.javaClass.declaredMethods.first { m -> m.name == "reset" }
                                 .invoke(input)
                             callback.result =
@@ -204,7 +204,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                     "getMinimumSignatureSchemeVersionForTargetSdk", Int::class.java
                 )
             hookBefore(getMinimumSignatureSchemeVersionForTargetSdkMethod, object : BeforeCallback {
-                override fun before(callback: XposedInterface.BeforeHookCallback) {
+                override fun before(callback: BeforeHookCallback) {
                     if (Config.isBypassVerificationEnabled()) {
                         callback.returnAndSkip(0)
                     }
