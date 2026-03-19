@@ -31,9 +31,6 @@ class MainActivity : Activity() {
         val bypassDigest = SwitchData(
             getString(R.string.bypass_digest), "", Config.BYPASS_DIGEST
         )
-        val enhancedMode = SwitchData(
-            getString(R.string.enhanced_mode), "", Config.ENHANCED_MODE
-        )
         val usePreviousSignatures = SwitchData(
             getString(R.string.use_previous_signatures), "", Config.USE_PREVIOUS_SIGNATURES
         )
@@ -48,7 +45,6 @@ class MainActivity : Activity() {
             bypassDowngrade,
             bypassVerification,
             bypassDigest,
-            enhancedMode,
             usePreviousSignatures,
             bypassSharedUser,
             disableVerificationAgent

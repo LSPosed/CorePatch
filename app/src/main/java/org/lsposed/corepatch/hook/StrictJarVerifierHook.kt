@@ -49,14 +49,6 @@ object StrictJarVerifierHook : BaseHook() {
         })
 
         val strictJarVerifierConstructor = strictJarVerifierClazz.declaredConstructors.first()
-        hookBefore(strictJarVerifierConstructor, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isEnhancedModeEnabled()) {
-                    callback.args[3] = false
-                }
-            }
-        })
-
         val signatureSchemeRollbackProtectionsEnforcedField =
             strictJarVerifierClazz.declaredFields.first { f -> f.name == "signatureSchemeRollbackProtectionsEnforced" }
         signatureSchemeRollbackProtectionsEnforcedField.isAccessible = true
