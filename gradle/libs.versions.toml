@@ -1,13 +1,10 @@
 [versions]
 agp = "9.1.0"
-kotlin = "2.3.20"
 
 [libraries]
 libxposed-api = { group = "io.github.libxposed", name = "api", version = "101.0.0" }
 libxposed-service = { group = "io.github.libxposed", name = "service", version = "101.0.0" }
-androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.9.1" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 lsplugin-resopt = { id = "org.lsposed.lsplugin.resopt", version = "1.6" }

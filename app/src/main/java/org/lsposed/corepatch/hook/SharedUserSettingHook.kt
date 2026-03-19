@@ -63,7 +63,7 @@ object SharedUserSettingHook : BaseHook() {
                 for (i in 0..pkgSize) {
                     val pkg =
                         packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
-                            .invoke(packagesSettings, i)
+                            .invoke(packagesSettings, i) ?: continue
                     // skip the removed package
                     if (pkg == toRemove) {
                         removed = true
@@ -115,7 +115,7 @@ object SharedUserSettingHook : BaseHook() {
                 for (i in 0..pkgSize) {
                     var pkg =
                         packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
-                            .invoke(packagesSettings, i)
+                            .invoke(packagesSettings, i) ?: continue
                     // skip the added package
                     if (pkg == toAdd) {
                         added = true
@@ -146,13 +146,13 @@ object SharedUserSettingHook : BaseHook() {
         val signaturesField = try {
             pkgOrSharedUser.javaClass.getDeclaredField("signatures")
         } catch (ignored: NoSuchFieldException) {
-            pkgOrSharedUser.javaClass.superclass.getDeclaredField("signatures")
+            pkgOrSharedUser.javaClass.superclass?.getDeclaredField("signatures")
         }
-        signaturesField.isAccessible = true
-        val signatures = signaturesField.get(pkgOrSharedUser)
-        val mSigningDetailsField = signatures.javaClass.getDeclaredField("mSigningDetails")
-        mSigningDetailsField.isAccessible = true
-        return mSigningDetailsField.get(signatures)
+        signaturesField?.isAccessible = true
+        val signatures = signaturesField?.get(pkgOrSharedUser)
+        val mSigningDetailsField = signatures?.javaClass?.getDeclaredField("mSigningDetails")
+        mSigningDetailsField?.isAccessible = true
+        return mSigningDetailsField?.get(signatures)
     }
 
     fun setSigningDetails(pkgOrSharedUser: Any, signingDetails: Any?) {

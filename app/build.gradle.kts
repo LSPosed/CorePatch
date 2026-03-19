@@ -1,10 +1,11 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.lsplugin.resopt)
 }
 
-android {
+configure<ApplicationExtension> {
     namespace = "org.lsposed.corepatch"
     compileSdk = 36
 
@@ -18,6 +19,7 @@ android {
 
     buildTypes {
         release {
+            @Suppress("UnstableApiUsage") vcsInfo.include = false
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs["debug"]
@@ -30,12 +32,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
     }
 
     packaging {
@@ -53,23 +49,23 @@ android {
     }
 }
 
-dependencies {
-    compileOnly(libs.libxposed.api)
-    implementation(libs.libxposed.service)
-    implementation(libs.androidx.annotation)
-}
-
-val deleteAppMetadata = task("deleteAppMetadata") {
+val deleteAppMetadata = tasks.register("deleteAppMetadata") {
+    val appMetadataFile =
+        file("build/intermediates/app_metadata/release/writeReleaseAppMetadata/app-metadata.properties")
     doLast {
-        file("build/intermediates/app_metadata/release/writeReleaseAppMetadata/app-metadata.properties").writeText(
+        appMetadataFile.writeText(
             ""
         )
     }
 }
 
 afterEvaluate {
-    tasks.named("mergeReleaseArtProfile").get().enabled = false
-    tasks.named("compileReleaseArtProfile").get().enabled = false
-    tasks.named("extractReleaseVersionControlInfo").get().enabled = false
-    tasks.named("writeReleaseAppMetadata").get().finalizedBy(deleteAppMetadata)
+    tasks.named("writeReleaseAppMetadata") {
+        finalizedBy(deleteAppMetadata)
+    }
+}
+
+dependencies {
+    compileOnly(libs.libxposed.api)
+    implementation(libs.libxposed.service)
 }
