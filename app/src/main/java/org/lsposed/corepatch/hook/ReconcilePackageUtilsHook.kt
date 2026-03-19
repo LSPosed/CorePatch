@@ -21,7 +21,10 @@ object ReconcilePackageUtilsHook : BaseHook() {
             reconcilePackageUtilsClazz.declaredMethods.first { m -> m.name == "reconcilePackages" }
         if (!XposedHelper.deoptimize(reconcilePackagesMethod)) log("failed to deoptimize reconcilePackages")
 
-        if (Config.isBypassDigestEnabled() && !Config.isBypassSharedUserEnabled()) {
+        // Android 17 blocks using reflection to modify static final field
+        // Since DP2, instead of throwing java exception, they just let art itself crash
+        // Disable it temporarily till we change hook points
+        if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA || (Build.VERSION.SDK_INT == Build.VERSION_CODES.BAKLAVA && Build.VERSION.PREVIEW_SDK_INT == 0)) && (Config.isBypassDigestEnabled() && !Config.isBypassSharedUserEnabled())) {
             reconcilePackageUtilsClazz.declaredFields.firstOrNull { field -> field.name == "ALLOW_NON_PRELOADS_SYSTEM_SHAREDUIDS" }
                 ?.let { field ->
                     field.isAccessible = true
