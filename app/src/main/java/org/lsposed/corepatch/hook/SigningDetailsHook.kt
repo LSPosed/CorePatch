@@ -15,7 +15,7 @@ object SigningDetailsHook : BaseHook() {
 
     @SuppressLint("PrivateApi")
     override fun hook() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
 
         val signingDetailsClazz =
             hostClassLoader.loadClass("android.content.pm.PackageParser\$SigningDetails")
@@ -76,5 +76,15 @@ object SigningDetailsHook : BaseHook() {
                 }
             })
         }
+
+        // https://cs.android.com/android/platform/superproject/+/android-9.0.0_r61:frameworks/base/core/java/android/content/pm/PackageParser.java;l=6036
+        val signaturesMatchExactlyMethod = signingDetailsClazz.getDeclaredMethod("signaturesMatchExactly", signingDetailsClazz)
+        hookBefore(signaturesMatchExactlyMethod, object : BeforeCallback {
+            override fun before(callback: BeforeHookCallback) {
+                if (Config.isBypassExactSignatureMatch()) {
+                    callback.returnAndSkip(true)
+                }
+            }
+        })
     }
 }

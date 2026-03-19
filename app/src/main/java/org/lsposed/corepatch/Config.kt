@@ -7,6 +7,7 @@ object Config {
     const val BYPASS_DOWNGRADE = "downgrade"
     const val BYPASS_VERIFICATION = "bypass_verification"
     const val BYPASS_DIGEST = "bypass_digest"
+    const val BYPASS_EXACT_SIGNATURE_MATCH = "bypass_exact_sig_match"
     const val USE_PREVIOUS_SIGNATURES = "use_previous_signatures"
     const val BYPASS_SHARED_USER = "bypass_shared_user"
     const val DISABLE_VERIFICATION_AGENT = "disable_verification_agent"
@@ -35,6 +36,10 @@ object Config {
 
     fun isBypassDigestEnabled(): Boolean {
         return prefs.getBoolean(BYPASS_DIGEST, false)
+    }
+
+    fun isBypassExactSignatureMatch(): Boolean {
+        return prefs.getBoolean(BYPASS_EXACT_SIGNATURE_MATCH, false)
     }
 
     fun isUsePreviousSignaturesEnabled(): Boolean {

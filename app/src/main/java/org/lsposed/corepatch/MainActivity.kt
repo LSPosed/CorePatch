@@ -31,6 +31,9 @@ class MainActivity : Activity() {
         val bypassDigest = SwitchData(
             getString(R.string.bypass_digest), "", Config.BYPASS_DIGEST
         )
+        val bypassExactSignatureMatch = SwitchData(
+            getString(R.string.bypass_exact_signature_match), "", Config.BYPASS_EXACT_SIGNATURE_MATCH
+        )
         val usePreviousSignatures = SwitchData(
             getString(R.string.use_previous_signatures), "", Config.USE_PREVIOUS_SIGNATURES
         )
