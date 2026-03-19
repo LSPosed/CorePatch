@@ -48,6 +48,7 @@ class MainActivity : Activity() {
             bypassDowngrade,
             bypassVerification,
             bypassDigest,
+            bypassExactSignatureMatch,
             usePreviousSignatures,
             bypassSharedUser,
             disableVerificationAgent
