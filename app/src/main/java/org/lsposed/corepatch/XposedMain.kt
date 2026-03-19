@@ -5,6 +5,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import org.lsposed.corepatch.Config.printAllConfig
 import org.lsposed.corepatch.hook.ApkSignatureVerifierHook
+import org.lsposed.corepatch.hook.ApkSigningBlockUtilsHook
 import org.lsposed.corepatch.hook.ApplicationInfoHook
 import org.lsposed.corepatch.hook.AssetManagerHook
 import org.lsposed.corepatch.hook.InstallPackageHelperHook
@@ -38,6 +39,7 @@ class XposedMain : XposedModule() {
 
         val hooks = listOf(
             ApkSignatureVerifierHook,
+            ApkSigningBlockUtilsHook,
             ApplicationInfoHook,
             AssetManagerHook,
             InstallPackageHelperHook,
