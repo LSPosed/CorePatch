@@ -16,7 +16,9 @@ class MainActivity : Activity() {
             loadPrefs()
         } else {
             reloadListener = {
-                loadPrefs()
+                runOnUiThread {
+                    loadPrefs()
+                }
             }
         }
     }
