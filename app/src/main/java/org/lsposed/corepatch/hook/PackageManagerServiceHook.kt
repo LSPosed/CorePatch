@@ -3,10 +3,6 @@ package org.lsposed.corepatch.hook
 import android.annotation.SuppressLint
 import android.os.Build
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.AfterCallback
-import org.lsposed.corepatch.XposedHelper.AfterHookCallback
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookAfter
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
@@ -29,65 +25,57 @@ object PackageManagerServiceHook : BaseHook() {
         // private static void checkDowngrade(AndroidPackage before, PackageInfoLite after)
         val checkDowngradeVoidMethod =
             packageManagerServiceClazz.declaredMethods.first { m -> m.name == "checkDowngrade" && m.returnType == Void.TYPE }
-        hookBefore(checkDowngradeVoidMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassDowngradeEnabled()) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                        val before = callback.args[0]!!
-                        val packageParserPackageClazz = before.javaClass
-                        val mVersionCodeField =
-                            packageParserPackageClazz.declaredFields.first { f -> f.name == "mVersionCode" }
-                        val mVersionCodeMajorField =
-                            packageParserPackageClazz.declaredFields.first { f -> f.name == "mVersionCodeMajor" }
-                        mVersionCodeField.set(before, 0)
-                        mVersionCodeMajorField.set(before, 0)
-                    }
-                    callback.returnAndSkip(null)
+        hookBefore(checkDowngradeVoidMethod) { callback ->
+            if (Config.isBypassDowngradeEnabled()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                    val before = callback.args[0]!!
+                    val packageParserPackageClazz = before.javaClass
+                    val mVersionCodeField =
+                        packageParserPackageClazz.declaredFields.first { f -> f.name == "mVersionCode" }
+                    val mVersionCodeMajorField =
+                        packageParserPackageClazz.declaredFields.first { f -> f.name == "mVersionCodeMajor" }
+                    mVersionCodeField.set(before, 0)
+                    mVersionCodeMajorField.set(before, 0)
                 }
+                callback.returnAndSkip(null)
             }
-        })
+        }
 
         val isVerificationEnabledMethod =
             packageManagerServiceClazz.declaredMethods.first { m -> m.name == "isVerificationEnabled" }
-        hookBefore(isVerificationEnabledMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isDisableVerificationAgentEnabled()) {
-                    callback.returnAndSkip(false)
-                }
+        hookBefore(isVerificationEnabledMethod) { callback ->
+            if (Config.isDisableVerificationAgentEnabled()) {
+                callback.returnAndSkip(false)
             }
-        })
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val doesSignatureMatchForPermissionsMethod =
                 packageManagerServiceClazz.declaredMethods.first { m -> m.name == "doesSignatureMatchForPermissions" }
-            hookAfter(doesSignatureMatchForPermissionsMethod, object : AfterCallback {
-                override fun after(callback: AfterHookCallback) {
-                    if (Config.isBypassDigestEnabled() && Config.isUsePreviousSignaturesEnabled()) {
-                        if (callback.result == false) {
-                            val getPackageNameMethod =
-                                callback.args[1]!!.javaClass.declaredMethods.first { m -> m.name == "getPackageName" }
-                            val packageName =
-                                getPackageNameMethod.invoke(callback.args[1]) as String
-                            if (packageName == callback.args[0] as String) {
-                                callback.result = true
-                            }
+            hookAfter(doesSignatureMatchForPermissionsMethod) { callback ->
+                if (Config.isBypassDigestEnabled() && Config.isUsePreviousSignaturesEnabled()) {
+                    if (callback.result == false) {
+                        val getPackageNameMethod =
+                            callback.args[1]!!.javaClass.declaredMethods.first { m -> m.name == "getPackageName" }
+                        val packageName =
+                            getPackageNameMethod.invoke(callback.args[1]) as String
+                        if (packageName == callback.args[0] as String) {
+                            callback.result = true
                         }
                     }
                 }
-            })
+            }
         }
 
         // exists on flyme 9(Android 11) only
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && isFlyme()) {
             val checkDowngradeBooleanMethod =
                 packageManagerServiceClazz.declaredMethods.first { m -> m.name == "checkDowngrade" && m.returnType == Boolean::class.java }
-            hookBefore(checkDowngradeBooleanMethod, object : BeforeCallback {
-                override fun before(callback: BeforeHookCallback) {
-                    if (Config.isBypassDowngradeEnabled()) {
-                        callback.returnAndSkip(true)
-                    }
+            hookBefore(checkDowngradeBooleanMethod) { callback ->
+                if (Config.isBypassDowngradeEnabled()) {
+                    callback.returnAndSkip(true)
                 }
-            })
+            }
         }
     }
 

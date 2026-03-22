@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 
@@ -23,15 +21,13 @@ object ApplicationInfoHook : BaseHook() {
         // private boolean isPackageWhitelistedForHiddenApis()
         val isPackageWhitelistedForHiddenApisMethod =
             applicationInfoClazz.getDeclaredMethod("isPackageWhitelistedForHiddenApis")
-        hookBefore(isPackageWhitelistedForHiddenApisMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassDigestEnabled()) {
-                    val applicationInfo = callback.thisObject as ApplicationInfo
-                    if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0 || applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP != 0) {
-                        callback.returnAndSkip(true)
-                    }
+        hookBefore(isPackageWhitelistedForHiddenApisMethod) { callback ->
+            if (Config.isBypassDigestEnabled()) {
+                val applicationInfo = callback.thisObject as ApplicationInfo
+                if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0 || applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP != 0) {
+                    callback.returnAndSkip(true)
                 }
             }
-        })
+        }
     }
 }

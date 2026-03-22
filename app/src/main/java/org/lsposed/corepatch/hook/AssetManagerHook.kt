@@ -3,8 +3,6 @@ package org.lsposed.corepatch.hook
 import android.annotation.SuppressLint
 import android.os.Build
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 
@@ -25,12 +23,10 @@ object AssetManagerHook : BaseHook() {
         // public boolean containsAllocatedTable()
         val containsAllocatedTableMethod =
             assetManagerClazz.getDeclaredMethod("containsAllocatedTable")
-        hookBefore(containsAllocatedTableMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassVerificationEnabled()) {
-                    callback.returnAndSkip(false)
-                }
+        hookBefore(containsAllocatedTableMethod) { callback ->
+            if (Config.isBypassVerificationEnabled()) {
+                callback.returnAndSkip(false)
             }
-        })
+        }
     }
 }

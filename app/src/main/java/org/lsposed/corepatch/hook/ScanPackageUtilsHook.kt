@@ -3,8 +3,6 @@ package org.lsposed.corepatch.hook
 import android.annotation.SuppressLint
 import android.os.Build
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 
@@ -19,12 +17,10 @@ object ScanPackageUtilsHook : BaseHook() {
             hostClassLoader.loadClass("com.android.server.pm.ScanPackageUtils")
         val assertMinSignatureSchemeIsValidMethod =
             scanPackageUtilsClazz.declaredMethods.first { m -> m.name == "assertMinSignatureSchemeIsValid" }
-        hookBefore(assertMinSignatureSchemeIsValidMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassVerificationEnabled()) {
-                    callback.returnAndSkip(null)
-                }
+        hookBefore(assertMinSignatureSchemeIsValidMethod) { callback ->
+            if (Config.isBypassVerificationEnabled()) {
+                callback.returnAndSkip(null)
             }
-        })
+        }
     }
 }

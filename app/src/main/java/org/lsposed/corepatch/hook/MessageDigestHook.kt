@@ -2,8 +2,6 @@ package org.lsposed.corepatch.hook
 
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 
 object MessageDigestHook : BaseHook() {
@@ -16,12 +14,10 @@ object MessageDigestHook : BaseHook() {
         val isEqualMethod = messageDigestClazz.getDeclaredMethod(
             "isEqual", ByteArray::class.java, ByteArray::class.java
         )
-        XposedHelper.hookBefore(isEqualMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassVerificationEnabled()) {
-                    callback.returnAndSkip(true)
-                }
+        XposedHelper.hookBefore(isEqualMethod) { callback ->
+            if (Config.isBypassVerificationEnabled()) {
+                callback.returnAndSkip(true)
             }
-        })
+        }
     }
 }

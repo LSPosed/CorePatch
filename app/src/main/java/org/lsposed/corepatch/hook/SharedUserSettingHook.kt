@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 import org.lsposed.corepatch.XposedHelper.xposedModule
@@ -40,106 +38,102 @@ object SharedUserSettingHook : BaseHook() {
 
         val removePackageMethod =
             sharedUserSettingClazz.declaredMethods.first { m -> m.name == "removePackage" }
-        hookBefore(removePackageMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                val thisObject = callback.thisObject ?: return
-                if (!Config.isBypassVerificationEnabled() || !Config.isBypassSharedUserEnabled()) {
-                    return
-                }
-                val uidFlags = uidFlagsField.get(thisObject) as Int
-                if (uidFlags and ApplicationInfo.FLAG_SYSTEM != 0) {
-                    return // do not modify system's signature
-                }
-                val toRemove = callback.args[0] ?: return
-                var removed = false
-                val sharedUserSig = getSigningDetails(thisObject) ?: return
-                var newSignatures: Any? = null
-
-                val packagesSettings = packagesField.get(thisObject)
-                val pkgSize =
-                    packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
-                        .invoke(packagesSettings) as Int
-                if (pkgSize == 0) return
-                for (i in 0..pkgSize) {
-                    val pkg =
-                        packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
-                            .invoke(packagesSettings, i) ?: continue
-                    // skip the removed package
-                    if (pkg == toRemove) {
-                        removed = true
-                        continue
-                    }
-                    val packagesSignatures = getSigningDetails(pkg) ?: continue
-                    val b1 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
-                        packagesSignatures, sharedUserSig, 0
-                    ) as Boolean
-                    val b2 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
-                        sharedUserSig, packagesSignatures, 0
-                    ) as Boolean
-                    // if old signing exists, return
-                    if (b1 || b2) {
-                        return
-                    }
-                    // otherwise, choose the first signature we meet, and merge with others if possible
-                    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
-                    // respect to system
-                    newSignatures = if (newSignatures == null) packagesSignatures
-                    else mergeLineageWithMethod.invoke(newSignatures, packagesSignatures)
-                }
-                if (!removed || newSignatures == null) return
-                setSigningDetails(thisObject, newSignatures)
+        hookBefore(removePackageMethod) { callback ->
+            val thisObject = callback.thisObject ?: return@hookBefore
+            if (!Config.isBypassVerificationEnabled() || !Config.isBypassSharedUserEnabled()) {
+                return@hookBefore
             }
-        })
+            val uidFlags = uidFlagsField.get(thisObject) as Int
+            if (uidFlags and ApplicationInfo.FLAG_SYSTEM != 0) {
+                return@hookBefore // do not modify system's signature
+            }
+            val toRemove = callback.args[0] ?: return@hookBefore
+            var removed = false
+            val sharedUserSig = getSigningDetails(thisObject) ?: return@hookBefore
+            var newSignatures: Any? = null
+
+            val packagesSettings = packagesField.get(thisObject)
+            val pkgSize =
+                packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
+                    .invoke(packagesSettings) as Int
+            if (pkgSize == 0) return@hookBefore
+            for (i in 0..pkgSize) {
+                val pkg =
+                    packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
+                        .invoke(packagesSettings, i) ?: continue
+                // skip the removed package
+                if (pkg == toRemove) {
+                    removed = true
+                    continue
+                }
+                val packagesSignatures = getSigningDetails(pkg) ?: continue
+                val b1 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                    packagesSignatures, sharedUserSig, 0
+                ) as Boolean
+                val b2 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                    sharedUserSig, packagesSignatures, 0
+                ) as Boolean
+                // if old signing exists, return
+                if (b1 || b2) {
+                    return@hookBefore
+                }
+                // otherwise, choose the first signature we meet, and merge with others if possible
+                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
+                // respect to system
+                newSignatures = if (newSignatures == null) packagesSignatures
+                else mergeLineageWithMethod.invoke(newSignatures, packagesSignatures)
+            }
+            if (!removed || newSignatures == null) return@hookBefore
+            setSigningDetails(thisObject, newSignatures)
+        }
 
         val addPackageMethod =
             sharedUserSettingClazz.declaredMethods.first { m -> m.name == "addPackage" }
-        hookBefore(addPackageMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                val thisObject = callback.thisObject ?: return
-                if (!Config.isBypassVerificationEnabled() || !Config.isBypassSharedUserEnabled()) {
-                    return
-                }
-                val uidFlags = uidFlagsField.get(thisObject) as Int
-                if (uidFlags and ApplicationInfo.FLAG_SYSTEM != 0) {
-                    return // do not modify system's signature
-                }
-                val toAdd = callback.args[0] ?: return
-                var added = false
-                val sharedUserSig = getSigningDetails(thisObject) ?: return
-                var newSignatures: Any? = null
-                val packagesSettings = packagesField.get(thisObject)
-                val pkgSize =
-                    packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
-                        .invoke(packagesSettings) as Int
-                if (pkgSize == 0) return
-                for (i in 0..pkgSize) {
-                    var pkg =
-                        packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
-                            .invoke(packagesSettings, i) ?: continue
-                    // skip the added package
-                    if (pkg == toAdd) {
-                        added = true
-                        pkg = toAdd
-                    }
-                    val packagesSignatures = getSigningDetails(pkg) ?: continue
-                    val b1 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
-                        packagesSignatures, sharedUserSig, 0
-                    ) as Boolean
-                    val b2 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
-                        sharedUserSig, packagesSignatures, 0
-                    ) as Boolean
-                    // if old signing exists, return
-                    if (b1 || b2) return
-                    // otherwise, choose the first signature we meet, and merge with others if possible
-                    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
-                    // respect to system
-                    newSignatures = if (newSignatures == null) packagesSignatures
-                    else mergeLineageWithMethod.invoke(sharedUserSig, packagesSignatures)
-                }
-                if (!added || newSignatures == null) return
-                setSigningDetails(thisObject, newSignatures)
+        hookBefore(addPackageMethod) { callback ->
+            val thisObject = callback.thisObject ?: return@hookBefore
+            if (!Config.isBypassVerificationEnabled() || !Config.isBypassSharedUserEnabled()) {
+                return@hookBefore
             }
-        })
+            val uidFlags = uidFlagsField.get(thisObject) as Int
+            if (uidFlags and ApplicationInfo.FLAG_SYSTEM != 0) {
+                return@hookBefore // do not modify system's signature
+            }
+            val toAdd = callback.args[0] ?: return@hookBefore
+            var added = false
+            val sharedUserSig = getSigningDetails(thisObject) ?: return@hookBefore
+            var newSignatures: Any? = null
+            val packagesSettings = packagesField.get(thisObject)
+            val pkgSize =
+                packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
+                    .invoke(packagesSettings) as Int
+            if (pkgSize == 0) return@hookBefore
+            for (i in 0..pkgSize) {
+                var pkg =
+                    packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
+                        .invoke(packagesSettings, i) ?: continue
+                // skip the added package
+                if (pkg == toAdd) {
+                    added = true
+                    pkg = toAdd
+                }
+                val packagesSignatures = getSigningDetails(pkg) ?: continue
+                val b1 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                    packagesSignatures, sharedUserSig, 0
+                ) as Boolean
+                val b2 = xposedModule.getInvoker(checkCapabilityMethod).invoke(
+                    sharedUserSig, packagesSignatures, 0
+                ) as Boolean
+                // if old signing exists, return
+                if (b1 || b2) return@hookBefore
+                // otherwise, choose the first signature we meet, and merge with others if possible
+                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
+                // respect to system
+                newSignatures = if (newSignatures == null) packagesSignatures
+                else mergeLineageWithMethod.invoke(sharedUserSig, packagesSignatures)
+            }
+            if (!added || newSignatures == null) return@hookBefore
+            setSigningDetails(thisObject, newSignatures)
+        }
     }
 
     fun getSigningDetails(pkgOrSharedUser: Any): Any? {

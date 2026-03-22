@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Build
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 import org.lsposed.corepatch.XposedHelper.log
@@ -37,13 +35,11 @@ object PackageManagerServiceUtilsHook : BaseHook() {
         val verifySignaturesMethod =
             packageManagerServiceUtilsClazz.declaredMethods.first { m -> m.name == "verifySignatures" && m.returnType == Boolean::class.java }
         if (!XposedHelper.deoptimize(verifySignaturesMethod)) log("failed to deoptimize verifySignatures")
-        hookBefore(verifySignaturesMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassVerificationEnabled()) {
-                    callback.returnAndSkip(false)
-                }
+        hookBefore(verifySignaturesMethod) { callback ->
+            if (Config.isBypassVerificationEnabled()) {
+                callback.returnAndSkip(false)
             }
-        })
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r1:frameworks/base/services/core/java/com/android/server/pm/PackageManagerServiceUtils.java;l=1375
@@ -52,13 +48,11 @@ object PackageManagerServiceUtilsHook : BaseHook() {
             // public static void checkDowngrade(com.android.server.pm.pkg.AndroidPackage before, PackageInfoLite after)
             val checkDowngradeMethod =
                 packageManagerServiceUtilsClazz.declaredMethods.first { m -> m.name == "checkDowngrade" }
-            hookBefore(checkDowngradeMethod, object : BeforeCallback {
-                override fun before(callback: BeforeHookCallback) {
-                    if (Config.isBypassDowngradeEnabled()) {
-                        callback.returnAndSkip(null)
-                    }
+            hookBefore(checkDowngradeMethod) { callback ->
+                if (Config.isBypassDowngradeEnabled()) {
+                    callback.returnAndSkip(null)
                 }
-            })
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -3,8 +3,6 @@ package org.lsposed.corepatch.hook
 import android.annotation.SuppressLint
 import android.os.Build
 import org.lsposed.corepatch.Config
-import org.lsposed.corepatch.XposedHelper.BeforeCallback
-import org.lsposed.corepatch.XposedHelper.BeforeHookCallback
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 import java.util.Arrays
@@ -26,15 +24,13 @@ object SigningDetailsHook : BaseHook() {
         val checkCapabilityMethod = signingDetailsClazz.getDeclaredMethod(
             "checkCapability", signingDetailsClazz, Int::class.java
         )
-        hookBefore(checkCapabilityMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassDigestEnabled() && Config.isBypassVerificationEnabled()) {
-                    if (callback.args[1] != 4 && callback.args[1] != 16) {
-                        callback.returnAndSkip(true)
-                    }
+        hookBefore(checkCapabilityMethod) { callback ->
+            if (Config.isBypassDigestEnabled() && Config.isBypassVerificationEnabled()) {
+                if (callback.args[1] != 4 && callback.args[1] != 16) {
+                    callback.returnAndSkip(true)
                 }
             }
-        })
+        }
 
         // https://cs.android.com/android/platform/superproject/+/android-9.0.0_r61:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5962
         // public boolean checkCapabilityRecover(SigningDetails oldDetails, @CertCapabilities int flags)
@@ -43,18 +39,16 @@ object SigningDetailsHook : BaseHook() {
         val checkCapabilityRecoverMethod = signingDetailsClazz.getDeclaredMethod(
             "checkCapabilityRecover", signingDetailsClazz, Int::class.java
         )
-        hookBefore(checkCapabilityRecoverMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassDigestEnabled() && Config.isBypassVerificationEnabled()) {
-                    // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
-                    // Or applications will have all privileged permissions
-                    // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947
-                    if (callback.args[1] != 4) {
-                        callback.returnAndSkip(true)
-                    }
+        hookBefore(checkCapabilityRecoverMethod) { callback ->
+            if (Config.isBypassDigestEnabled() && Config.isBypassVerificationEnabled()) {
+                // Don't handle PERMISSION (grant SIGNATURE permissions to pkgs with this cert)
+                // Or applications will have all privileged permissions
+                // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/content/pm/PackageParser.java;l=5947
+                if (callback.args[1] != 4) {
+                    callback.returnAndSkip(true)
                 }
             }
-        })
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             // for SharedUser
@@ -63,28 +57,24 @@ object SigningDetailsHook : BaseHook() {
             val hasCommonAncestorMethod = signingDetailsClazz.getDeclaredMethod(
                 "hasCommonAncestor", signingDetailsClazz
             )
-            hookBefore(hasCommonAncestorMethod, object : BeforeCallback {
-                override fun before(callback: BeforeHookCallback) {
-                    if (Config.isBypassDigestEnabled() && Config.isBypassSharedUserEnabled()
-                        // because of LSPosed's bug, we can't hook verifySignatures while deoptimize it
-                        && Arrays.stream(
-                            Thread.currentThread().stackTrace
-                        ).anyMatch { o: StackTraceElement -> "verifySignatures" == o.methodName }
-                    ) {
-                        callback.returnAndSkip(true)
-                    }
+            hookBefore(hasCommonAncestorMethod) { callback ->
+                if (Config.isBypassDigestEnabled() && Config.isBypassSharedUserEnabled()
+                    // because of LSPosed's bug, we can't hook verifySignatures while deoptimize it
+                    && Arrays.stream(
+                        Thread.currentThread().stackTrace
+                    ).anyMatch { o: StackTraceElement -> "verifySignatures" == o.methodName }
+                ) {
+                    callback.returnAndSkip(true)
                 }
-            })
+            }
         }
 
         // https://cs.android.com/android/platform/superproject/+/android-9.0.0_r61:frameworks/base/core/java/android/content/pm/PackageParser.java;l=6036
         val signaturesMatchExactlyMethod = signingDetailsClazz.getDeclaredMethod("signaturesMatchExactly", signingDetailsClazz)
-        hookBefore(signaturesMatchExactlyMethod, object : BeforeCallback {
-            override fun before(callback: BeforeHookCallback) {
-                if (Config.isBypassExactSignatureMatch()) {
-                    callback.returnAndSkip(true)
-                }
+        hookBefore(signaturesMatchExactlyMethod) { callback ->
+            if (Config.isBypassExactSignatureMatch()) {
+                callback.returnAndSkip(true)
             }
-        })
+        }
     }
 }
