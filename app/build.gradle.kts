@@ -9,6 +9,15 @@ configure<ApplicationExtension> {
     namespace = "org.lsposed.corepatch"
     compileSdk = 37
 
+    val releaseSigningPropertyNames = listOf(
+        "releaseStoreFile",
+        "releaseStorePassword",
+        "releaseKeyAlias",
+        "releaseKeyPassword",
+    )
+    val hasReleaseSigningProperties =
+        releaseSigningPropertyNames.all { providers.gradleProperty(it).isPresent }
+
     defaultConfig {
         applicationId = "org.lsposed.corepatch"
         minSdk = 28
@@ -17,12 +26,24 @@ configure<ApplicationExtension> {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            if (hasReleaseSigningProperties) {
+                storeFile = rootProject.file(providers.gradleProperty("releaseStoreFile").get())
+                storePassword = providers.gradleProperty("releaseStorePassword").get()
+                keyAlias = providers.gradleProperty("releaseKeyAlias").get()
+                keyPassword = providers.gradleProperty("releaseKeyPassword").get()
+            }
+        }
+    }
+
     buildTypes {
         release {
-            @Suppress("UnstableApiUsage") vcsInfo.include = false
+            @Suppress("UnstableApiUsage")
+            vcsInfo.include = false
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs["debug"]
+            signingConfig = signingConfigs["release"].takeIf { hasReleaseSigningProperties }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
