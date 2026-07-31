@@ -1,0 +1,29 @@
+<resources>
+  <string name="app_name">Core Patch N</string>
+  <string name="module_description">Modyfikacje usługi menedżera pakietów</string>
+  <string name="xposed_service_unavailable">Nie można połączyć się z usługą Xposed</string>
+  <string name="xposed_service_unavailable_summary">Upewnij się, że środowisko Xposed jest uruchomione i ten moduł jest włączony</string>
+  <string name="bypass_downgrade">Obejdź blokadę obniżenia wersji</string>
+  <string name="bypass_verification">Obejdź weryfikację</string>
+  <string name="bypass_digest">Obejdź skrót</string>
+  <string name="bypass_exact_signature_match">Obejdź dokładne dopasowanie podpisu</string>
+  <string name="use_previous_signatures">Używaj poprzednich podpisów</string>
+  <string name="bypass_shared_user">Obejdź weryfikację współdzielonego użytkownika</string>
+  <string name="disable_verification_agent">Wyłącz agenta weryfikacji pakietów</string>
+  <string name="bypass_downgrade_summary">Zezwól na instalację starszej wersji zamiast nowszej</string>
+  <string name="bypass_verification_summary">Zezwól na instalację plików APK z nieprawidłowymi lub zmodyfikowanymi podpisami</string>
+  <string name="bypass_resource_arsc_restrictions">Obejdź ograniczenie wyrównania resources.arsc</string>
+  <string name="bypass_resource_arsc_restrictions_summary">Zezwól na instalację plików APK, których resources.arsc jest skompresowany lub nie jest wyrównany do 4 bajtów w Androidzie 11 i nowszych</string>
+  <string name="bypass_digest_summary">Zezwól na ponowną instalację aplikacji z innym skrótem podpisu</string>
+  <string name="bypass_exact_signature_match_summary">Zezwól podzielonym plikom APK używać różnych podpisów</string>
+  <string name="use_previous_signatures_summary">Zawsze używaj podpisów zainstalowanej aplikacji podczas instalacji</string>
+  <string name="use_previous_signatures_warning">Dowolny plik APK może zastąpić zainstalowaną aplikację. Włączaj tylko w razie potrzeby</string>
+  <string name="allow_hidden_apis_for_system_apps">Zezwól aplikacjom systemowym na ukryte API</string>
+  <string name="allow_hidden_apis_for_system_apps_summary">Zezwól aplikacjom systemowym z podpisami niezgodnymi z podpisem platformy korzystać z ukrytych API bez ograniczeń</string>
+  <string name="miui_usepresig_warn">Użytkownicy fabrycznego oprogramowania Xiaomi/Redmi nie mogą włączać tej opcji, ponieważ urządzenie może się nie uruchomić.</string>
+  <string name="bypass_shared_user_summary">Zezwól pakietom z innym podpisem współdzielonego użytkownika.</string>
+  <string name="disable_verification_agent_summary">Na przykład Google Play Protect.</string>
+  <string name="bypass_block">Obejdź listę blokady instalacji</string>
+  <string name="bypass_block_summary">Obejdź listę blokady na urządzeniach takich jak Nothing Phone.</string>
+  <string name="hide_launcher_icon">Ukryj ikonę programu uruchamiającego</string>
+</resources>
