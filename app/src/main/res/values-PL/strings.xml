@@ -25,5 +25,5 @@
   <string name="disable_verification_agent_summary">Na przykład Google Play Protect.</string>
   <string name="bypass_block">Obejdź listę blokady instalacji</string>
   <string name="bypass_block_summary">Obejdź listę blokady na urządzeniach takich jak Nothing Phone.</string>
-  <string name="hide_launcher_icon">Ukryj ikonę programu uruchamiającego</string>
+  <string name="hide_launcher_icon">Ukryj ikonę launchera</string>
 </resources>
