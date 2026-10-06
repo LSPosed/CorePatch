@@ -82,9 +82,12 @@ object ApkSignatureVerifierHook : BaseHook() {
         // private static SigningDetailsWithDigests verifyV1Signature(String apkPath, boolean verifyFull)
         // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r74:frameworks/base/core/java/android/util/apk/ApkSignatureVerifier.java;l=362
         // private static ParseResult<SigningDetailsWithDigests> verifyV1Signature(ParseInput input, String apkPath, boolean verifyFull)
+        // Android 17 QPR2 adds a FileDescriptor parameter before apkPath
         apkSignatureVerifierClazz.declaredMethods
             .filter { method -> method.name == "verifyV1Signature" }
             .forEach { verifyV1SignatureMethod ->
+                val apkPathIndex =
+                    verifyV1SignatureMethod.parameterTypes.indexOf(String::class.java)
                 hookAfter(verifyV1SignatureMethod) { callback ->
                     if (Config.isBypassVerificationEnabled()) {
                         val throwable = callback.throwable
@@ -116,7 +119,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                                         log("Cannot get the Package Manager... Are you using MiUI?")
                                     } else {
                                         val packageInfo = packageManager.getPackageArchiveInfo(
-                                            callback.args[if (parseError == null) 0 else 1] as String,
+                                            callback.args[apkPathIndex] as String,
                                             0
                                         )
                                         packageInfo?.let { info ->
@@ -138,7 +141,7 @@ object ApkSignatureVerifierHook : BaseHook() {
                                     // verifyV1Signature(String apkPath, boolean verifyFull)
                                     // verifyV1Signature(ParseInput input, String apkPath, boolean verifyFull) // Android 13
                                     val originalJarFile = strictJarFileConstructor.newInstance(
-                                        callback.args[if (parseError == null) 0 else 1],
+                                        callback.args[apkPathIndex],
                                         true,
                                         false
                                     )
