@@ -56,6 +56,9 @@ class MainActivity : Activity() {
         val bypassDowngrade = SwitchData(
             getString(R.string.bypass_downgrade), getString(R.string.bypass_downgrade_summary), Config.BYPASS_DOWNGRADE
         )
+        val bypassMinSdk = SwitchData(
+            getString(R.string.bypass_min_sdk), getString(R.string.bypass_min_sdk_summary), Config.BYPASS_MIN_SDK
+        )
         val bypassVerification = SwitchData(
             getString(R.string.bypass_verification), getString(R.string.bypass_verification_summary), Config.BYPASS_VERIFICATION
         )
@@ -95,6 +98,7 @@ class MainActivity : Activity() {
 
         val dataSet = arrayListOf(
             bypassDowngrade,
+            bypassMinSdk,
             bypassVerification,
             bypassResourceArscRestrictions,
             bypassDigest,

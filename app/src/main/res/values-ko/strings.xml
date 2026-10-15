@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Xposed 프레임워크가 실행 중이고 이 모듈이 활성화되어 있는지 확인하세요.</string>
     <string name="bypass_downgrade">다운그레이드 허용</string>
     <string name="bypass_downgrade_summary">애플리케이션 다운그레이드를 허용합니다.</string>
+    <string name="bypass_min_sdk">최소 SDK 버전 제한 우회</string>
+    <string name="bypass_min_sdk_summary">minSdkVersion이 현재 시스템 버전보다 높은 APK 설치를 허용합니다.</string>
     <string name="bypass_verification">다이제스트 확인 비활성화</string>
     <string name="bypass_verification_summary">apk의 파일을 수정한 후 앱을 설치할 수 있습니다. (잘못된 다이제스트 오류를 무시).</string>
     <string name="bypass_resource_arsc_restrictions">resources.arsc 정렬 제한 우회</string>

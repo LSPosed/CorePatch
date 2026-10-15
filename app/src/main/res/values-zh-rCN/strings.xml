@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">请确认 Xposed 框架正在运行，并且已启用本模块。</string>
     <string name="bypass_downgrade">允许降级安装应用</string>
     <string name="bypass_downgrade_summary">允许应用在安装新版本的情况下直接覆盖安装旧版本</string>
+    <string name="bypass_min_sdk">绕过最低 SDK 版本限制</string>
+    <string name="bypass_min_sdk_summary">允许安装 minSdkVersion 高于当前系统版本的 APK</string>
     <string name="bypass_verification">禁用软件包管理器签名验证</string>
     <string name="bypass_verification_summary">关闭安装应用时的签名验证，可以安装被篡改的应用</string>
     <string name="bypass_resource_arsc_restrictions">绕过 resources.arsc 对齐限制</string>

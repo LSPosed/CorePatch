@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Pastikan framework Xposed berjalan dan modul ini diaktifkan.</string>
     <string name="bypass_downgrade">Izinkan turun versi</string>
     <string name="bypass_downgrade_summary">Izinkan turun versi aplikasi.</string>
+    <string name="bypass_min_sdk">Lewati pembatasan versi SDK minimum</string>
+    <string name="bypass_min_sdk_summary">Izinkan pemasangan APK dengan minSdkVersion yang lebih tinggi dari versi sistem.</string>
     <string name="bypass_verification">Matikan verifikasi digest</string>
     <string name="bypass_verification_summary">Izinkan pemasangan aplikasi setelah file dalam apk dimodifikasi (abaikan kesalahan digest yang tidak valid).</string>
     <string name="bypass_resource_arsc_restrictions">Lewati pembatasan penyelarasan resources.arsc</string>

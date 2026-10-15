@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Убедитесь, что фреймворк Xposed запущен, а этот модуль включён.</string>
     <string name="bypass_downgrade">Разрешить понижать версию.</string>
     <string name="bypass_downgrade_summary">Разрешить переустановку приложений на прошлые версии.</string>
+    <string name="bypass_min_sdk">Обойти ограничение минимальной версии SDK</string>
+    <string name="bypass_min_sdk_summary">Разрешить установку APK, у которых minSdkVersion выше версии системы.</string>
     <string name="bypass_verification">Отключить проверку дайджеста</string>
     <string name="bypass_verification_summary">Позволяет устанавливать приложения после изменения файла в apk (игнорировать недопустимую ошибку дайджеста).</string>
     <string name="bypass_resource_arsc_restrictions">Обойти ограничение выравнивания resources.arsc</string>
