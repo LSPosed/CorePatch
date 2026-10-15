@@ -8,6 +8,7 @@ import org.lsposed.corepatch.hook.ApkSignatureVerifierHook
 import org.lsposed.corepatch.hook.ApkSigningBlockUtilsHook
 import org.lsposed.corepatch.hook.ApplicationInfoHook
 import org.lsposed.corepatch.hook.AssetManagerHook
+import org.lsposed.corepatch.hook.FrameworkParsingPackageUtilsHook
 import org.lsposed.corepatch.hook.InstallPackageHelperHook
 import org.lsposed.corepatch.hook.KeySetManagerServiceHook
 import org.lsposed.corepatch.hook.MessageDigestHook
@@ -42,6 +43,7 @@ class XposedMain : XposedModule() {
             ApkSigningBlockUtilsHook,
             ApplicationInfoHook,
             AssetManagerHook,
+            FrameworkParsingPackageUtilsHook,
             InstallPackageHelperHook,
             KeySetManagerServiceHook,
             MessageDigestHook,

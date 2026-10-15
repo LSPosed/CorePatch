@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Verifique se o framework Xposed está em execução e se este módulo está ativado.</string>
     <string name="bypass_downgrade">Permitir downgrade</string>
     <string name="bypass_downgrade_summary">Permite o downgrade de apps</string>
+    <string name="bypass_min_sdk">Ignorar restrição de versão mínima do SDK</string>
+    <string name="bypass_min_sdk_summary">Permitir a instalação de APKs cujo minSdkVersion seja maior que a versão do sistema.</string>
     <string name="bypass_verification">Desativar verificação de integridade</string>
     <string name="bypass_verification_summary">Permite instalar apps após modificar um arquivo no APK (ignore o erro de integridade inválido)</string>
     <string name="bypass_resource_arsc_restrictions">Ignorar restrição de alinhamento do resources.arsc</string>

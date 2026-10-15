@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Assicurati che il framework Xposed sia in esecuzione e che questo modulo sia abilitato.</string>
     <string name="bypass_downgrade">Consenti ​​Downgrade</string>
     <string name="bypass_downgrade_summary">Consenti il ​​downgrade delle applicazioni.</string>
+    <string name="bypass_min_sdk">Ignora il vincolo di versione minima dell’SDK</string>
+    <string name="bypass_min_sdk_summary">Consenti l’installazione di APK con minSdkVersion superiore alla versione del sistema.</string>
     <string name="bypass_verification">Disabilita verifica digest</string>
     <string name="bypass_verification_summary">Consente l\'installazione di app dopo aver modificato il file nell\'apk (ignora l\'errore digest non valido).</string>
     <string name="bypass_resource_arsc_restrictions">Ignora il vincolo di allineamento di resources.arsc</string>

@@ -11,6 +11,8 @@
     <string name="bypass_shared_user">Bypass shared user verification</string>
     <string name="disable_verification_agent">Disable Package Verification Agent</string>
     <string name="bypass_downgrade_summary">Allow installing an older version over a newer version.</string>
+    <string name="bypass_min_sdk">Bypass minimum SDK version check</string>
+    <string name="bypass_min_sdk_summary">Allow installing APKs whose minSdkVersion is higher than the system SDK version.</string>
     <string name="bypass_verification_summary">Allow installing APKs with invalid or modified signatures.</string>
     <string name="bypass_resource_arsc_restrictions">Bypass resources.arsc alignment restriction</string>
     <string name="bypass_resource_arsc_restrictions_summary">Allow installing APKs whose resources.arsc is compressed or not 4-byte aligned on Android 11 and later.</string>

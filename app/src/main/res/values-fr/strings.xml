@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Assurez-vous que le framework Xposed est en cours d’exécution et que ce module est activé.</string>
     <string name="bypass_downgrade">Permettre la rétrogradation</string>
     <string name="bypass_downgrade_summary">Permettre la rétrogradation d\’applications.</string>
+    <string name="bypass_min_sdk">Contourner la version minimale du SDK</string>
+    <string name="bypass_min_sdk_summary">Autoriser l’installation des APK dont le minSdkVersion est supérieur à la version du système.</string>
     <string name="bypass_verification">Désactiver la vérification digest</string>
     <string name="bypass_verification_summary">Permettre l\’installation d\’applications après avoir modifier le fichier dans l\’apk (ignorer les erreures invalid digest).</string>
     <string name="bypass_resource_arsc_restrictions">Contourner la contrainte d’alignement de resources.arsc</string>

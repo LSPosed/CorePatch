@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Βεβαιωθείτε ότι το πλαίσιο Xposed εκτελείται και ότι αυτή η μονάδα είναι ενεργοποιημένη.</string>
     <string name="bypass_downgrade">Επιτρεπόμενη υποβάθμιση</string>
     <string name="bypass_downgrade_summary">Επιτρέπει την υποβάθμιση εφαρμογών.</string>
+    <string name="bypass_min_sdk">Παράκαμψη περιορισμού ελάχιστης έκδοσης SDK</string>
+    <string name="bypass_min_sdk_summary">Επιτρέπει την εγκατάσταση APK των οποίων το minSdkVersion είναι μεγαλύτερο από την έκδοση του συστήματος.</string>
     <string name="bypass_verification">Απενεργοποίηση επαλήθευσης σύνοψης</string>
     <string name="bypass_verification_summary">Επιτρέπει την εγκατάσταση εφαρμογών μετά την τροποποίηση ενός αρχείου στο APK (αγνοεί το σφάλμα μη έγκυρης σύνοψης).</string>
     <string name="bypass_resource_arsc_restrictions">Παράκαμψη περιορισμού στοίχισης του resources.arsc</string>

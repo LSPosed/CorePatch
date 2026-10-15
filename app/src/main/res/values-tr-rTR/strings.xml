@@ -4,6 +4,8 @@
     <string name="xposed_service_unavailable_summary">Xposed altyapısının çalıştığından ve bu modülün etkinleştirildiğinden emin olun.</string>
     <string name="bypass_downgrade">Sürüm düşürmeye izin ver</string>
     <string name="bypass_downgrade_summary">Uygulamaların sürüm düşürmesine izin ver.</string>
+    <string name="bypass_min_sdk">Minimum SDK sürümü kısıtlamasını atla</string>
+    <string name="bypass_min_sdk_summary">minSdkVersion değeri sistem sürümünden yüksek olan APK’ların yüklenmesine izin ver.</string>
     <string name="bypass_verification">Özet doğrulamayı devre dışı bırak</string>
     <string name="bypass_verification_summary">APK içindeki dosya değiştirildikten sonra uygulama yüklenmesine izin verir (geçersiz özet hatasını yoksayar).</string>
     <string name="bypass_resource_arsc_restrictions">resources.arsc hizalama kısıtlamasını atla</string>

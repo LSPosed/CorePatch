@@ -5,6 +5,7 @@ import org.lsposed.corepatch.XposedHelper.prefs
 
 object Config {
     const val BYPASS_DOWNGRADE = "downgrade"
+    const val BYPASS_MIN_SDK = "bypass_min_sdk"
     const val BYPASS_VERIFICATION = "bypass_verification"
     const val BYPASS_RESOURCE_ARSC_RESTRICTIONS = "bypass_resource_arsc_restrictions"
     const val BYPASS_DIGEST = "bypass_digest"
@@ -17,6 +18,7 @@ object Config {
 
     private val allConfig = arrayOf(
         BYPASS_DOWNGRADE,
+        BYPASS_MIN_SDK,
         BYPASS_VERIFICATION,
         BYPASS_RESOURCE_ARSC_RESTRICTIONS,
         BYPASS_DIGEST,
@@ -34,6 +36,10 @@ object Config {
 
     fun isBypassDowngradeEnabled(): Boolean {
         return prefs.getBoolean(BYPASS_DOWNGRADE, false)
+    }
+
+    fun isBypassMinSdkEnabled(): Boolean {
+        return prefs.getBoolean(BYPASS_MIN_SDK, false)
     }
 
     fun isBypassVerificationEnabled(): Boolean {
