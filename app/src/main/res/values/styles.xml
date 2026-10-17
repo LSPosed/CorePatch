@@ -1,5 +1,5 @@
 <resources>
-    <style name="AppTheme" parent="android:style/Theme.DeviceDefault.Light">
+    <style name="AppTheme" parent="android:style/Theme.DeviceDefault.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>
