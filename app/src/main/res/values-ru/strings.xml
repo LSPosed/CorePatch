@@ -73,4 +73,6 @@
     <string name="export_failed">Ошибка экспорта</string>
     <string name="import_success">Импортировано</string>
     <string name="import_failed">Ошибка импорта</string>
+    <string name="install_group">Установка</string>
+    <string name="signature_group">Подпись</string>
 </resources>

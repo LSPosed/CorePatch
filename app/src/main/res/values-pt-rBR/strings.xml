@@ -71,4 +71,6 @@
     <string name="export_failed">Falha na exportação</string>
     <string name="import_success">Importado</string>
     <string name="import_failed">Falha na importação</string>
+    <string name="install_group">Instalação</string>
+    <string name="signature_group">Assinatura</string>
 </resources>

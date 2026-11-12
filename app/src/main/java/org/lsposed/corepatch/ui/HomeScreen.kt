@@ -79,12 +79,19 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .firstCard()
             ) {
+                val darkTheme = isInDarkTheme()
                 val statusColor = if (serviceAvailable) {
-                    if (isDynamicColor) MiuixTheme.colorScheme.secondaryContainer
-                    else Color(0xFFDFFAE4)
+                    when {
+                        isDynamicColor -> MiuixTheme.colorScheme.secondaryContainer
+                        darkTheme -> Color(0xFF1A3825)
+                        else -> Color(0xFFDFFAE4)
+                    }
                 } else {
-                    if (isDynamicColor) MiuixTheme.colorScheme.errorContainer
-                    else Color(0xFFFDE8E8)
+                    when {
+                        isDynamicColor -> MiuixTheme.colorScheme.errorContainer
+                        darkTheme -> Color(0xFF3D1C1C)
+                        else -> Color(0xFFFDE8E8)
+                    }
                 }
                 val iconTint = if (serviceAvailable) {
                     if (isDynamicColor) MiuixTheme.colorScheme.primary.copy(alpha = 0.8f)

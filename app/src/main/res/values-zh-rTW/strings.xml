@@ -71,4 +71,6 @@
     <string name="export_failed">匯出失敗</string>
     <string name="import_success">匯入成功</string>
     <string name="import_failed">匯入失敗</string>
+    <string name="install_group">安裝</string>
+    <string name="signature_group">簽名</string>
 </resources>

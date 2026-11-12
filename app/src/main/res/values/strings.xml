@@ -81,4 +81,6 @@
     <string name="export_failed">Export failed</string>
     <string name="import_success">Imported</string>
     <string name="import_failed">Import failed</string>
+    <string name="install_group">Install</string>
+    <string name="signature_group">Signature</string>
 </resources>

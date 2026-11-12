@@ -23,13 +23,14 @@ import org.lsposed.corepatch.R
 import org.lsposed.corepatch.data.SwitchData
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.SmallTitle
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.overlay.OverlayDialog
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
-/** All module switches in one card, moved over from the old single-page UI. */
+/** Module switches in two groups: install and signature. */
 @Composable
 fun FeaturesScreen(
     serviceAvailable: Boolean,
@@ -40,32 +41,50 @@ fun FeaturesScreen(
         ServiceUnavailable(isBlurEnabled = isBlurEnabled, extraBottomPadding = extraBottomPadding)
         return
     }
-    val switches = switchItems()
+    val installItems = installSwitchItems()
+    val signatureItems = signatureSwitchItems()
     val checkedStates = remember { mutableStateMapOf<String, Boolean>() }
     var warningText by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) {
-        switches.forEach { checkedStates[it.key] = Config.getConfig(it.key) }
+        (installItems + signatureItems).forEach { checkedStates[it.key] = Config.getConfig(it.key) }
     }
+
+    fun toggle(item: SwitchData, checked: Boolean) {
+        Config.setConfig(item.key, checked)
+        checkedStates[item.key] = checked
+        if (checked && item.warning != null) {
+            warningText = item.warning
+        }
+    }
+
     PageScaffold(
         title = stringResource(R.string.tab_features),
         isBlurEnabled = isBlurEnabled,
         extraBottomPadding = extraBottomPadding,
     ) {
         item {
-            Card(modifier = Modifier.firstCard()) {
-                switches.forEach { item ->
-                    SwitchPreference(
-                        title = item.title,
-                        summary = item.description,
-                        checked = checkedStates[item.key] ?: false,
-                        onCheckedChange = { checked ->
-                            Config.setConfig(item.key, checked)
-                            checkedStates[item.key] = checked
-                            if (checked && item.warning != null) {
-                                warningText = item.warning
-                            }
-                        },
-                    )
+            Column {
+                SmallTitle(text = stringResource(R.string.install_group))
+                Card(modifier = Modifier.nextCard()) {
+                    installItems.forEach { item ->
+                        SwitchPreference(
+                            title = item.title,
+                            summary = item.description,
+                            checked = checkedStates[item.key] ?: false,
+                            onCheckedChange = { toggle(item, it) },
+                        )
+                    }
+                }
+                SmallTitle(text = stringResource(R.string.signature_group))
+                Card(modifier = Modifier.nextCard()) {
+                    signatureItems.forEach { item ->
+                        SwitchPreference(
+                            title = item.title,
+                            summary = item.description,
+                            checked = checkedStates[item.key] ?: false,
+                            onCheckedChange = { toggle(item, it) },
+                        )
+                    }
                 }
             }
         }
@@ -117,7 +136,36 @@ private fun ServiceUnavailable(isBlurEnabled: Boolean, extraBottomPadding: Dp) {
 }
 
 @Composable
-private fun switchItems(): List<SwitchData> {
+private fun installSwitchItems(): List<SwitchData> = listOf(
+    SwitchData(
+        stringResource(R.string.bypass_downgrade),
+        stringResource(R.string.bypass_downgrade_summary),
+        Config.BYPASS_DOWNGRADE
+    ),
+    SwitchData(
+        stringResource(R.string.bypass_min_sdk),
+        stringResource(R.string.bypass_min_sdk_summary),
+        Config.BYPASS_MIN_SDK
+    ),
+    SwitchData(
+        stringResource(R.string.bypass_resource_arsc_restrictions),
+        stringResource(R.string.bypass_resource_arsc_restrictions_summary),
+        Config.BYPASS_RESOURCE_ARSC_RESTRICTIONS
+    ),
+    SwitchData(
+        stringResource(R.string.disable_verification_agent),
+        stringResource(R.string.disable_verification_agent_summary),
+        Config.DISABLE_VERIFICATION_AGENT
+    ),
+    SwitchData(
+        stringResource(R.string.bypass_block),
+        stringResource(R.string.bypass_block_summary),
+        Config.BYPASS_BLOCK
+    ),
+)
+
+@Composable
+private fun signatureSwitchItems(): List<SwitchData> {
     val usePreviousSignaturesWarning = if (isMiui()) {
         stringResource(R.string.miui_usepresig_warn) + "\n\n" + stringResource(R.string.use_previous_signatures_warning)
     } else {
@@ -125,24 +173,9 @@ private fun switchItems(): List<SwitchData> {
     }
     return listOf(
         SwitchData(
-            stringResource(R.string.bypass_downgrade),
-            stringResource(R.string.bypass_downgrade_summary),
-            Config.BYPASS_DOWNGRADE
-        ),
-        SwitchData(
-            stringResource(R.string.bypass_min_sdk),
-            stringResource(R.string.bypass_min_sdk_summary),
-            Config.BYPASS_MIN_SDK
-        ),
-        SwitchData(
             stringResource(R.string.bypass_verification),
             stringResource(R.string.bypass_verification_summary),
             Config.BYPASS_VERIFICATION
-        ),
-        SwitchData(
-            stringResource(R.string.bypass_resource_arsc_restrictions),
-            stringResource(R.string.bypass_resource_arsc_restrictions_summary),
-            Config.BYPASS_RESOURCE_ARSC_RESTRICTIONS
         ),
         SwitchData(
             stringResource(R.string.bypass_digest),
@@ -169,16 +202,6 @@ private fun switchItems(): List<SwitchData> {
             stringResource(R.string.bypass_shared_user),
             stringResource(R.string.bypass_shared_user_summary),
             Config.BYPASS_SHARED_USER
-        ),
-        SwitchData(
-            stringResource(R.string.disable_verification_agent),
-            stringResource(R.string.disable_verification_agent_summary),
-            Config.DISABLE_VERIFICATION_AGENT
-        ),
-        SwitchData(
-            stringResource(R.string.bypass_block),
-            stringResource(R.string.bypass_block_summary),
-            Config.BYPASS_BLOCK
         ),
     )
 }

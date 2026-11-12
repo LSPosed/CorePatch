@@ -71,4 +71,6 @@
     <string name="export_failed">エクスポートに失敗しました</string>
     <string name="import_success">インポートしました</string>
     <string name="import_failed">インポートに失敗しました</string>
+    <string name="install_group">インストール</string>
+    <string name="signature_group">署名</string>
 </resources>
