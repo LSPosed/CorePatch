@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A plaster/bandage: the "patch" of CorePatch. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:rotation="-45"
+        android:pivotX="54"
+        android:pivotY="54">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M36,44 H72 A10,10 0 0 1 72,64 H36 A10,10 0 0 1 36,44 Z" />
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.32"
+            android:pathData="M49.5,49.5 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z" />
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.32"
+            android:pathData="M53.5,49.5 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z" />
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.32"
+            android:pathData="M49.5,56 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z" />
+        <path
+            android:fillColor="#000000"
+            android:fillAlpha="0.32"
+            android:pathData="M53.5,56 a2.5,2.5 0 1 0 5,0 a2.5,2.5 0 1 0 -5,0 Z" />
+    </group>
+</vector>
