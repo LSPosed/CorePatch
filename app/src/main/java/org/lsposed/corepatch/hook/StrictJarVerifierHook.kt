@@ -5,6 +5,7 @@ import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper.hookAfter
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
+import java.security.cert.Certificate
 
 object StrictJarVerifierHook : BaseHook() {
     override val name = "StrictJarVerifierHook"
@@ -73,7 +74,11 @@ object StrictJarVerifierHook : BaseHook() {
                 if (signerInfo.isEmpty()) return@hookAfter
                 val signer = signerInfo[0]
                 val certs = getCertificateChainMethod.invoke(signer, block)
-                callback.result = certs
+                callback.result = when (certs) {
+                    is Array<*> -> certs
+                    is List<*> -> Array(certs.size) { index -> certs[index] as Certificate }
+                    else -> certs
+                }
                 callback.throwable = null
             }
         }
