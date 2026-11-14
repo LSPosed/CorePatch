@@ -74,8 +74,8 @@ object StrictJarVerifierHook : BaseHook() {
                 if (signerInfo.isEmpty()) return@hookAfter
                 val signer = signerInfo[0]
                 val certs = getCertificateChainMethod.invoke(signer, block)
+                //应对新版Android修改返回类型
                 callback.result = when (certs) {
-                    is Array<*> -> certs
                     is List<*> -> Array(certs.size) { index -> certs[index] as Certificate }
                     else -> certs
                 }
