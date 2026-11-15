@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Build
 import org.lsposed.corepatch.Config
 import org.lsposed.corepatch.XposedHelper.getOriginInvoker
+import org.lsposed.corepatch.XposedHelper.hookAfter
 import org.lsposed.corepatch.XposedHelper.hookBefore
 import org.lsposed.corepatch.XposedHelper.hostClassLoader
 
@@ -105,33 +106,27 @@ object SharedUserSettingHook : BaseHook() {
 
         val addPackageMethod =
             sharedUserSettingClazz.declaredMethods.first { m -> m.name == "addPackage" }
-        hookBefore(addPackageMethod) { callback ->
-            val thisObject = callback.thisObject ?: return@hookBefore
+        // Read packages after addPackage
+        hookAfter(addPackageMethod) { callback ->
+            if (callback.throwable != null) return@hookAfter
+            val thisObject = callback.thisObject ?: return@hookAfter
             if (!Config.isBypassDigestEnabled() || !Config.isBypassSharedUserEnabled()) {
-                return@hookBefore
+                return@hookAfter
             }
             val uidFlags = uidFlagsField.get(thisObject) as Int
             if (uidFlags and ApplicationInfo.FLAG_SYSTEM != 0) {
-                return@hookBefore // do not modify system's signature
+                return@hookAfter // do not modify system's signature
             }
-            val toAdd = callback.args[0] ?: return@hookBefore
-            var added = false
-            val sharedUserSig = getSigningDetails(thisObject) ?: return@hookBefore
+            val sharedUserSig = getSigningDetails(thisObject) ?: return@hookAfter
             var newSignatures: Any? = null
-            val packagesSettings = getPackageStorage(packagesField.get(thisObject) ?: return@hookBefore)
+            val packagesSettings = getPackageStorage(packagesField.get(thisObject) ?: return@hookAfter)
             val valueAtMethod =
                 packagesSettings.javaClass.declaredMethods.first { m -> m.name == "valueAt" }
             val pkgSize =
                 packagesSettings.javaClass.declaredMethods.first { m -> m.name == "size" }
                     .invoke(packagesSettings) as Int
-            if (pkgSize == 0) return@hookBefore
             for (i in 0 until pkgSize) {
-                var pkg = valueAtMethod.invoke(packagesSettings, i) ?: continue
-                // skip the added package
-                if (pkg == toAdd) {
-                    added = true
-                    pkg = toAdd
-                }
+                val pkg = valueAtMethod.invoke(packagesSettings, i) ?: continue
                 val packagesSignatures = getSigningDetails(pkg) ?: continue
                 val b1 = checkCapabilityInvoker.invoke(
                     packagesSignatures, sharedUserSig, 0
@@ -140,14 +135,14 @@ object SharedUserSettingHook : BaseHook() {
                     sharedUserSig, packagesSignatures, 0
                 ) as Boolean
                 // if old signing exists, return
-                if (b1 || b2) return@hookBefore
+                if (b1 || b2) return@hookAfter
                 // otherwise, choose the first signature we meet, and merge with others if possible
                 // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/ReconcilePackageUtils.java;l=193;drc=c9a8baf585e8eb0f3272443930301a61331b65c1
                 // respect to system
                 newSignatures = if (newSignatures == null) packagesSignatures
                 else mergeLineageWith(newSignatures, packagesSignatures)
             }
-            if (!added || newSignatures == null) return@hookBefore
+            if (newSignatures == null) return@hookAfter
             setSigningDetails(thisObject, newSignatures)
         }
     }
