@@ -24,6 +24,8 @@
     <string name="bypass_shared_user_summary">允许安装与其共享用户签名不同的 app（<b>需要同时打开“禁用APK签名验证”</b>）</string>
     <string name="disable_verification_agent">禁用安装包验证代理</string>
     <string name="disable_verification_agent_summary">如 Play 商店的保护机制</string>
+    <string name="disable_developer_verification">禁用 Android 开发者验证</string>
+    <string name="disable_developer_verification_summary">跳过安装时的开发者身份验证</string>
     <string name="bypass_block">绕过黑名单</string>
     <string name="bypass_block_summary">绕过某些设备如 Nothing Phone 上的黑名单</string>
     <string name="module_description">软件包管理服务修改</string>

@@ -92,6 +92,11 @@ class MainActivity : Activity() {
         val disableVerificationAgent = SwitchData(
             getString(R.string.disable_verification_agent), getString(R.string.disable_verification_agent_summary), Config.DISABLE_VERIFICATION_AGENT
         )
+        val disableDeveloperVerification = SwitchData(
+            getString(R.string.disable_developer_verification),
+            getString(R.string.disable_developer_verification_summary),
+            Config.DISABLE_DEVELOPER_VERIFICATION
+        )
         val bypassBlock = SwitchData(
             getString(R.string.bypass_block), getString(R.string.bypass_block_summary), Config.BYPASS_BLOCK
         )
@@ -107,6 +112,7 @@ class MainActivity : Activity() {
             allowHiddenApisForSystemApps,
             bypassSharedUser,
             disableVerificationAgent,
+            disableDeveloperVerification,
             bypassBlock
         )
 

@@ -13,6 +13,7 @@ import org.lsposed.corepatch.hook.InstallPackageHelperHook
 import org.lsposed.corepatch.hook.KeySetManagerServiceHook
 import org.lsposed.corepatch.hook.MessageDigestHook
 import org.lsposed.corepatch.hook.NtConfigListServiceImplHook
+import org.lsposed.corepatch.hook.PackageInstallerSessionHook
 import org.lsposed.corepatch.hook.PackageManagerServiceHook
 import org.lsposed.corepatch.hook.PackageManagerServiceUtilsHook
 import org.lsposed.corepatch.hook.ReconcilePackageUtilsHook
@@ -48,6 +49,7 @@ class XposedMain : XposedModule() {
             KeySetManagerServiceHook,
             MessageDigestHook,
             NtConfigListServiceImplHook,
+            PackageInstallerSessionHook,
             PackageManagerServiceHook,
             PackageManagerServiceUtilsHook,
             ReconcilePackageUtilsHook,

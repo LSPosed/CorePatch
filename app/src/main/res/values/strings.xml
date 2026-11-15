@@ -25,6 +25,8 @@
     <string name="miui_usepresig_warn">Xiaomi/Redmi users must not enable this option; otherwise, the device may fail to boot.</string>
     <string name="bypass_shared_user_summary">Allow packages with a different shared-user signature.</string>
     <string name="disable_verification_agent_summary">For example, Google Play Protect.</string>
+    <string name="disable_developer_verification">Disable Android developer verification</string>
+    <string name="disable_developer_verification_summary">Skip developer identity verification during installation.</string>
     <string name="bypass_block">Bypass installation blocklist</string>
     <string name="bypass_block_summary">Bypass blocklists on devices such as Nothing Phone.</string>
     <string name="hide_launcher_icon">Hide launcher icon</string>
