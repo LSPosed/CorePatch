@@ -1,10 +1,23 @@
 [versions]
-agp = "9.2.0"
+agp = "9.4.1"
+kotlin = "2.4.20"
+miuix = "0.9.4"
+androidx-activity = "1.13.0"
+androidx-compose-bom = "2026.08.00"
+libxposed = "102.0.0"
 
 [libraries]
-libxposed-api = { group = "io.github.libxposed", name = "api", version = "101.0.0" }
-libxposed-service = { group = "io.github.libxposed", name = "service", version = "101.0.0" }
+libxposed-api = { group = "io.github.libxposed", name = "api", version.ref = "libxposed" }
+libxposed-service = { group = "io.github.libxposed", name = "service", version.ref = "libxposed" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
+material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+miuix-ui = { group = "top.yukonga.miuix.kmp", name = "miuix-ui-android", version.ref = "miuix" }
+miuix-preference = { group = "top.yukonga.miuix.kmp", name = "miuix-preference-android", version.ref = "miuix" }
+miuix-icons = { group = "top.yukonga.miuix.kmp", name = "miuix-icons-android", version.ref = "miuix" }
+miuix-blur = { group = "top.yukonga.miuix.kmp", name = "miuix-blur-android", version.ref = "miuix" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 lsplugin-resopt = { id = "org.lsposed.lsplugin.resopt", version = "1.6" }
